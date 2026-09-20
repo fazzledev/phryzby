@@ -35,6 +35,8 @@ export const BOOK = [
   },
   {
     group: "light",
+    dir: "lib/light/",
+    files: [ "lib/light/quantities.rb" ],
     chapters: [
       { page: "light/reflection.html", files: [ "lib/light/reflection.rb" ] },
       { page: "light/refraction.html", files: [ "lib/light/refraction.rb" ] },
@@ -87,6 +89,10 @@ function mountTree(host, { here, loaded, open }) {
     rows.push(heading(section.group, "group"));
 
     if (section.chapters) {
+      if (section.files) {
+        rows.push(heading(section.dir, "dir"));
+        section.files.forEach((path) => rows.push(fileRow(path, section.chapters[0].page)));
+      }
       section.chapters.forEach((chapter) => {
         rows.push(link(TITLES[chapter.page], at(chapter.page), { current: chapter.page === here }));
         chapter.files.forEach((path) => rows.push(fileRow(path, chapter.page)));

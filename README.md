@@ -11,10 +11,7 @@ root of `left - right` afterwards.
 module Refraction
   extend Physics::Law
 
-  variable :angle_of_incidence,                alias: :i,   within: RIGHT_ANGLE
-  variable :angle_of_refraction,               alias: :rr,  within: RIGHT_ANGLE
-  variable :refractive_index_of_first_medium,  alias: :mu1, within: INDEX
-  variable :refractive_index_of_second_medium, alias: :mu2, within: INDEX
+  uses Optics, :i, :rr, :mu1, :mu2
 
   equation(:snells_law) { mu2 / mu1 == sin(i) / sin(rr) }
 
@@ -26,6 +23,11 @@ class Interface < Physics::Model
   include Refraction
 end
 ```
+
+A quantity is declared once, in `lib/light/quantities.rb`, with its symbol and
+the branch it lives on. A law then says which quantities it mentions — and it
+has to name them all, because the equation block is evaluated against the law's
+own variables and can see nothing else.
 
 Because the law is stored rather than compiled into a formula, one declaration
 solves in any direction. Give it two angles and it names the material:
@@ -56,8 +58,7 @@ each chapter includes one more law into it.
 | 1.2 | `Refraction` | Snell, declared domains, total internal reflection as a condition |
 | 1.3 | `Reflectance` | Fresnel: three equations, and the solver choosing between them |
 
-Each law names every quantity it mentions, so including two of them merges two
-sets of declarations that agree. By the third, one interface holds all of them:
+By the third, one interface holds all of them:
 ask it for the refracted angle and it uses Snell, then ask it for a share and
 it uses that answer. Nothing tells it which equation to reach for.
 
@@ -81,6 +82,7 @@ domain and watch the solver wander off the physical branch.
 
 ```
 ruby test/physics_test.rb               #  8 runs,  17 assertions
+ruby test/physics/law_test.rb           #  8 runs,  11 assertions
 ruby test/physics/solver_test.rb        #  7 runs,   7 assertions
 ruby test/pythagoras_test.rb            #  8 runs,  10 assertions
 ruby test/light/reflection_test.rb      #  7 runs,   7 assertions
@@ -102,6 +104,7 @@ lib/physics/
   solver.rb            Newton, bisection, and which one to believe
   model.rb             holding values, choosing an equation, solving
   degrees.rb           Numeric#deg and #in_degrees
+lib/light/quantities.rb  every optical quantity, declared once
 lib/light/*.rb         one law per file, plus the Interface that includes it
 test/                  mirrors lib/
 assets/phryzby.js      the tree, highlighting, the editor, booting CRuby — no build step

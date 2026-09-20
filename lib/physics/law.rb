@@ -14,6 +14,15 @@ module Physics
     def equation(name, &block) = equations[name] = Scope.new(variables).instance_eval(&block)
     def condition(name, &block) = conditions[name] = Scope.new(variables).instance_eval(&block)
 
+    def uses(source, *names)
+      names.each do |name|
+        key = source.variables.fetch(name)
+        variables[name] = key
+        variables[key] = key
+        domains[key] = source.domains[key] if source.domains.key?(key)
+      end
+    end
+
     def absorb(other)
       variables.merge!(other.variables)
       equations.merge!(other.equations)

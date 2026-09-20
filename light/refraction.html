@@ -132,6 +132,7 @@ const degrees = (v) => (v == null ? "—" : `${v.toFixed(2)}°`);
 const page = await chapter({
   page: "light/refraction.html",
   files: [
+    { key: "lib/light/quantities.rb", tab: 3 },
     { key: "lib/light/reflection.rb", tab: 2 },
     { key: "lib/light/refraction.rb", tab: 1 },
   ],

@@ -102,7 +102,10 @@ function paint(i, rl) {
 
 const page = await chapter({
   page: "light/reflection.html",
-  files: [ { key: "lib/light/reflection.rb" } ],
+  files: [
+    { key: "lib/light/quantities.rb", tab: 2 },
+    { key: "lib/light/reflection.rb", tab: 1 },
+  ],
   harness: HARNESS,
   onSolve(vm) {
     const i = +$("i").value;
