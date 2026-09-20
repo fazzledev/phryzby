@@ -7,76 +7,88 @@
 <link rel="stylesheet" href="assets/phryzby.css">
 </head>
 <body>
-<div class="wrap">
+<div class="app">
+  <header class="bar">
+    <a class="brand" href="./">phryzby</a>
+    <span class="where">physics written in Ruby</span>
+    <span class="grow"></span>
+    <a href="https://github.com/fazzledev/phryzby" class="where">github.com/fazzledev/phryzby</a>
+  </header>
 
-  <h1>phryzby <small>— physics written in Ruby</small></h1>
-  <p class="lede">
-    A law should read the way it is written on a blackboard and still be executable. Inside an
-    <code>equation</code> block the variables are not numbers — they are nodes in an expression
-    tree, so <code>==</code> builds an equation instead of answering true or false. The solver
-    finds a root of <code>left − right</code> afterwards, which is why one declaration answers in
-    any direction: give it two angles and it names the material.
-  </p>
-  <p class="lede">
-    Every page here runs CRuby compiled to WebAssembly and evaluates the repository's own
-    <code>.rb</code> files — the same bytes the tests run. Edit a law in the page and run it again.
-  </p>
+  <div class="pane cover-pane" style="overflow:auto">
+    <div class="cover">
+      <h1>phryzby <small>— physics written in Ruby</small></h1>
+      <p class="lede">
+        A law should read the way it is written on a blackboard and still be executable. Inside an
+        <code>equation</code> block the variables are not numbers — they are nodes in an expression
+        tree, so <code>==</code> builds an equation instead of answering true or false. The solver
+        finds a root of <code>left − right</code> afterwards, which is why one declaration answers
+        in any direction: give it two angles and it names the material.
+      </p>
+      <p class="lede">
+        Every page runs CRuby compiled to WebAssembly and evaluates this repository's own
+        <code>.rb</code> files — the same bytes the tests run. Edit a law in the page and run it
+        again.
+      </p>
 
-  <p class="part">The machinery</p>
-  <ul class="toc">
-    <li>
-      <a href="engine.html">
-        <span class="n">0</span>
-        <span>
-          <span class="t">The engine</span>
-          <span class="d">What a law is made of: an expression tree where <code>==</code> builds
-            instead of compares, the scope a declaration runs in, and a solver that does not care
-            which side of the equals sign the unknown was on.</span>
-        </span>
-      </a>
-    </li>
-  </ul>
+      <p class="part">The machinery</p>
+      <ul class="toc">
+        <li>
+          <a href="engine.html">
+            <span class="n">0</span>
+            <span>
+              <span class="t">The engine</span>
+              <span class="d">What a law is made of: an expression tree where <code>==</code>
+                builds instead of compares, the scope a declaration runs in, and a solver that does
+                not care which side of the equals sign the unknown was on.</span>
+            </span>
+          </a>
+        </li>
+      </ul>
 
-  <p class="part">Light</p>
-  <ul class="toc">
-    <li>
-      <a href="light/reflection.html">
-        <span class="n">1.1</span>
-        <span>
-          <span class="t">Reflection</span>
-          <span class="d">One equation, and what it means for <code>==</code> to build rather than
-            compare. A law is a module; <code>Interface</code> is the surface it holds for.</span>
-        </span>
-      </a>
-    </li>
-    <li>
-      <a href="light/refraction.html">
-        <span class="n">1.2</span>
-        <span>
-          <span class="t">Refraction</span>
-          <span class="d">A second law included alongside the first, neither a kind of the other.
-            Declared domains, because a periodic law has infinitely many roots and only one is
-            physical. Total internal reflection as a condition rather than a special case.</span>
-        </span>
-      </a>
-    </li>
-    <li>
-      <a href="light/reflectance.html">
-        <span class="n">1.3</span>
-        <span>
-          <span class="t">Reflectance</span>
-          <span class="d">Fresnel: how much goes each way. Three equations, an interface that now
-            holds all three laws, and the solver choosing between them. Brewster's angle and the
-            meaning of the word <em>total</em> fall out rather than being stated.</span>
-        </span>
-      </a>
-    </li>
-  </ul>
+      <p class="part">Light</p>
+      <ul class="toc">
+        <li>
+          <a href="light/reflection.html">
+            <span class="n">1.1</span>
+            <span>
+              <span class="t">Reflection</span>
+              <span class="d">One equation, and what it means for <code>==</code> to build rather
+                than compare. A law is a module; <code>Interface</code> is the surface it holds
+                for.</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="light/refraction.html">
+            <span class="n">1.2</span>
+            <span>
+              <span class="t">Refraction</span>
+              <span class="d">A second law included alongside the first, neither a kind of the
+                other. Declared domains, because a periodic law has infinitely many roots and only
+                one is physical. Total internal reflection as a condition rather than a special
+                case.</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="light/reflectance.html">
+            <span class="n">1.3</span>
+            <span>
+              <span class="t">Reflectance</span>
+              <span class="d">Fresnel: how much goes each way. Three equations, an interface that
+                now holds all three laws, and the solver choosing between them. Brewster's angle
+                and the meaning of the word <em>total</em> fall out rather than being stated.</span>
+            </span>
+          </a>
+        </li>
+      </ul>
 
-  <p class="note">
-    Source at <a href="https://github.com/fazzledev/phryzby">github.com/fazzledev/phryzby</a>.
-    No gems, no build step. 53 tests, Ruby 3.4.
-  </p>
+      <p class="note" style="margin-top:2rem">
+        No gems, no build step. 53 tests, Ruby 3.4.
+      </p>
+    </div>
+  </div>
 </div>
 </body>
 </html>

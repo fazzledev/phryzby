@@ -7,27 +7,20 @@
 <link rel="stylesheet" href="assets/phryzby.css">
 </head>
 <body>
-<div class="wrap">
+<div class="app">
+  <header class="bar">
+    <a class="brand" href="./">phryzby</a>
+    <span class="where"><strong>the engine</strong></span>
+    <span class="grow"></span>
+    <button id="run">Run in Ruby</button>
+    <button id="reset" class="ghost" hidden>Reset</button>
+    <span class="status" id="status">Nothing is computed until Ruby boots.</span>
+  </header>
 
-  <p class="crumbs"><a href="./">phryzby</a> <span>/</span> <strong>the engine</strong></p>
+  <div class="panes">
+    <nav class="pane tree" id="tree" aria-label="Files"></nav>
 
-  <h1>The engine <small>— what a law is made of</small></h1>
-  <p class="lede">
-    Seven small files under everything else, and worth reading once before the physics starts. A declaration block does not run arithmetic: the names inside it are nodes in an
-    expression tree, every operator returns another node, and <code>==</code> is overridden to
-    build an <code>Equation</code> rather than answer true or false. What the class stores is the
-    law as written.
-  </p>
-  <p class="lede">
-    Solving comes afterwards and knows nothing about which side of the equals sign anything was
-    on. It finds the equation that mentions the unknown and nothing else unknown, then finds a
-    root of <code>left − right</code> — Newton first, bisection when Newton wanders off the branch
-    the variable declared. Those two live in <code>solver.rb</code> and know nothing about physics
-    at all; they are handed a lambda and a range.
-  </p>
-
-  <div class="cols">
-    <div class="panel">
+    <div class="pane code">
       <div class="tabs" id="tabs" role="tablist"></div>
       <div class="editor">
         <pre id="highlight" aria-hidden="true"></pre>
@@ -35,75 +28,69 @@
       </div>
     </div>
 
-    <div class="panel">
-      <h2 class="head">one law, asked three ways</h2>
-      <div class="body">
-        <p style="margin:.1rem 0 1rem;font-size:.85rem;color:var(--ink-mid)">
-          A right triangle, because the answers are already known. Choose what to leave unknown;
-          the other two are given.
-        </p>
+    <aside class="pane side">
+      <h1>The engine <small>— what a law is made of</small></h1>
+      <p class="lede">
+        Seven small files under everything else. A declaration block does not run arithmetic: the
+        names inside it are nodes in an expression tree, every operator returns another node, and
+        <code>==</code> is overridden to build an <code>Equation</code>. What the class stores is
+        the law as written.
+      </p>
 
-        <div class="field">
-          <label for="unknown">solve for</label>
-          <select id="unknown" style="grid-column:2/4;font:inherit;font-size:.82rem;padding:.3rem;
-            background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:5px">
-            <option value="c">c — the hypotenuse</option>
-            <option value="a">a — one leg</option>
-            <option value="b">b — the other leg</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="a">a</label>
-          <input type="range" id="a" min="0.5" max="12" step="0.1" value="3">
-          <output id="a-out">3.0</output>
-        </div>
-        <div class="field">
-          <label for="b">b</label>
-          <input type="range" id="b" min="0.5" max="12" step="0.1" value="4">
-          <output id="b-out">4.0</output>
-        </div>
-        <div class="field">
-          <label for="c">c</label>
-          <input type="range" id="c" min="0.5" max="18" step="0.1" value="5">
-          <output id="c-out">5.0</output>
-        </div>
-
-        <div class="out">
-          <div><span>what the block returned</span><span class="val" id="r-class">—</span></div>
-          <div><span>as it was written</span><span class="val" id="r-eq" style="font-size:.74rem">—</span></div>
-          <hr>
-          <div><span>solved</span><span class="val" id="r-answer">—</span></div>
-          <div><span>equation it reached for</span><span class="val" id="r-chosen">—</span></div>
-          <div><span>law holds afterwards</span><span class="val" id="r-holds">—</span></div>
-        </div>
+      <p class="head">one law, asked three ways</p>
+      <div class="field">
+        <label for="unknown">solve for</label>
+        <select id="unknown">
+          <option value="c">c — the hypotenuse</option>
+          <option value="a">a — one leg</option>
+          <option value="b">b — the other leg</option>
+        </select>
       </div>
-    </div>
+      <div class="field">
+        <label for="a">a</label>
+        <input type="range" id="a" min="0.5" max="12" step="0.1" value="3">
+        <output id="a-out">3.0</output>
+      </div>
+      <div class="field">
+        <label for="b">b</label>
+        <input type="range" id="b" min="0.5" max="12" step="0.1" value="4">
+        <output id="b-out">4.0</output>
+      </div>
+      <div class="field">
+        <label for="c">c</label>
+        <input type="range" id="c" min="0.5" max="18" step="0.1" value="5">
+        <output id="c-out">5.0</output>
+      </div>
+
+      <div class="out">
+        <div><span>what the block returned</span><span class="val" id="r-class">—</span></div>
+        <div><span>as it was written</span><span class="val" id="r-eq" style="font-size:.72rem">—</span></div>
+        <hr>
+        <div><span>solved</span><span class="val" id="r-answer">—</span></div>
+        <div><span>equation it reached for</span><span class="val" id="r-chosen">—</span></div>
+        <div><span>law holds afterwards</span><span class="val" id="r-holds">—</span></div>
+      </div>
+
+      <p class="head">notes</p>
+      <p class="note">
+        Solving knows nothing about which side of the equals sign anything was on. It finds the
+        equation that mentions the unknown and nothing else unknown, then finds a root of
+        <code>left − right</code> — Newton first, bisection when Newton wanders off the branch the
+        variable declared. Those two live in <code>solver.rb</code> and know nothing about physics
+        at all; they are handed a lambda and a range.
+      </p>
+      <p class="note">
+        Nothing was rearranged to solve backwards. <code>a</code> is not <code>sqrt(c² − b²)</code>
+        anywhere in the source — the same stored equation is handed to a root finder with a
+        different unknown.
+      </p>
+      <p class="note">
+        <code>within:</code> earns its keep even here. Squaring loses the sign, so the residual for
+        <code>a</code> has a root at −3 as well as 3, and bisection scanning from the bottom would
+        find the negative one first.
+      </p>
+    </aside>
   </div>
-
-  <div class="runbar">
-    <button id="run">Run in Ruby</button>
-    <button id="reset" class="ghost" hidden>Reset the files</button>
-    <span class="status" id="status">Nothing is computed until Ruby boots — the physics lives in the Ruby, not in this page.</span>
-  </div>
-
-  <p class="note">
-    Nothing was rearranged to solve backwards. <code>a</code> is not <code>sqrt(c² − b²)</code>
-    anywhere in the source — the same stored equation is handed to a root finder with a different
-    unknown. That is the whole trick, and it is why a chapter can declare a law once and then be
-    asked what a material is.
-  </p>
-  <p class="note">
-    <code>within:</code> earns its keep even here. Squaring loses the sign, so the residual for
-    <code>a</code> has a root at −3 as well as 3, and bisection scanning from the bottom would find
-    the negative one first. The declared domain is the only thing that keeps the answer a length.
-    In the chapters it does heavier work: <code>sin</code> is periodic, so a law like Snell's has
-    infinitely many roots and only one is an angle light can take.
-  </p>
-
-  <nav class="pager">
-    <a href="./">← Contents</a>
-    <a href="light/reflection.html">Reflection →</a>
-  </nav>
 </div>
 
 <script type="module">
@@ -126,8 +113,9 @@ end
 const FIELDS = [ "a", "b", "c" ];
 
 const page = await chapter({
+  page: "engine.html",
   showEngine: true,
-  files: [ { path: "lib/pythagoras.rb", tab: 99 } ],
+  files: [ { key: "lib/pythagoras.rb", tab: 99 } ],
   harness: HARNESS,
   onSolve(vm) {
     const unknown = $("unknown").value;

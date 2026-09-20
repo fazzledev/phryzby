@@ -7,21 +7,20 @@
 <link rel="stylesheet" href="../assets/phryzby.css">
 </head>
 <body>
-<div class="wrap">
+<div class="app">
+  <header class="bar">
+    <a class="brand" href="../">phryzby</a>
+    <span class="where">light <strong>/ reflectance</strong></span>
+    <span class="grow"></span>
+    <button id="run">Run in Ruby</button>
+    <button id="reset" class="ghost" hidden>Reset</button>
+    <span class="status" id="status">Nothing is computed until Ruby boots.</span>
+  </header>
 
-  <p class="crumbs"><a href="../">phryzby</a> <span>/</span> light <span>/</span> <strong>reflectance</strong></p>
+  <div class="panes">
+    <nav class="pane tree" id="tree" aria-label="Files"></nav>
 
-  <h1>Reflectance <small>— how much, rather than which way</small></h1>
-  <p class="lede">
-    The two previous laws say where the light goes and nothing about how it divides. Fresnel gives
-    the shares, and they depend on polarisation — so there are two equations and an average for
-    ordinary light. With the third law included, <code>Interface</code> holds all of them: ask it
-    for the refracted angle and it uses Snell, then ask it for a share and it uses that answer. The
-    solver picks whichever equation the question needs, and nothing here tells it which.
-  </p>
-
-  <div class="cols">
-    <div class="panel">
+    <div class="pane code">
       <div class="tabs" id="tabs" role="tablist"></div>
       <div class="editor">
         <pre id="highlight" aria-hidden="true"></pre>
@@ -29,70 +28,59 @@
       </div>
     </div>
 
-    <div class="panel">
-      <h2 class="head">the split</h2>
-      <div class="body">
-        <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray dividing at an interface"></svg>
+    <aside class="pane side">
+      <h1>Reflectance <small>— how much, rather than which way</small></h1>
+      <p class="lede">
+        Fresnel gives the shares, and they depend on polarisation — two equations and an average
+        for ordinary light. With the third law included, <code>Interface</code> holds all of them,
+        and the solver picks whichever equation a question needs.
+      </p>
 
-        <div class="field">
-          <label for="i">incidence</label>
-          <input type="range" id="i" min="0.5" max="89.5" step="0.01" value="30">
-          <output id="i-out">30.00°</output>
-        </div>
-        <div class="field">
-          <label for="mu1">μ₁ first medium</label>
-          <input type="range" id="mu1" min="1" max="2.5" step="0.01" value="1.00">
-          <output id="mu1-out">1.00</output>
-        </div>
-        <div class="field">
-          <label for="mu2">μ₂ second medium</label>
-          <input type="range" id="mu2" min="1" max="2.5" step="0.01" value="1.50">
-          <output id="mu2-out">1.50</output>
-        </div>
+      <p class="head">the split</p>
+      <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray dividing at an interface"></svg>
 
-        <div class="out">
-          <div><span>angle of refraction</span><span class="val" id="r-rr">—</span></div>
-          <div class="alarm"><span>total internal reflection</span><span class="val" id="r-tir">—</span></div>
-          <hr>
-          <div><span>reflected, s-polarised</span><span class="val" id="r-rs">—</span></div>
-          <div><span>reflected, p-polarised</span><span class="val" id="r-rp">—</span></div>
-          <div><span>reflected, unpolarised</span><span class="val" id="r-r">—</span></div>
-          <div><span>refracted</span><span class="val" id="r-t">—</span></div>
-        </div>
+      <div class="field" style="margin-top:.9rem">
+        <label for="i">incidence</label>
+        <input type="range" id="i" min="0.5" max="89.5" step="0.01" value="30">
+        <output id="i-out">30.00°</output>
       </div>
-    </div>
+      <div class="field">
+        <label for="mu1">μ₁ first</label>
+        <input type="range" id="mu1" min="1" max="2.5" step="0.01" value="1.00">
+        <output id="mu1-out">1.00</output>
+      </div>
+      <div class="field">
+        <label for="mu2">μ₂ second</label>
+        <input type="range" id="mu2" min="1" max="2.5" step="0.01" value="1.50">
+        <output id="mu2-out">1.50</output>
+      </div>
+
+      <div class="out">
+        <div><span>angle of refraction</span><span class="val" id="r-rr">—</span></div>
+        <div class="alarm"><span>total internal reflection</span><span class="val" id="r-tir">—</span></div>
+        <hr>
+        <div><span>reflected, s-polarised</span><span class="val" id="r-rs">—</span></div>
+        <div><span>reflected, p-polarised</span><span class="val" id="r-rp">—</span></div>
+        <div><span>reflected, unpolarised</span><span class="val" id="r-r">—</span></div>
+        <div><span>refracted</span><span class="val" id="r-t">—</span></div>
+      </div>
+
+      <p class="head">notes</p>
+      <p class="note">
+        The two outgoing rays share the incident ray's width exactly, so four percent looks like
+        four percent. Two well-known facts fall out of these equations rather than being stated:
+        reflection reaches 1 at the critical angle, which is what the <em>total</em> in total
+        internal reflection means, and the p-polarised share reaches 0 at Brewster's angle —
+        56.31° for glass — which is why polarised sunglasses cut glare off water.
+      </p>
+      <p class="note">
+        Approaching the critical angle the collapse is steeper than it looks. Set μ₁ 1.50 and μ₂
+        1.00 and creep from 41.00° upward: 62% still refracts at 41.00°, 2% at 41.81°, and nothing
+        at all a hundredth of a degree later. <code>cos(rr)</code> is going to zero as the
+        refracted ray swings flat along the surface, and it takes the whole transition with it.
+      </p>
+    </aside>
   </div>
-
-  <div class="runbar">
-    <button id="run">Run in Ruby</button>
-    <button id="reset" class="ghost" hidden>Reset the files</button>
-    <span class="status" id="status">Nothing is computed until Ruby boots — the physics lives in the Ruby, not in this page.</span>
-  </div>
-
-  <p class="note">
-    The two outgoing rays share the incident ray's width exactly, so four percent looks like four
-    percent. Two well-known facts fall out of these equations rather than being stated anywhere:
-    reflection reaches 1 at the critical angle, which is what the <em>total</em> in total internal
-    reflection means, and the p-polarised share reaches 0 at Brewster's angle — 56.31° for glass —
-    which is why polarised sunglasses cut glare off water.
-  </p>
-  <p class="note">
-    Approaching the critical angle the collapse is steeper than it looks. Set μ₁ 1.50 and μ₂ 1.00
-    and creep from 41.00° upward: 62% still refracts at 41.00°, 2% at 41.81°, and nothing at all a
-    hundredth of a degree later. <code>cos(rr)</code> is going to zero as the refracted ray swings
-    flat along the surface, and it takes the whole transition with it.
-  </p>
-
-  <p class="note">
-    The tabs show the laws. <a href="../engine.html">The engine</a> underneath them — the
-    expression tree, the scope a declaration runs in, and the solver — is loaded on this page too,
-    and has a page of its own.
-  </p>
-
-  <nav class="pager">
-    <a href="refraction.html">← Refraction</a>
-    <span>End of the chapter</span>
-  </nav>
 </div>
 
 <script type="module">
@@ -158,10 +146,11 @@ function paint(i, rr, trapped, reflected) {
 const share = (v) => (v == null ? "—" : `${(v * 100).toFixed(1)}%`);
 
 const page = await chapter({
+  page: "light/reflectance.html",
   files: [
-    { path: "../lib/light/reflection.rb", tab: 3 },
-    { path: "../lib/light/refraction.rb", tab: 2 },
-    { path: "../lib/light/reflectance.rb", tab: 1 },
+    { key: "lib/light/reflection.rb", tab: 3 },
+    { key: "lib/light/refraction.rb", tab: 2 },
+    { key: "lib/light/reflectance.rb", tab: 1 },
   ],
   harness: HARNESS,
   onSolve(vm) {

@@ -70,7 +70,8 @@ Two well-known numbers fall out of Fresnel rather than being stated anywhere:
 
 ## The demo
 
-**[Open it](https://fazzle.dev/phryzby/)** — one page per chapter. Each
+**[Open it](https://fazzle.dev/phryzby/)** — one page per chapter: file tree on
+the left, the law in the middle, the demo on the right. Each
 downloads CRuby compiled to WebAssembly (about 30 MB, cached across pages) and
 `fetch`es the `.rb` files out of this repository, so the page runs the same
 bytes the tests run. Edit a law in the page and run it again; delete a `within:`
@@ -103,7 +104,7 @@ lib/physics/
   degrees.rb           Numeric#deg and #in_degrees
 lib/light/*.rb         one law per file, plus the Interface that includes it
 test/                  mirrors lib/
-assets/phryzby.js      highlighting, the editor, and booting CRuby — no build step
+assets/phryzby.js      the tree, highlighting, the editor, booting CRuby — no build step
 assets/phryzby.css
 index.html             contents
 light/*.html           one page per chapter

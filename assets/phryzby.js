@@ -14,15 +14,98 @@ const SHIM = "def require_relative(_path) = true\n";
 export const RAD = Math.PI / 180;
 export const $ = (id) => document.getElementById(id);
 
-// Resolved against this module rather than the page, so a chapter one
-// directory down needs no ../ of its own. Order is the order the requires in
-// lib/physics.rb imply.
-export const ENGINE = [
-  "expression", "equation", "scope", "law", "solver", "model", "degrees",
-].map((part) => ({
-  path: new URL(`../lib/physics/${part}.rb`, import.meta.url).href,
-  label: `${part}.rb`,
-}));
+// Everything is addressed from the site root, resolved against this module
+// rather than the page, so a chapter one directory down needs no ../ of its
+// own and the tree is identical on every page.
+const ROOT = new URL("../", import.meta.url);
+const at = (path) => new URL(path, ROOT).href;
+
+const PARTS = [ "expression", "equation", "scope", "law", "solver", "model", "degrees" ];
+
+// Order is the order the requires in lib/physics.rb imply.
+export const ENGINE = PARTS.map((part) => `lib/physics/${part}.rb`);
+
+// The book, as the tree draws it: which page owns which file.
+export const BOOK = [
+  {
+    group: "the engine",
+    page: "engine.html",
+    dir: "lib/physics/",
+    files: PARTS.map((part) => `lib/physics/${part}.rb`).concat("lib/pythagoras.rb"),
+  },
+  {
+    group: "light",
+    chapters: [
+      { page: "light/reflection.html", files: [ "lib/light/reflection.rb" ] },
+      { page: "light/refraction.html", files: [ "lib/light/refraction.rb" ] },
+      { page: "light/reflectance.html", files: [ "lib/light/reflectance.rb" ] },
+    ],
+  },
+];
+
+const TITLES = {
+  "engine.html": "0 · The engine",
+  "light/reflection.html": "1.1 · Reflection",
+  "light/refraction.html": "1.2 · Refraction",
+  "light/reflectance.html": "1.3 · Reflectance",
+};
+
+// A file belonging to this page opens in the editor; one belonging to another
+// opens that chapter. So the tree is the table of contents as well.
+function mountTree(host, { here, loaded, open }) {
+  const rows = [];
+
+  const link = (label, href, { nest = false, current = false, away = false } = {}) => {
+    const a = document.createElement("a");
+    a.textContent = label;
+    a.href = href;
+    if (nest) a.classList.add("nest");
+    if (away) a.classList.add("elsewhere");
+    if (current) a.setAttribute("aria-current", "page");
+    return a;
+  };
+
+  const heading = (text, className) => {
+    const node = document.createElement("div");
+    node.className = className;
+    node.textContent = text;
+    return node;
+  };
+
+  const fileRow = (path, page) => {
+    const label = path.split("/").pop();
+    const mine = loaded.has(path);
+    const row = link(label, mine ? "#" : at(page), { nest: true, away: !mine });
+    if (mine) {
+      row.addEventListener("click", (event) => { event.preventDefault(); open(path); });
+      row.dataset.path = path;
+    }
+    return row;
+  };
+
+  BOOK.forEach((section) => {
+    rows.push(heading(section.group, "group"));
+
+    if (section.chapters) {
+      section.chapters.forEach((chapter) => {
+        rows.push(link(TITLES[chapter.page], at(chapter.page), { current: chapter.page === here }));
+        chapter.files.forEach((path) => rows.push(fileRow(path, chapter.page)));
+      });
+    } else {
+      rows.push(link(TITLES[section.page], at(section.page), { current: section.page === here }));
+      rows.push(heading(section.dir, "dir"));
+      section.files.forEach((path) => rows.push(fileRow(path, section.page)));
+    }
+  });
+
+  host.replaceChildren(...rows);
+
+  return (path) => {
+    host.querySelectorAll("a[data-path]").forEach((row) => {
+      row.setAttribute("aria-current", String(row.dataset.path === path));
+    });
+  };
+}
 
 // --- syntax highlighting ---------------------------------------------------
 // Small enough to read, which is the point: nothing is imported to colour it.
@@ -111,7 +194,7 @@ export function stage({ second = null } = {}) {
 
 // --- the editor ------------------------------------------------------------
 
-function mountEditor(files, { tabs, pre, textarea }) {
+function mountEditor(files, { tabs, pre, textarea }, announce = () => {}) {
   let active = 0;
 
   const remember = () => { if (textarea.value !== "") files[active].code = textarea.value; };
@@ -128,6 +211,7 @@ function mountEditor(files, { tabs, pre, textarea }) {
     textarea.value = files[index].code;
     [ ...tabs.children ].forEach((b, n) => b.setAttribute("aria-selected", String(n === index)));
     repaint();
+    announce(files[index].key);
   };
 
   tabs.innerHTML = "";
@@ -145,10 +229,14 @@ function mountEditor(files, { tabs, pre, textarea }) {
   textarea.spellcheck = false;
 
   show(0);
-  return { remember, reset: (restore) => {
-    files.forEach((file) => { file.code = restore(file); });
-    show(active);
-  } };
+  return {
+    remember,
+    showPath: (key) => show(Math.max(0, files.findIndex((file) => file.key === key))),
+    reset: (restore) => {
+      files.forEach((file) => { file.code = restore(file); });
+      show(active);
+    },
+  };
 }
 
 // --- the page --------------------------------------------------------------
@@ -156,8 +244,8 @@ function mountEditor(files, { tabs, pre, textarea }) {
 async function fetchRuby(files) {
   return Promise.all(files.map(async (file) => ({
     ...file,
-    label: file.label || file.path.split("/").pop(),
-    code: (await fetch(file.path).then((r) => r.text())).trimEnd(),
+    label: file.label || file.key.split("/").pop(),
+    code: (await fetch(at(file.key)).then((r) => r.text())).trimEnd(),
   })));
 }
 
@@ -191,7 +279,7 @@ async function loadVM(onStatus) {
  *   harness — Ruby that the page's controls call into
  *   onSolve — called with the vm whenever a control moves
  */
-export async function chapter({ files, harness = "", onSolve, showEngine = false }) {
+export async function chapter({ page, files, harness = "", onSolve, showEngine = false }) {
   const status = $("status");
   const run = $("run");
   const reset = $("reset");
@@ -203,16 +291,25 @@ export async function chapter({ files, harness = "", onSolve, showEngine = false
   // The engine is loaded on every page and shown only on its own. Files are
   // evaluated in the order given, because that is the order the requires
   // imply, and shown in `tab` order.
-  const engine = ENGINE.map((part, index) => ({ ...part, hidden: !showEngine, tab: index - ENGINE.length }));
+  const engine = ENGINE.map((key, index) => ({ key, hidden: !showEngine, tab: index - ENGINE.length }));
   const loaded = await fetchRuby([ ...engine, ...files ]);
   const originals = loaded.map((file) => file.code);
   const tabbed = loaded.filter((file) => !file.hidden)
     .map((file, index) => ({ file, at: file.tab ?? index }))
     .sort((a, b) => a.at - b.at).map((entry) => entry.file);
-  const editor = mountEditor(tabbed, { tabs: $("tabs"), pre: $("highlight"), textarea: $("source") });
+
+  let markTree = () => {};
+  const editor = mountEditor(tabbed, { tabs: $("tabs"), pre: $("highlight"), textarea: $("source") },
+    (key) => markTree(key));
+  markTree = mountTree($("tree"), {
+    here: page,
+    loaded: new Set(tabbed.map((file) => file.key)),
+    open: (key) => editor.showPath(key),
+  });
+  markTree(tabbed[0].key);
 
   let vm = null;
-  const page = {
+  const view = {
     get vm() { return vm; },
     say,
     refresh() {
@@ -234,7 +331,7 @@ export async function chapter({ files, harness = "", onSolve, showEngine = false
 
   run.addEventListener("click", async () => {
     try {
-      if (vm) { evaluate(); page.refresh(); return; }
+      if (vm) { evaluate(); view.refresh(); return; }
       run.disabled = true;
       say("Fetching CRuby…");
       vm = await loadVM(say);
@@ -243,7 +340,7 @@ export async function chapter({ files, harness = "", onSolve, showEngine = false
       run.textContent = "Re-run the laws";
       run.disabled = false;
       if (reset) reset.hidden = false;
-      page.refresh();
+      view.refresh();
     } catch (error) {
       say(String(error).split("\n")[0], true);
       run.disabled = false;
@@ -253,9 +350,9 @@ export async function chapter({ files, harness = "", onSolve, showEngine = false
   if (reset) {
     reset.addEventListener("click", () => {
       editor.reset((file) => originals[loaded.indexOf(file)]);
-      if (vm) { evaluate(); page.refresh(); }
+      if (vm) { evaluate(); view.refresh(); }
     });
   }
 
-  return page;
+  return view;
 }

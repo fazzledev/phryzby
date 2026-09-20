@@ -7,26 +7,20 @@
 <link rel="stylesheet" href="../assets/phryzby.css">
 </head>
 <body>
-<div class="wrap">
+<div class="app">
+  <header class="bar">
+    <a class="brand" href="../">phryzby</a>
+    <span class="where">light <strong>/ reflection</strong></span>
+    <span class="grow"></span>
+    <button id="run">Run in Ruby</button>
+    <button id="reset" class="ghost" hidden>Reset</button>
+    <span class="status" id="status">Nothing is computed until Ruby boots.</span>
+  </header>
 
-  <p class="crumbs"><a href="../">phryzby</a> <span>/</span> light <span>/</span> <strong>reflection</strong></p>
+  <div class="panes">
+    <nav class="pane tree" id="tree" aria-label="Files"></nav>
 
-  <h1>Reflection <small>— the angle out is the angle in</small></h1>
-  <p class="lede">
-    The smallest law there is, and enough to show what the whole thing is for. Inside the
-    <code>equation</code> block <code>i</code> and <code>rl</code> are not numbers — they are nodes
-    in an expression tree, so <code>==</code> does not answer true or false, it builds an equation
-    and hands it back. Nothing is computed until something asks for a value, which is why the same
-    one-line declaration solves forwards and backwards.
-  </p>
-  <p class="lede">
-    A law is a module, not a class, because a law is not a kind of another law. What the chapters
-    build up is <code>Interface</code> — the surface light arrives at — and each chapter includes
-    one more law into it. Here it knows exactly one.
-  </p>
-
-  <div class="cols">
-    <div class="panel">
+    <div class="pane code">
       <div class="tabs" id="tabs" role="tablist"></div>
       <div class="editor">
         <pre id="highlight" aria-hidden="true"></pre>
@@ -34,52 +28,47 @@
       </div>
     </div>
 
-    <div class="panel">
-      <h2 class="head">the mirror</h2>
-      <div class="body">
-        <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray reflecting off a mirror"></svg>
+    <aside class="pane side">
+      <h1>Reflection <small>— the angle out is the angle in</small></h1>
+      <p class="lede">
+        The smallest law there is. Inside the <code>equation</code> block <code>i</code> and
+        <code>rl</code> are not numbers — they are nodes in an expression tree, so <code>==</code>
+        does not answer true or false, it builds an equation and hands it back.
+      </p>
 
-        <div class="field">
-          <label for="i">incidence</label>
-          <input type="range" id="i" min="0" max="89" step="0.5" value="30">
-          <output id="i-out">30.0°</output>
-        </div>
+      <p class="head">the mirror</p>
+      <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray reflecting off a mirror"></svg>
 
-        <div class="out">
-          <div><span>angle of incidence</span><span class="val" id="r-i">—</span></div>
-          <div><span>angle of reflection</span><span class="val" id="r-rl">—</span></div>
-          <div><span>solved from</span><span class="val" id="r-eq">—</span></div>
-        </div>
+      <div class="field" style="margin-top:.9rem">
+        <label for="i">incidence</label>
+        <input type="range" id="i" min="0" max="89" step="0.5" value="30">
+        <output id="i-out">30.0°</output>
       </div>
-    </div>
+
+      <div class="out">
+        <div><span>angle of incidence</span><span class="val" id="r-i">—</span></div>
+        <div><span>angle of reflection</span><span class="val" id="r-rl">—</span></div>
+        <div><span>solved from</span><span class="val" id="r-eq">—</span></div>
+      </div>
+
+      <p class="head">notes</p>
+      <p class="note">
+        A law is a module, not a class, because a law is not a kind of another law. What the
+        chapters build up is <code>Interface</code> — the surface light arrives at — and each
+        chapter includes one more law into it. Here it knows exactly one.
+      </p>
+      <p class="note">
+        The solver is never told which way round the question goes. It finds the equation that
+        mentions the unknown and nothing else unknown, then finds a root of
+        <code>left − right</code>. Give it <code>rl</code> instead of <code>i</code> and the same
+        declaration answers.
+      </p>
+      <p class="note">
+        Run downloads CRuby compiled to WebAssembly, about 30 MB, and evaluates the files in the
+        tree unmodified — the same bytes the tests run.
+      </p>
+    </aside>
   </div>
-
-  <div class="runbar">
-    <button id="run">Run in Ruby</button>
-    <button id="reset" class="ghost" hidden>Reset the files</button>
-    <span class="status" id="status">Nothing is computed until Ruby boots — the physics lives in the Ruby, not in this page.</span>
-  </div>
-
-  <p class="note">
-    Run downloads CRuby compiled to WebAssembly, about 30 MB, and evaluates the two files above
-    unmodified — the same bytes the tests run. Edit either one and run it again.
-  </p>
-  <p class="note">
-    The solver is never told which way round the question goes. It finds the equation that mentions
-    the unknown and nothing else unknown, then finds a root of <code>left − right</code>. Give it
-    <code>rl</code> instead of <code>i</code> and the same declaration answers.
-  </p>
-
-  <p class="note">
-    The tabs show the laws. <a href="../engine.html">The engine</a> underneath them — the
-    expression tree, the scope a declaration runs in, and the solver — is loaded on this page too,
-    and has a page of its own.
-  </p>
-
-  <nav class="pager">
-    <a href="../engine.html">← The engine</a>
-    <a href="refraction.html">Refraction →</a>
-  </nav>
 </div>
 
 <script type="module">
@@ -112,7 +101,8 @@ function paint(i, rl) {
 }
 
 const page = await chapter({
-  files: [ { path: "../lib/light/reflection.rb" } ],
+  page: "light/reflection.html",
+  files: [ { key: "lib/light/reflection.rb" } ],
   harness: HARNESS,
   onSolve(vm) {
     const i = +$("i").value;
