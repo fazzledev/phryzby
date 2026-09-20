@@ -495,7 +495,10 @@ function paint({ i, rr, trapped, reflected }) {
   const up = (a) => [ cx - Math.sin(a * RAD) * len, cy - Math.cos(a * RAD) * len ];
   const upRight = (a) => [ cx + Math.sin(a * RAD) * len, cy - Math.cos(a * RAD) * len ];
   const down = (a) => [ cx + Math.sin(a * RAD) * len, cy + Math.cos(a * RAD) * len ];
-  const weight = (s) => (s == null ? 2 : 0.8 + 3.2 * s);
+  // The incident ray carries all of it, so the two outgoing widths divide
+  // that one width between them rather than each being scaled on its own.
+  const FULL = 4;
+  const weight = (s) => (s == null ? FULL / 2 : Math.max(0.5, FULL * s));
   const alpha = (s) => (s == null ? 0.6 : 0.32 + 0.68 * s);
 
   const line = (x1, y1, x2, y2, w, o) =>
@@ -521,7 +524,7 @@ function paint({ i, rr, trapped, reflected }) {
     label(294, 94, "μ₁", "var(--ink-soft)", "end"),
     label(294, 114, "μ₂", "var(--ink-soft)", "end"),
     label(156, 15, "normal", "var(--ink-soft)", "start"),
-    line(ix, iy, cx, cy, 2.6, 0.95),
+    line(ix, iy, cx, cy, FULL, 0.95),
     label(ix, iy - 6, "incident", "var(--ray)"),
     line(cx, cy, fx, fy, weight(back), alpha(back)),
     label(fx + 4, fy - 6, back == null ? "reflected" : `reflected ${(back * 100).toFixed(0)}%`, "var(--ray)"),
