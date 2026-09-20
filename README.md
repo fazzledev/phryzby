@@ -8,14 +8,22 @@ builds an equation rather than answering true or false, and the solver finds a
 root of `left - right` afterwards.
 
 ```ruby
-class Refraction < Reflection
+module Refraction
+  extend Physics::Law
+
+  variable :angle_of_incidence,                alias: :i,   within: RIGHT_ANGLE
   variable :angle_of_refraction,               alias: :rr,  within: RIGHT_ANGLE
-  variable :refractive_index_of_first_medium,  alias: :mu1, within: 1.0..4.0
-  variable :refractive_index_of_second_medium, alias: :mu2, within: 1.0..4.0
+  variable :refractive_index_of_first_medium,  alias: :mu1, within: INDEX
+  variable :refractive_index_of_second_medium, alias: :mu2, within: INDEX
 
   equation(:snells_law) { mu2 / mu1 == sin(i) / sin(rr) }
 
   condition(:total_internal_reflection) { sin(i) * mu1 / mu2 > 1 }
+end
+
+class Interface < Physics::Model
+  include Reflection
+  include Refraction
 end
 ```
 
@@ -23,10 +31,10 @@ Because the law is stored rather than compiled into a formula, one declaration
 solves in any direction. Give it two angles and it names the material:
 
 ```ruby
-ray = Refraction.new(i: 45.deg, rr: 28.9.deg, mu1: 1.0)
+ray = Interface.new(i: 45.deg, rr: 28.9.deg, mu1: 1.0)
 ray.solve(:mu2, guess: 1.2).round(2)   # => 1.46, which is silica glass
 
-ray = Refraction.new(i: 45.deg, mu1: 1.0, mu2: 1.5)
+ray = Interface.new(i: 45.deg, mu1: 1.0, mu2: 1.5)
 ray.solve(:rr, guess: 0.4).in_degrees  # => 28.13
 ```
 
@@ -38,18 +46,20 @@ one several turns away.
 
 ## Chapters
 
-Each law inherits the one before it, so each file states only what is new and
-each page's code is a little more than the last.
+A law is a module, not a class, because a law is not a kind of another law.
+What the chapters build up is `Interface` — the surface light arrives at — and
+each chapter includes one more law into it.
 
 | | | |
 |---|---|---|
 | 1.1 | `Reflection` | one equation; what it means for `==` to build rather than compare |
-| 1.2 | `Refraction < Reflection` | Snell, declared domains, total internal reflection as a condition |
-| 1.3 | `Reflectance < Refraction` | Fresnel: three equations, and the solver choosing between them |
+| 1.2 | `Refraction` | Snell, declared domains, total internal reflection as a condition |
+| 1.3 | `Reflectance` | Fresnel: three equations, and the solver choosing between them |
 
-By the third, one object holds the whole interface: ask it for the refracted
-angle and it uses Snell, then ask it for a share and it uses that answer.
-Nothing tells it which equation to reach for.
+Each law names every quantity it mentions, so including two of them merges two
+sets of declarations that agree. By the third, one interface holds all of them:
+ask it for the refracted angle and it uses Snell, then ask it for a share and
+it uses that answer. Nothing tells it which equation to reach for.
 
 Two well-known numbers fall out of Fresnel rather than being stated anywhere:
 
@@ -75,13 +85,13 @@ ruby test/light/refraction_test.rb      # 14 runs, 106 assertions
 ruby test/light/reflectance_test.rb     #  9 runs, 189 assertions
 ```
 
-No gems. Ruby 3.4.
+No gems, and no comments — the prose is on the pages. Ruby 3.4.
 
 ## Layout
 
 ```
 lib/physics_dsl.rb     the expression tree, the declaration scope, the solver
-lib/light/*.rb         the laws, each inheriting the last
+lib/light/*.rb         one law per file, plus the Interface that includes it
 test/                  mirrors lib/
 assets/phryzby.js      highlighting, the editor, and booting CRuby — no build step
 assets/phryzby.css

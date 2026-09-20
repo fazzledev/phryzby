@@ -1,19 +1,4 @@
-# A small declarative layer for writing physics as Ruby.
-#
-# The point is that a law should read the way it is written on a blackboard, and
-# still be executable. So the variables inside an `equation` block are not
-# numbers, they are expression nodes: `==` on them builds an equation rather
-# than answering true or false, and the solver works on the residual afterwards.
-#
-#   ruby test/pythagoras_test.rb
-
 module Physics
-  # --- expression tree -------------------------------------------------------
-  #
-  # Every operator returns another node, so a block like
-  #   { mu2 / mu1 == sin(i) / sin(rr) }
-  # evaluates to an Equation instead of a boolean.
-
   class Expr
     def +(other) = BinOp.new(:+, self, other)
     def -(other) = BinOp.new(:-, self, other)
@@ -21,8 +6,6 @@ module Physics
     def /(other) = BinOp.new(:/, self, other)
     def **(other) = BinOp.new(:**, self, other)
 
-    # Deliberately not object equality: inside a DSL block this is how a law
-    # gets stated. Nodes are never used as hash keys, so nothing depends on it.
     def ==(other) = Equation.new(self, other)
 
     def >(other)  = Comparison.new(:>, self, other)
@@ -78,8 +61,6 @@ module Physics
     def to_s = "#{@name}(#{@arg})"
   end
 
-  # --- statements ------------------------------------------------------------
-
   class Equation
     attr_reader :left, :right
 
@@ -88,7 +69,6 @@ module Physics
       @right = Expr.wrap(right)
     end
 
-    # Zero when the law holds. Everything the solver does is find a root of this.
     def residual(env) = @left.evaluate(env) - @right.evaluate(env)
     def variables = @left.variables | @right.variables
     def to_s = "#{@left} == #{@right}"
@@ -105,8 +85,6 @@ module Physics
     def variables = @left.variables | @right.variables
     def to_s = "#{@left} #{@op} #{@right}"
   end
-
-  # --- the context a declaration block runs in -------------------------------
 
   class Scope < BasicObject
     def initialize(names) = @names = names
@@ -125,35 +103,43 @@ module Physics
     FUNCTIONS = %i[sin cos tan asin acos atan sqrt log exp].freeze
   end
 
-  # --- the model -------------------------------------------------------------
+  module Declarations
+    def variables = @variables ||= {}
+    def equations = @equations ||= {}
+    def conditions = @conditions ||= {}
+    def domains = @domains ||= {}
+
+    def variable(name, **options)
+      variables[name] = name
+      variables[options[:alias]] = name if options[:alias]
+      domains[name] = options[:within] if options[:within]
+    end
+
+    def equation(name, &block) = equations[name] = Scope.new(variables).instance_eval(&block)
+    def condition(name, &block) = conditions[name] = Scope.new(variables).instance_eval(&block)
+
+    def absorb(other)
+      variables.merge!(other.variables)
+      equations.merge!(other.equations)
+      conditions.merge!(other.conditions)
+      domains.merge!(other.domains)
+    end
+  end
+
+  module Law
+    include Declarations
+
+    def included(model) = model.absorb(self)
+  end
 
   class Model
-    class << self
-      def variables = @variables ||= {}
-      def equations = @equations ||= {}
-      def conditions = @conditions ||= {}
-      def domains = @domains ||= {}
+    extend Declarations
 
+    class << self
       def inherited(subclass)
         super
-        subclass.instance_variable_set(:@variables, variables.dup)
-        subclass.instance_variable_set(:@equations, equations.dup)
-        subclass.instance_variable_set(:@conditions, conditions.dup)
-        subclass.instance_variable_set(:@domains, domains.dup)
+        subclass.absorb(self)
       end
-
-      # `alias:` is the symbol a physicist would actually write on the board.
-      # `within:` is the branch the quantity physically lives on — a refracted
-      # angle is between zero and a right angle, a reflectance is a fraction.
-      # Without it the solver is free to return any root of a periodic law.
-      def variable(name, **options)
-        variables[name] = name
-        variables[options[:alias]] = name if options[:alias]
-        domains[name] = options[:within] if options[:within]
-      end
-
-      def equation(name, &block) = equations[name] = Scope.new(variables).instance_eval(&block)
-      def condition(name, &block) = conditions[name] = Scope.new(variables).instance_eval(&block)
     end
 
     def initialize(**values)
@@ -169,9 +155,6 @@ module Physics
 
     def satisfies?(name) = self.class.conditions.fetch(name).satisfied?(@env)
 
-    # Solve one unknown from whichever equation mentions it and nothing else
-    # unknown. Newton first, then a bracketed bisection when Newton wanders —
-    # and a root outside the variable's declared branch counts as wandering.
     def solve(target, guess: 0.5, range: nil)
       key = self.class.variables.fetch(target)
       range ||= self.class.domains[key] || (-10.0..10.0)

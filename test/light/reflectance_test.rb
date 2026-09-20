@@ -1,11 +1,6 @@
-# ruby test/light/reflectance_test.rb
-
 require "minitest/autorun"
 require_relative "../../lib/light/reflectance"
 
-# Fresnel is checked against the numbers that have names: the four percent
-# everyone quotes for glass, Brewster's angle, and the moment reflection
-# becomes total.
 class ReflectanceTest < Minitest::Test
   AIR = 1.0
   GLASS = 1.5
@@ -20,7 +15,6 @@ class ReflectanceTest < Minitest::Test
     assert_in_delta rs, rp, 1e-3
   end
 
-  # The angle whose tangent is the index ratio. Polarised sunglasses work here.
   def test_p_polarised_light_vanishes_at_brewsters_angle
     _, rp, = share(at: BREWSTER, from: AIR, into: GLASS)
 
@@ -34,7 +28,6 @@ class ReflectanceTest < Minitest::Test
     assert_operator rs, :>, 0.1
   end
 
-  # This is what the "total" in total internal reflection means.
   def test_everything_reflects_at_the_critical_angle
     critical = Math.asin(AIR / GLASS).in_degrees
     _, _, r = share(at: critical, from: GLASS, into: AIR)
@@ -70,11 +63,8 @@ class ReflectanceTest < Minitest::Test
 
   BREWSTER = Math.atan(GLASS / AIR).in_degrees
 
-  # One object holds all three laws now, so the refracted angle comes from the
-  # inherited Snell and the shares are solved from it. The solver picks the
-  # equation each question needs; nothing here says which.
   def share(at:, from:, into:)
-    interface = Reflectance.new(i: at.deg, mu1: from, mu2: into)
+    interface = Interface.new(i: at.deg, mu1: from, mu2: into)
     interface.solve(:rr, guess: 0.4)
 
     %i[rs rp r].map { |part| interface.solve(part, guess: 0.1) }

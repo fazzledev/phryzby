@@ -13,10 +13,12 @@
 
   <h1>Refraction <small>— and the branch problem</small></h1>
   <p class="lede">
-    <code>Refraction</code> inherits <code>Reflection</code>, so the file states only what is new:
-    Snell's law, and the condition under which there is no refracted ray at all. Because the law is
-    stored rather than compiled into a formula, one declaration answers in any direction — give it
-    two angles and it names the material.
+    A ray meeting glass does both things at once, so <code>Interface</code> now includes two laws
+    rather than one. Neither inherits the other — refraction is not a kind of reflection — and each
+    names every quantity it mentions, so including both merges two sets of declarations that agree
+    about <code>angle_of_incidence</code>. Because a law is stored rather than compiled into a
+    formula, one declaration answers in any direction: give it two angles and it names the
+    material.
   </p>
 
   <div class="cols">
@@ -100,7 +102,7 @@ rescue StandardError
 end
 
 def trace(i_deg, mu1, mu2)
-  light = Refraction.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
+  light = Interface.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
   trapped = attempt { light.satisfies?(:total_internal_reflection) }
 
   rr = trapped ? nil : attempt { light.solve(:rr, guess: 0.4) }

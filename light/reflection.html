@@ -19,6 +19,11 @@
     and hands it back. Nothing is computed until something asks for a value, which is why the same
     one-line declaration solves forwards and backwards.
   </p>
+  <p class="lede">
+    A law is a module, not a class, because a law is not a kind of another law. What the chapters
+    build up is <code>Interface</code> — the surface light arrives at — and each chapter includes
+    one more law into it. Here it knows exactly one.
+  </p>
 
   <div class="cols">
     <div class="panel">
@@ -82,7 +87,7 @@ import { chapter, $, ray, label, stage, above, mirrored } from "../assets/phryzb
 
 const HARNESS = String.raw`
 def trace(i_deg)
-  mirror = Reflection.new(i: i_deg.deg)
+  mirror = Interface.new(i: i_deg.deg)
   rl = mirror.solve(:rl, guess: 0.4)
   [ rl.in_degrees, mirror.holds?(:law_of_reflection) ].join("|")
 rescue StandardError => e

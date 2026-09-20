@@ -15,9 +15,9 @@
   <p class="lede">
     The two previous laws say where the light goes and nothing about how it divides. Fresnel gives
     the shares, and they depend on polarisation — so there are two equations and an average for
-    ordinary light. <code>Reflectance</code> inherits <code>Refraction</code>, so one object now
-    holds the whole interface: ask it for the refracted angle and it uses Snell, then ask it for a
-    share and it uses that answer. The solver picks whichever equation the question needs.
+    ordinary light. With the third law included, <code>Interface</code> holds all of them: ask it
+    for the refracted angle and it uses Snell, then ask it for a share and it uses that answer. The
+    solver picks whichever equation the question needs, and nothing here tells it which.
   </p>
 
   <div class="cols">
@@ -106,7 +106,7 @@ rescue StandardError
 end
 
 def trace(i_deg, mu1, mu2)
-  interface = Reflectance.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
+  interface = Interface.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
   trapped = attempt { interface.satisfies?(:total_internal_reflection) }
 
   rr = trapped ? nil : attempt { interface.solve(:rr, guess: 0.4) }

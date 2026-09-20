@@ -1,10 +1,6 @@
-# ruby test/physics_dsl_test.rb
-
 require "minitest/autorun"
 require_relative "../lib/physics_dsl"
 
-# The machinery underneath: the reason a law can be written as a block and
-# still be executable is that the variables are expression nodes, not numbers.
 class PhysicsDSLTest < Minitest::Test
   def test_equality_inside_a_block_builds_an_equation_not_a_boolean
     equation = x == 5
@@ -63,8 +59,6 @@ class PhysicsDSLTest < Minitest::Test
   def var(name) = Physics::Var.new(name)
   def x = var(:x)
 
-  # A throwaway model with two variables, so each test only shows the part
-  # it is actually about.
   def model(&declarations)
     Class.new(Physics::Model) do
       variable :a

@@ -1,25 +1,16 @@
 require_relative "refraction"
 
-# How much, rather than which way.
-#
-# The two previous laws say where the light goes and say nothing about how it
-# divides. Fresnel gives the shares, and they depend on polarisation — so there
-# are two equations and an average for ordinary unpolarised light.
-#
-# Inheriting Refraction means one object now holds the whole interface: ask it
-# for the refracted angle and it uses Snell, then ask it for a share and it
-# uses that answer. The solver picks whichever equation the question needs.
-#
-# Two well-known facts fall out of these rather than being stated anywhere:
-#   - at the critical angle the reflected share reaches 1, which is what the
-#     "total" in total internal reflection means
-#   - at Brewster's angle the p-polarised share reaches 0, which is why
-#     polarised sunglasses cut glare off water
-#
-#   ruby test/light/reflectance_test.rb
+module Reflectance
+  extend Physics::Law
 
-class Reflectance < Refraction
+  RIGHT_ANGLE = 0.0..(Math::PI / 2)
+  INDEX = 1.0..4.0
   FRACTION = 0.0..1.0
+
+  variable :angle_of_incidence,                alias: :i,   within: RIGHT_ANGLE
+  variable :angle_of_refraction,               alias: :rr,  within: RIGHT_ANGLE
+  variable :refractive_index_of_first_medium,  alias: :mu1, within: INDEX
+  variable :refractive_index_of_second_medium, alias: :mu2, within: INDEX
 
   variable :reflectance_s_polarised, alias: :rs, within: FRACTION
   variable :reflectance_p_polarised, alias: :rp, within: FRACTION
@@ -34,4 +25,8 @@ class Reflectance < Refraction
   end
 
   equation(:unpolarised) { r == (rs + rp) / 2 }
+end
+
+class Interface
+  include Reflectance
 end

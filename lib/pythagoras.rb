@@ -1,14 +1,5 @@
 require_relative "physics_dsl"
 
-# A law with no physics in it, for looking at the machinery on its own.
-#
-# It is here because everything interesting about the engine is visible in one
-# equation: that `==` returned something instead of answering something, that
-# the same declaration solves in whichever direction it is asked, and that a
-# declared domain is what stops the solver handing back the negative root.
-#
-#   ruby test/pythagoras_test.rb
-
 class Pythagoras < Physics::Model
   LENGTH = 0.0..20.0
 

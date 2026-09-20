@@ -1,10 +1,6 @@
-# ruby test/light/refraction_test.rb
-
 require "minitest/autorun"
 require_relative "../../lib/light/refraction"
 
-# The optics the law is supposed to reproduce. Values are the textbook ones, so
-# a wrong solver shows up as wrong physics rather than as a wrong number.
 class RefractionTest < Minitest::Test
   AIR = 1.0
   WATER = 1.33
@@ -22,14 +18,11 @@ class RefractionTest < Minitest::Test
     assert_in_delta 30.0, solved(:i, from: AIR, into: GLASS, rr: 19.4712), 1e-3
   end
 
-  # The measurement a student actually makes: protract both angles, and the
-  # law names the material. Same declaration, solved sideways.
   def test_identifies_the_medium_from_two_measured_angles
     assert_in_delta GLASS, identified(into: 19.4712, from_air_at: 30), 1e-4
     assert_in_delta WATER, identified(into: 32.1173, from_air_at: 45), 1e-4
   end
 
-  # Inherited from the previous chapter, and still solvable here.
   def test_reflection_still_holds
     assert_in_delta 37.0, solved(:rl, from: AIR, into: GLASS, i: 37), 1e-6
   end
@@ -45,15 +38,12 @@ class RefractionTest < Minitest::Test
     refute ray(from: AIR, into: GLASS, i: 30, rr: 25).holds?(:snells_law)
   end
 
-  # Without a declared domain the solver is free to return any root of a
-  # periodic law, and at small angles Newton's method wanders to a distant one.
   def test_shallow_angles_stay_on_the_physical_branch
     { 3 => 1.9990, 10 => 6.6478, 30 => 19.4712 }.each do |degrees, expected|
       assert_in_delta expected, solved(:rr, from: AIR, into: GLASS, i: degrees), 1e-3
     end
   end
 
-  # Going the other way, past the critical angle, nothing refracts.
   def test_total_internal_reflection_past_the_critical_angle
     assert traps?(from: GLASS, into: AIR, at: 50)
   end
@@ -73,16 +63,12 @@ class RefractionTest < Minitest::Test
     end
   end
 
-  # Snell written as a ratio divides by sin(rr), which is zero when the ray
-  # comes straight in. The physics is fine — rr is also zero — but this form
-  # of the law cannot say so, and the solver is right to fail rather than
-  # invent an answer.
   def test_normal_incidence_is_outside_this_formulation
     assert_raises(RuntimeError) { solved(:rr, from: AIR, into: GLASS, i: 0) }
   end
 
   def test_refuses_to_solve_what_is_not_determined
-    ray = Refraction.new(i: 30.deg, mu1: AIR)
+    ray = Interface.new(i: 30.deg, mu1: AIR)
 
     assert_raises(RuntimeError) { ray.solve(:rr, guess: GUESS) }
   end
@@ -93,7 +79,7 @@ class RefractionTest < Minitest::Test
   CRITICAL = Math.asin(AIR / GLASS).in_degrees
 
   def ray(from:, into:, **angles)
-    Refraction.new(mu1: from, mu2: into, **angles.transform_values(&:deg))
+    Interface.new(mu1: from, mu2: into, **angles.transform_values(&:deg))
   end
 
   def solved(target, from:, into:, **angles)
@@ -103,7 +89,7 @@ class RefractionTest < Minitest::Test
   end
 
   def identified(into:, from_air_at:)
-    ray = Refraction.new(i: from_air_at.deg, rr: into.deg, mu1: AIR)
+    ray = Interface.new(i: from_air_at.deg, rr: into.deg, mu1: AIR)
     ray.solve(:mu2, guess: 1.0)
     ray[:mu2]
   end
