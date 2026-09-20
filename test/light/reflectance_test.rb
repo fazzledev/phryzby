@@ -1,4 +1,5 @@
 require "minitest/autorun"
+require_relative "../../lib/light/refraction"
 require_relative "../../lib/light/reflectance"
 
 class ReflectanceTest < Minitest::Test
