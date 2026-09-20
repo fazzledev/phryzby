@@ -503,9 +503,20 @@ function paint({ i, rr, trapped, reflected }) {
   const weight = (s) => (s == null ? FULL / 2 : FULL * s);
   const alpha = (s) => (s == null ? 0.6 : 0.32 + 0.68 * s);
 
-  const line = (x1, y1, x2, y2, w, o) =>
-    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--ray)" stroke-width="${w}"
-      stroke-opacity="${o}" stroke-linecap="round" marker-end="url(#tip)"/>`;
+  // A ray is its line plus a head drawn at the tip. The head is the same size
+  // on a hairline as on a thick ray — only the width carries the share — so it
+  // is built here rather than left to an SVG marker, which scales with stroke.
+  const HEAD = 7;
+  const ray = (x1, y1, x2, y2, w, o) => {
+    const span = Math.hypot(x2 - x1, y2 - y1);
+    const ux = (x2 - x1) / span, uy = (y2 - y1) / span;
+    const bx = x2 - ux * HEAD, by = y2 - uy * HEAD;
+    const half = HEAD * 0.42;
+    return `<line x1="${x1}" y1="${y1}" x2="${bx}" y2="${by}" stroke="var(--ray)"
+        stroke-width="${w}" stroke-opacity="${o}"/>
+      <path d="M ${x2} ${y2} L ${bx - uy * half} ${by + ux * half}
+        L ${bx + uy * half} ${by - ux * half} z" fill="var(--ray)" fill-opacity="${o}"/>`;
+  };
   const label = (x, y, t, fill = "var(--ink-soft)", anchor = "middle") =>
     `<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="8.5" fill="${fill}"
       font-family="var(--mono)">${t}</text>`;
@@ -517,26 +528,21 @@ function paint({ i, rr, trapped, reflected }) {
   const through = back == null ? null : 1 - back;
 
   const parts = [
-    // userSpaceOnUse, so an arrowhead stays the same size on a hairline ray
-    // as on a thick one — only the width carries the share.
-    `<defs><marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10"
-      markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
-      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--ray)"/></marker></defs>`,
     `<rect x="0" y="100" width="300" height="100" fill="var(--rule)" opacity=".3"/>`,
     `<line x1="0" y1="100" x2="300" y2="100" ${faint}/>`,
     `<line x1="150" y1="10" x2="150" y2="190" ${faint} stroke-dasharray="3 4"/>`,
     label(294, 94, "μ₁", "var(--ink-soft)", "end"),
     label(294, 114, "μ₂", "var(--ink-soft)", "end"),
     label(156, 15, "normal", "var(--ink-soft)", "start"),
-    line(ix, iy, cx, cy, FULL, 0.95),
+    ray(ix, iy, cx, cy, FULL, 0.95),
     label(ix, iy - 6, "incident", "var(--ray)"),
-    line(cx, cy, fx, fy, weight(back), alpha(back)),
+    ray(cx, cy, fx, fy, weight(back), alpha(back)),
     label(fx + 4, fy - 6, back == null ? "reflected" : `reflected ${(back * 100).toFixed(0)}%`, "var(--ray)"),
   ];
 
   if (rr != null) {
     const [rx, ry] = down(rr);
-    parts.push(line(cx, cy, rx, ry, weight(through), alpha(through)));
+    parts.push(ray(cx, cy, rx, ry, weight(through), alpha(through)));
     parts.push(label(rx + 4, ry + 12,
       through == null ? "refracted" : `refracted ${(through * 100).toFixed(0)}%`, "var(--ray)"));
   }
