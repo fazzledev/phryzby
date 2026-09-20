@@ -56,7 +56,7 @@ Two well-known numbers fall out of it rather than being stated anywhere:
 
 ## The demo
 
-**[Open it](https://fazzledev.github.io/phryzby/)** — it downloads CRuby
+**[Open it](https://fazzle.dev/phryzby/)** — it downloads CRuby
 compiled to WebAssembly (about 30 MB) and runs these exact files in the browser.
 Edit a law in the page and run it again; break Snell and the solver reports that
 it cannot find a root inside the branch the variable declares.
