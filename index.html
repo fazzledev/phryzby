@@ -495,10 +495,12 @@ function paint({ i, rr, trapped, reflected }) {
   const up = (a) => [ cx - Math.sin(a * RAD) * len, cy - Math.cos(a * RAD) * len ];
   const upRight = (a) => [ cx + Math.sin(a * RAD) * len, cy - Math.cos(a * RAD) * len ];
   const down = (a) => [ cx + Math.sin(a * RAD) * len, cy + Math.cos(a * RAD) * len ];
-  // The incident ray carries all of it, so the two outgoing widths divide
-  // that one width between them rather than each being scaled on its own.
-  const FULL = 4;
-  const weight = (s) => (s == null ? FULL / 2 : Math.max(0.5, FULL * s));
+  // The incident ray carries all of it, so the two outgoing widths add up to
+  // that one width exactly. No floor under them: four percent should look
+  // like four percent, and under total internal reflection the reflected ray
+  // inherits the incident width whole.
+  const FULL = 5;
+  const weight = (s) => (s == null ? FULL / 2 : FULL * s);
   const alpha = (s) => (s == null ? 0.6 : 0.32 + 0.68 * s);
 
   const line = (x1, y1, x2, y2, w, o) =>
@@ -515,9 +517,11 @@ function paint({ i, rr, trapped, reflected }) {
   const through = back == null ? null : 1 - back;
 
   const parts = [
-    `<defs><marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5"
-      markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z"
-      fill="var(--ray)"/></marker></defs>`,
+    // userSpaceOnUse, so an arrowhead stays the same size on a hairline ray
+    // as on a thick one — only the width carries the share.
+    `<defs><marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12"
+      markerHeight="12" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--ray)"/></marker></defs>`,
     `<rect x="0" y="100" width="300" height="100" fill="var(--rule)" opacity=".3"/>`,
     `<line x1="0" y1="100" x2="300" y2="100" ${faint}/>`,
     `<line x1="150" y1="10" x2="150" y2="190" ${faint} stroke-dasharray="3 4"/>`,
