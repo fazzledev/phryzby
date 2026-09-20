@@ -5,7 +5,7 @@
 # numbers, they are expression nodes: `==` on them builds an equation rather
 # than answering true or false, and the solver works on the residual afterwards.
 #
-#   ruby physics/light_ray_incidence.rb
+#   ruby test/pythagoras_test.rb
 
 module Physics
   # --- expression tree -------------------------------------------------------

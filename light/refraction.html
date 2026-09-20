@@ -77,6 +77,12 @@
     angle to watch it happen.
   </p>
 
+  <p class="note">
+    The tabs show the laws. <a href="../engine.html">The engine</a> underneath them — the
+    expression tree, the scope a declaration runs in, and the solver — is loaded on this page too,
+    and has a page of its own.
+  </p>
+
   <nav class="pager">
     <a href="reflection.html">← Reflection</a>
     <a href="reflectance.html">Reflectance →</a>
@@ -132,7 +138,7 @@ const degrees = (v) => (v == null ? "—" : `${v.toFixed(2)}°`);
 
 const page = await chapter({
   files: [
-    { path: "../lib/physics_dsl.rb", tab: 3 },
+    { path: "../lib/physics_dsl.rb", hidden: true },
     { path: "../lib/light/reflection.rb", tab: 2 },
     { path: "../lib/light/refraction.rb", tab: 1 },
   ],

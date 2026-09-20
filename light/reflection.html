@@ -65,8 +65,14 @@
     <code>rl</code> instead of <code>i</code> and the same declaration answers.
   </p>
 
+  <p class="note">
+    The tabs show the laws. <a href="../engine.html">The engine</a> underneath them — the
+    expression tree, the scope a declaration runs in, and the solver — is loaded on this page too,
+    and has a page of its own.
+  </p>
+
   <nav class="pager">
-    <span>The beginning</span>
+    <a href="../engine.html">← The engine</a>
     <a href="refraction.html">Refraction →</a>
   </nav>
 </div>
@@ -102,8 +108,8 @@ function paint(i, rl) {
 
 const page = await chapter({
   files: [
-    { path: "../lib/physics_dsl.rb", tab: 2 },
-    { path: "../lib/light/reflection.rb", tab: 1 },
+    { path: "../lib/physics_dsl.rb", hidden: true },
+    { path: "../lib/light/reflection.rb" },
   ],
   harness: HARNESS,
   onSolve(vm) {

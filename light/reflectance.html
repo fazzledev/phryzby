@@ -83,6 +83,12 @@
     flat along the surface, and it takes the whole transition with it.
   </p>
 
+  <p class="note">
+    The tabs show the laws. <a href="../engine.html">The engine</a> underneath them — the
+    expression tree, the scope a declaration runs in, and the solver — is loaded on this page too,
+    and has a page of its own.
+  </p>
+
   <nav class="pager">
     <a href="refraction.html">← Refraction</a>
     <span>End of the chapter</span>
@@ -153,7 +159,7 @@ const share = (v) => (v == null ? "—" : `${(v * 100).toFixed(1)}%`);
 
 const page = await chapter({
   files: [
-    { path: "../lib/physics_dsl.rb", tab: 4 },
+    { path: "../lib/physics_dsl.rb", hidden: true },
     { path: "../lib/light/reflection.rb", tab: 3 },
     { path: "../lib/light/refraction.rb", tab: 2 },
     { path: "../lib/light/reflectance.rb", tab: 1 },

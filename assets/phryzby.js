@@ -191,11 +191,12 @@ export async function chapter({ files, harness = "", onSolve }) {
   };
 
   // Evaluated in the order given, because that is the order the requires
-  // imply. Shown in `tab` order, because the chapter's own file should be the
-  // one you land on, not the engine underneath it.
+  // imply. Shown in `tab` order, and not shown at all when `hidden` — the
+  // engine has to be loaded on every page but has its own page to be read on.
   const loaded = await fetchRuby(files);
   const originals = loaded.map((file) => file.code);
-  const tabbed = loaded.map((file, index) => ({ file, at: file.tab ?? index }))
+  const tabbed = loaded.filter((file) => !file.hidden)
+    .map((file, index) => ({ file, at: file.tab ?? index }))
     .sort((a, b) => a.at - b.at).map((entry) => entry.file);
   const editor = mountEditor(tabbed, { tabs: $("tabs"), pre: $("highlight"), textarea: $("source") });
 
