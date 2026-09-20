@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>phryzby — physics written in Ruby</title>
+<style>
+  :root{
+    --paper:#FFFFFF; --ink:#1A1A1A; --ink-mid:#3A3A3A; --ink-soft:#6E6E6E;
+    --rule:#E4E4E2; --wash:#FAFAF9; --red:#C8102E; --ray:#1F6FEB;
+    --kw:#A626A4; --sym:#0184BC; --const:#B36C00; --num:#986801; --com:#9A9BA1; --op:#4A4A4A;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#131315; --ink:#ECECEC; --ink-mid:#C4C4C4; --ink-soft:#8C8C8C;
+      --rule:#2C2C30; --wash:#191919; --red:#FF6B81; --ray:#6BA8FF;
+      --kw:#C678DD; --sym:#56B6C2; --const:#E5C07B; --num:#D19A66; --com:#5C6370; --op:#ABB2BF;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#131315; --ink:#ECECEC; --ink-mid:#C4C4C4; --ink-soft:#8C8C8C;
+    --rule:#2C2C30; --wash:#191919; --red:#FF6B81; --ray:#6BA8FF;
+    --kw:#C678DD; --sym:#56B6C2; --const:#E5C07B; --num:#D19A66; --com:#5C6370; --op:#ABB2BF;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+  .wrap{max-width:1180px;margin:0 auto;padding:2.5rem 1.25rem 4rem;}
+  h1{font-size:1.55rem;margin:0 0 .3rem;letter-spacing:-.02em;}
+  h1 small{font-weight:400;color:var(--ink-soft);font-size:.62em;letter-spacing:0;}
+  .lede{color:var(--ink-mid);margin:0 0 1.9rem;max-width:66ch;}
+  .lede code{font-family:var(--mono);font-size:.9em;color:var(--ink);}
+  .cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1.4rem;align-items:start;}
+  @media (max-width:900px){.cols{grid-template-columns:1fr;}}
+  .panel{border:1px solid var(--rule);border-radius:10px;background:var(--wash);overflow:hidden;}
+  .tabs{display:flex;border-bottom:1px solid var(--rule);}
+  .tabs button{flex:0 0 auto;border:0;background:transparent;color:var(--ink-soft);
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+    padding:.72rem .95rem;cursor:pointer;border-bottom:2px solid transparent;border-radius:0;}
+  .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ray);}
+  .head{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);
+    margin:0;padding:.7rem .9rem;border-bottom:1px solid var(--rule);font-weight:600;}
+
+  /* Highlighted text sits under a transparent textarea, so it stays editable. */
+  .editor{position:relative;}
+  .editor pre, .editor textarea{
+    margin:0;padding:.9rem;font-family:var(--mono);font-size:.8rem;line-height:1.7;
+    white-space:pre;overflow:auto;tab-size:2;border:0;letter-spacing:0;
+  }
+  .editor pre{min-height:352px;color:var(--ink);pointer-events:none;}
+  .editor textarea{
+    position:absolute;inset:0;width:100%;height:100%;resize:none;background:transparent;
+    color:transparent;caret-color:var(--ink);outline:none;
+  }
+  .tok-kw{color:var(--kw);} .tok-sym{color:var(--sym);} .tok-const{color:var(--const);}
+  .tok-num{color:var(--num);} .tok-com{color:var(--com);font-style:italic;} .tok-op{color:var(--op);}
+
+  .body{padding:.9rem;}
+  .field{display:grid;grid-template-columns:8.6rem 1fr 4.2rem;gap:.5rem;align-items:center;margin-bottom:.6rem;}
+  .field label{font-size:.82rem;color:var(--ink-mid);}
+  .field input[type=range]{width:100%;accent-color:var(--ray);}
+  .field output{font-family:var(--mono);font-size:.82rem;text-align:right;}
+  .out{font-family:var(--mono);font-size:.82rem;border-top:1px solid var(--rule);margin-top:.85rem;padding-top:.75rem;}
+  .out div{display:flex;justify-content:space-between;gap:1rem;padding:.15rem 0;}
+  .out span:first-child{color:var(--ink-soft);}
+  .out .tir .val{color:var(--red);font-weight:600;}
+  .out hr{border:0;border-top:1px solid var(--rule);margin:.5rem 0;}
+  button{font:inherit;font-size:.85rem;padding:.5rem .95rem;border-radius:7px;cursor:pointer;
+    border:1px solid var(--ink);background:var(--ink);color:var(--paper);}
+  button:disabled{opacity:.45;cursor:default;}
+  button.ghost{background:transparent;color:var(--ink);}
+  .runbar{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:1.2rem 0 0;}
+  .status{font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);}
+  .status.err{color:var(--red);}
+  svg{display:block;width:100%;height:auto;}
+  .note{font-size:.78rem;color:var(--ink-soft);margin-top:1.6rem;max-width:74ch;}
+  .note code{font-family:var(--mono);}
+  .note + .note{margin-top:.7rem;}
+  a{color:var(--ray);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>phryzby <small>— physics written in Ruby</small></h1>
+  <p class="lede">
+    A law should read the way it is written on a blackboard and still be executable. Inside an
+    <code>equation</code> block the variables are not numbers — they are expression nodes, so
+    <code>==</code> builds an equation instead of answering true or false. The solver finds a root of
+    <code>left − right</code>, which is why one declaration solves in any direction: give it two
+    angles and it names the material. Two laws here, and the second consumes the first.
+  </p>
+
+  <div class="cols">
+
+    <div class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" id="tab-snell" aria-selected="true">snell &amp; reflection</button>
+        <button role="tab" id="tab-fresnel" aria-selected="false">fresnel</button>
+      </div>
+      <div class="editor">
+        <pre id="highlight" aria-hidden="true"></pre>
+        <textarea id="source" spellcheck="false" autocomplete="off"></textarea>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2 class="head">the ray</h2>
+      <div class="body">
+        <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray diagram"></svg>
+
+        <div class="field">
+          <label for="i">incidence</label>
+          <input type="range" id="i" min="1" max="89" step="1" value="30">
+          <output id="i-out">30°</output>
+        </div>
+        <div class="field">
+          <label for="mu1">μ₁ first medium</label>
+          <input type="range" id="mu1" min="1" max="2.5" step="0.01" value="1.00">
+          <output id="mu1-out">1.00</output>
+        </div>
+        <div class="field">
+          <label for="mu2">μ₂ second medium</label>
+          <input type="range" id="mu2" min="1" max="2.5" step="0.01" value="1.50">
+          <output id="mu2-out">1.50</output>
+        </div>
+
+        <div class="out">
+          <div><span>angle of refraction</span><span class="val" id="r-rr">—</span></div>
+          <div><span>angle of reflection</span><span class="val" id="r-rl">—</span></div>
+          <div><span>critical angle</span><span class="val" id="r-crit">—</span></div>
+          <div class="tir"><span>total internal reflection</span><span class="val" id="r-tir">—</span></div>
+          <hr>
+          <div><span>reflected, s-polarised</span><span class="val" id="r-rs">—</span></div>
+          <div><span>reflected, p-polarised</span><span class="val" id="r-rp">—</span></div>
+          <div><span>reflected, unpolarised</span><span class="val" id="r-r">—</span></div>
+          <div><span>refracted</span><span class="val" id="r-t">—</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="runbar">
+    <button id="run">Run in Ruby</button>
+    <button id="reset" class="ghost" hidden>Reset both laws</button>
+    <span class="status" id="status">Nothing is computed until Ruby boots — the physics lives in the Ruby, not in this page.</span>
+  </div>
+
+  <p class="note">
+    Run downloads CRuby compiled to WebAssembly, about 30&nbsp;MB, and evaluates both files above
+    unmodified. Edit a law and run it again: break Snell and the solver reports that it cannot find a
+    root inside the branch the variable declares.
+  </p>
+  <p class="note">
+    Snell says which way the light goes; Fresnel says how much of it goes each way. Both always
+    happen — some light reflects at every interface, about four percent for glass head-on. Two
+    results fall out of Fresnel rather than being stated: reflection reaches 1 exactly at the
+    critical angle, which is what the <em>total</em> in total internal reflection means, and the
+    p-polarised share reaches 0 at Brewster's angle, which is why polarised sunglasses cut glare.
+  </p>
+
+</div>
+
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const status = $("status");
+const RAD = Math.PI / 180;
+
+const SNELL = String.raw`class LightRayIncidence < Physics::Model
+  RIGHT_ANGLE = 0.0..(Math::PI / 2)
+
+  variable :angle_of_incidence,                alias: :i,   within: RIGHT_ANGLE
+  variable :angle_of_refraction,               alias: :rr,  within: RIGHT_ANGLE
+  variable :angle_of_reflection,               alias: :rl,  within: RIGHT_ANGLE
+  variable :refractive_index_of_first_medium,  alias: :mu1, within: 1.0..4.0
+  variable :refractive_index_of_second_medium, alias: :mu2, within: 1.0..4.0
+
+  equation(:snells_law)        { mu2 / mu1 == sin(i) / sin(rr) }
+  equation(:law_of_reflection) { i == rl }
+
+  condition(:total_internal_reflection) { sin(i) * mu1 / mu2 > 1 }
+end`;
+
+const FRESNEL = String.raw`# How much comes back, rather than which way it goes.
+# The split depends on polarisation, so there are two
+# equations and an average for ordinary light.
+
+class FresnelReflectance < Physics::Model
+  FRACTION = 0.0..1.0
+
+  variable :angle_of_incidence,                alias: :i,   within: 0.0..(Math::PI / 2)
+  variable :angle_of_refraction,               alias: :rr,  within: 0.0..(Math::PI / 2)
+  variable :refractive_index_of_first_medium,  alias: :mu1, within: 1.0..4.0
+  variable :refractive_index_of_second_medium, alias: :mu2, within: 1.0..4.0
+
+  variable :reflectance_s_polarised, alias: :rs, within: FRACTION
+  variable :reflectance_p_polarised, alias: :rp, within: FRACTION
+  variable :reflectance,             alias: :r,  within: FRACTION
+
+  equation(:s_polarised) do
+    rs == ((mu1 * cos(i) - mu2 * cos(rr)) /
+           (mu1 * cos(i) + mu2 * cos(rr))) ** 2
+  end
+
+  equation(:p_polarised) do
+    rp == ((mu1 * cos(rr) - mu2 * cos(i)) /
+           (mu1 * cos(rr) + mu2 * cos(i))) ** 2
+  end
+
+  equation(:unpolarised) { r == (rs + rp) / 2 }
+end`;
+
+const laws = { snell: SNELL, fresnel: FRESNEL };
+let active = "snell";
+
+// --- syntax highlighting ---------------------------------------------------
+// Small enough to read, which is the point: nothing is imported to colour it.
+
+const KEYWORDS = /^(class|module|def|do|end|self|if|unless|then|else|return)$/;
+const escape = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const span = (kind, text) => `<span class="tok-${kind}">${escape(text)}</span>`;
+
+function highlight(code) {
+  const pattern = /(#[^\n]*)|(:[A-Za-z_]\w*[?!]?)|(\b[a-z_]\w*:)|(\b[A-Z]\w*\b)|(\b\d+(?:\.\d+)?\b)|(\b[a-z_]\w*[?!]?\b)|(\*\*|==|\.\.|[{}()\[\].,<>+\-*\/=|])/g;
+  let out = "";
+  let last = 0;
+  let match;
+
+  while ((match = pattern.exec(code)) !== null) {
+    out += escape(code.slice(last, match.index));
+    const [text, comment, symbol, key, constant, number, word, operator] = match;
+
+    if (comment) out += span("com", text);
+    else if (symbol || key) out += span("sym", text);
+    else if (constant) out += span("const", text);
+    else if (number) out += span("num", text);
+    else if (word) out += KEYWORDS.test(text) ? span("kw", text) : escape(text);
+    else if (operator) out += span("op", text);
+    else out += escape(text);
+
+    last = pattern.lastIndex;
+  }
+  return out + escape(code.slice(last));
+}
+
+// The textarea is the live copy of whichever law is on screen.
+function remember() {
+  if ($("source").value !== "") laws[active] = $("source").value;
+}
+
+function repaintCode() {
+  const area = $("source");
+  const pre = $("highlight");
+  pre.innerHTML = highlight(area.value) + "\n";
+  pre.scrollTop = area.scrollTop;
+  pre.scrollLeft = area.scrollLeft;
+}
+
+function showTab(which) {
+  remember();
+  active = which;
+  $("source").value = laws[which];
+  $("tab-snell").setAttribute("aria-selected", String(which === "snell"));
+  $("tab-fresnel").setAttribute("aria-selected", String(which === "fresnel"));
+  repaintCode();
+}
+
+// --- the engine ------------------------------------------------------------
+
+const ENGINE = String.raw`
+module Physics
+  class Expr
+    def +(o) = BinOp.new(:+, self, o)
+    def -(o) = BinOp.new(:-, self, o)
+    def *(o) = BinOp.new(:*, self, o)
+    def /(o) = BinOp.new(:/, self, o)
+    def **(o) = BinOp.new(:**, self, o)
+    def ==(o) = Equation.new(self, o)
+    def >(o)  = Comparison.new(:>, self, o)
+    def <(o)  = Comparison.new(:<, self, o)
+    def coerce(n) = [ Const.new(n), self ]
+    def self.wrap(v) = v.is_a?(Expr) ? v : Const.new(v)
+  end
+
+  class Const < Expr
+    def initialize(v) = @v = v
+    def evaluate(_env) = @v
+    def variables = []
+  end
+
+  class Var < Expr
+    def initialize(name) = @name = name
+    def evaluate(env) = env.fetch(@name) { raise KeyError, "no value for #{@name}" }
+    def variables = [ @name ]
+  end
+
+  class BinOp < Expr
+    def initialize(op, l, r)
+      @op = op
+      @l = Expr.wrap(l)
+      @r = Expr.wrap(r)
+    end
+    def evaluate(env) = @l.evaluate(env).public_send(@op, @r.evaluate(env))
+    def variables = @l.variables | @r.variables
+  end
+
+  class Fn < Expr
+    def initialize(name, arg)
+      @name = name
+      @arg = Expr.wrap(arg)
+    end
+    def evaluate(env) = Math.public_send(@name, @arg.evaluate(env))
+    def variables = @arg.variables
+  end
+
+  class Equation
+    def initialize(l, r)
+      @l = Expr.wrap(l)
+      @r = Expr.wrap(r)
+    end
+    def residual(env) = @l.evaluate(env) - @r.evaluate(env)
+    def variables = @l.variables | @r.variables
+  end
+
+  class Comparison
+    def initialize(op, l, r)
+      @op = op
+      @l = Expr.wrap(l)
+      @r = Expr.wrap(r)
+    end
+    def satisfied?(env) = @l.evaluate(env).public_send(@op, @r.evaluate(env))
+    def variables = @l.variables | @r.variables
+  end
+
+  class Scope < BasicObject
+    FUNCTIONS = %i[sin cos tan asin acos atan sqrt log exp].freeze
+    def initialize(names) = @names = names
+    def method_missing(name, *args)
+      return Fn.new(name, args.first) if FUNCTIONS.include?(name)
+      return Var.new(@names.fetch(name)) if @names.key?(name)
+      ::Kernel.raise ::NameError, "unknown name #{name} in a physics block"
+    end
+    def respond_to_missing?(n, _p = false) = FUNCTIONS.include?(n) || @names.key?(n)
+  end
+
+  class Model
+    class << self
+      def variables = @variables ||= {}
+      def equations = @equations ||= {}
+      def conditions = @conditions ||= {}
+      def domains = @domains ||= {}
+
+      def inherited(sub)
+        super
+        sub.instance_variable_set(:@variables, variables.dup)
+        sub.instance_variable_set(:@equations, equations.dup)
+        sub.instance_variable_set(:@conditions, conditions.dup)
+        sub.instance_variable_set(:@domains, domains.dup)
+      end
+
+      def variable(name, **opts)
+        variables[name] = name
+        variables[opts[:alias]] = name if opts[:alias]
+        domains[name] = opts[:within] if opts[:within]
+      end
+
+      def equation(name, &b) = equations[name] = Scope.new(variables).instance_eval(&b)
+      def condition(name, &b) = conditions[name] = Scope.new(variables).instance_eval(&b)
+    end
+
+    def initialize(**values)
+      @env = {}
+      values.each { |k, v| @env[self.class.variables.fetch(k)] = v }
+    end
+
+    def [](name) = @env[self.class.variables.fetch(name)]
+    def satisfies?(name) = self.class.conditions.fetch(name).satisfied?(@env)
+
+    def solve(target, guess: 0.5, range: nil)
+      key = self.class.variables.fetch(target)
+      range ||= self.class.domains[key] || (-10.0..10.0)
+      eq = equation_for(key)
+      residual = ->(x) { eq.residual(@env.merge(key => x)) }
+      root = newton(residual, guess)
+      root = nil unless root && range.cover?(root)
+      root ||= bisect(residual, range)
+      raise "could not solve for #{target}" unless root
+      @env[key] = root
+    end
+
+    private
+
+    def equation_for(key)
+      known = @env.keys
+      self.class.equations.values.find { |eq|
+        eq.variables.include?(key) && (eq.variables - known - [ key ]).empty?
+      } || raise("no equation determines #{key} from what is known")
+    end
+
+    def newton(residual, guess, steps: 50)
+      x = guess
+      steps.times do
+        fx = residual.call(x)
+        return x if fx.abs < 1e-12
+        slope = (residual.call(x + 1e-7) - fx) / 1e-7
+        return nil if slope.abs < 1e-14
+        x -= fx / slope
+        return nil unless x.finite?
+      end
+      residual.call(x).abs < 1e-6 ? x : nil
+    rescue ::Math::DomainError
+      nil
+    end
+
+    def bisect(residual, range, steps: 200)
+      lo, hi = range.begin, range.end
+      found = lo.step(by: (hi - lo) / 1000.0, to: hi).each_cons(2).find { |a, b|
+        fa = safe(residual, a)
+        fb = safe(residual, b)
+        fa && fb && fa * fb <= 0
+      }
+      return nil unless found
+      lo, hi = found
+      steps.times do
+        mid = (lo + hi) / 2.0
+        break if (hi - lo).abs < 1e-12
+        safe(residual, lo) * safe(residual, mid) <= 0 ? hi = mid : lo = mid
+      end
+      (lo + hi) / 2.0
+    end
+
+    def safe(residual, x)
+      v = residual.call(x)
+      v.finite? ? v : nil
+    rescue ::Math::DomainError
+      nil
+    end
+  end
+end
+
+class Numeric
+  def deg = self * ::Math::PI / 180.0
+  def in_degrees = self * 180.0 / ::Math::PI
+end
+`;
+
+// Snell first, then Fresnel on its result. Neither knows about the other.
+const HARNESS = String.raw`
+def attempt
+  yield
+rescue StandardError
+  nil
+end
+
+def trace(i_deg, mu1, mu2)
+  ray = LightRayIncidence.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
+  trapped = attempt { ray.satisfies?(:total_internal_reflection) }
+
+  rr = trapped ? nil : attempt { ray.solve(:rr, guess: 0.4) }
+  rl = attempt { ray.solve(:rl, guess: 0.4) }
+  critical = mu2 < mu1 ? Math.asin(mu2 / mu1).in_degrees : nil
+
+  rs, rp, r =
+    if trapped
+      [ 1.0, 1.0, 1.0 ]
+    elsif rr
+      fresnel = FresnelReflectance.new(i: i_deg.deg, rr: rr, mu1: mu1, mu2: mu2)
+      attempt { %i[rs rp r].map { |part| fresnel.solve(part, guess: 0.1) } } || [ nil, nil, nil ]
+    else
+      [ nil, nil, nil ]
+    end
+
+  [ rr&.in_degrees, rl&.in_degrees, critical, trapped, rs, rp, r ]
+    .map { |value| value.nil? ? "" : value.to_s }.join("|")
+end
+`;
+
+let vm = null;
+const inputs = { i: $("i"), mu1: $("mu1"), mu2: $("mu2") };
+
+function echoInputs() {
+  const v = { i: +inputs.i.value, mu1: +inputs.mu1.value, mu2: +inputs.mu2.value };
+  $("i-out").textContent = `${v.i}°`;
+  $("mu1-out").textContent = v.mu1.toFixed(2);
+  $("mu2-out").textContent = v.mu2.toFixed(2);
+  return v;
+}
+
+// Ray weight carries the Fresnel share, so the reflected ray visibly
+// strengthens as the angle opens and takes over entirely past critical.
+function paint({ i, rr, trapped, reflected }) {
+  const cx = 150, cy = 100, len = 76;
+  const up = (a) => [ cx - Math.sin(a * RAD) * len, cy - Math.cos(a * RAD) * len ];
+  const upRight = (a) => [ cx + Math.sin(a * RAD) * len, cy - Math.cos(a * RAD) * len ];
+  const down = (a) => [ cx + Math.sin(a * RAD) * len, cy + Math.cos(a * RAD) * len ];
+  const weight = (s) => (s == null ? 2 : 0.8 + 3.2 * s);
+  const alpha = (s) => (s == null ? 0.6 : 0.32 + 0.68 * s);
+
+  const line = (x1, y1, x2, y2, w, o) =>
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--ray)" stroke-width="${w}"
+      stroke-opacity="${o}" stroke-linecap="round" marker-end="url(#tip)"/>`;
+  const label = (x, y, t, fill = "var(--ink-soft)", anchor = "middle") =>
+    `<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="8.5" fill="${fill}"
+      font-family="var(--mono)">${t}</text>`;
+
+  const [ix, iy] = up(i);
+  const [fx, fy] = upRight(i);
+  const faint = `stroke="var(--rule)" stroke-width="1"`;
+  const back = reflected;
+  const through = back == null ? null : 1 - back;
+
+  const parts = [
+    `<defs><marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5"
+      markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z"
+      fill="var(--ray)"/></marker></defs>`,
+    `<rect x="0" y="100" width="300" height="100" fill="var(--rule)" opacity=".3"/>`,
+    `<line x1="0" y1="100" x2="300" y2="100" ${faint}/>`,
+    `<line x1="150" y1="10" x2="150" y2="190" ${faint} stroke-dasharray="3 4"/>`,
+    label(294, 94, "μ₁", "var(--ink-soft)", "end"),
+    label(294, 114, "μ₂", "var(--ink-soft)", "end"),
+    label(156, 15, "normal", "var(--ink-soft)", "start"),
+    line(ix, iy, cx, cy, 2.6, 0.95),
+    label(ix, iy - 6, "incident", "var(--ray)"),
+    line(cx, cy, fx, fy, weight(back), alpha(back)),
+    label(fx + 4, fy - 6, back == null ? "reflected" : `reflected ${(back * 100).toFixed(0)}%`, "var(--ray)"),
+  ];
+
+  if (rr != null) {
+    const [rx, ry] = down(rr);
+    parts.push(line(cx, cy, rx, ry, weight(through), alpha(through)));
+    parts.push(label(rx + 4, ry + 12,
+      through == null ? "refracted" : `refracted ${(through * 100).toFixed(0)}%`, "var(--ray)"));
+  }
+  if (trapped) parts.push(label(150, 162, "no refracted ray — total internal reflection", "var(--red)"));
+
+  $("diagram").innerHTML = parts.join("");
+}
+
+const pct = (v) => (v == null ? "—" : `${(v * 100).toFixed(1)}%`);
+const degrees = (v) => (v == null ? "—" : `${v.toFixed(2)}°`);
+
+function recompute() {
+  const v = echoInputs();
+  if (!vm) { paint({ i: v.i, rr: null, trapped: false, reflected: null }); return; }
+
+  try {
+    const parts = vm.eval(`trace(${v.i}, ${v.mu1}, ${v.mu2})`).toString().split("|");
+    const n = (s) => (s === "" || s === undefined ? null : Number(s));
+    const [rr, rl, crit, tir, rs, rp, r] = parts;
+    const trapped = tir === "" ? null : tir === "true";
+
+    $("r-rr").textContent = rr === "" ? (trapped ? "none" : "—") : degrees(n(rr));
+    $("r-rl").textContent = degrees(n(rl));
+    $("r-crit").textContent = crit === "" ? "none" : degrees(n(crit));
+    $("r-tir").textContent = trapped == null ? "—" : (trapped ? "yes" : "no");
+    $("r-rs").textContent = pct(n(rs));
+    $("r-rp").textContent = pct(n(rp));
+    $("r-r").textContent = pct(n(r));
+    $("r-t").textContent = n(r) == null ? "—" : pct(1 - n(r));
+
+    paint({ i: v.i, rr: n(rr), trapped, reflected: n(r) });
+    status.textContent = "Solved in Ruby.";
+    status.classList.remove("err");
+  } catch (error) {
+    status.textContent = String(error).split("\n")[0];
+    status.classList.add("err");
+  }
+}
+
+function evaluateLaws() {
+  remember();
+  vm.eval(laws.snell);
+  vm.eval(laws.fresnel);
+  vm.eval(HARNESS);
+}
+
+async function boot() {
+  const RUNTIME = "https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@2.10.1/dist/browser/+esm";
+  const BINARY = "https://cdn.jsdelivr.net/npm/@ruby/3.4-wasm-wasi@2.10.1/dist/ruby+stdlib.wasm";
+
+  $("run").disabled = true;
+  status.classList.remove("err");
+  status.textContent = "Fetching CRuby…";
+
+  const { DefaultRubyVM } = await import(RUNTIME);
+  const response = await fetch(BINARY);
+  const total = +response.headers.get("content-length") || 0;
+  const reader = response.body.getReader();
+  const chunks = [];
+  let seen = 0;
+
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    seen += value.length;
+    const mb = (seen / 1048576).toFixed(1);
+    status.textContent = total
+      ? `Fetching CRuby… ${mb} of ${(total / 1048576).toFixed(1)} MB`
+      : `Fetching CRuby… ${mb} MB`;
+  }
+
+  status.textContent = "Compiling…";
+  const module = await WebAssembly.compile(await new Blob(chunks).arrayBuffer());
+  vm = (await DefaultRubyVM(module)).vm;
+
+  vm.eval(ENGINE);
+  evaluateLaws();
+
+  $("run").textContent = "Re-run the laws";
+  $("run").disabled = false;
+  $("reset").hidden = false;
+  recompute();
+}
+
+$("run").addEventListener("click", async () => {
+  try {
+    if (!vm) { await boot(); return; }
+    evaluateLaws();
+    recompute();
+  } catch (error) {
+    status.textContent = String(error).split("\n")[0];
+    status.classList.add("err");
+    $("run").disabled = false;
+  }
+});
+
+$("reset").addEventListener("click", () => {
+  laws.snell = SNELL;
+  laws.fresnel = FRESNEL;
+  $("source").value = laws[active];
+  repaintCode();
+  evaluateLaws();
+  recompute();
+});
+
+$("tab-snell").addEventListener("click", () => showTab("snell"));
+$("tab-fresnel").addEventListener("click", () => showTab("fresnel"));
+$("source").addEventListener("input", repaintCode);
+$("source").addEventListener("scroll", repaintCode);
+Object.values(inputs).forEach((el) => el.addEventListener("input", recompute));
+
+showTab("snell");
+recompute();
+</script>
+</body>
+</html>
