@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reflectance — phryzby</title>
+<link rel="stylesheet" href="../assets/phryzby.css">
+</head>
+<body>
+<div class="wrap">
+
+  <p class="crumbs"><a href="../">phryzby</a> <span>/</span> light <span>/</span> <strong>reflectance</strong></p>
+
+  <h1>Reflectance <small>— how much, rather than which way</small></h1>
+  <p class="lede">
+    The two previous laws say where the light goes and nothing about how it divides. Fresnel gives
+    the shares, and they depend on polarisation — so there are two equations and an average for
+    ordinary light. <code>Reflectance</code> inherits <code>Refraction</code>, so one object now
+    holds the whole interface: ask it for the refracted angle and it uses Snell, then ask it for a
+    share and it uses that answer. The solver picks whichever equation the question needs.
+  </p>
+
+  <div class="cols">
+    <div class="panel">
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="editor">
+        <pre id="highlight" aria-hidden="true"></pre>
+        <textarea id="source" autocomplete="off"></textarea>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2 class="head">the split</h2>
+      <div class="body">
+        <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray dividing at an interface"></svg>
+
+        <div class="field">
+          <label for="i">incidence</label>
+          <input type="range" id="i" min="0.5" max="89.5" step="0.01" value="30">
+          <output id="i-out">30.00°</output>
+        </div>
+        <div class="field">
+          <label for="mu1">μ₁ first medium</label>
+          <input type="range" id="mu1" min="1" max="2.5" step="0.01" value="1.00">
+          <output id="mu1-out">1.00</output>
+        </div>
+        <div class="field">
+          <label for="mu2">μ₂ second medium</label>
+          <input type="range" id="mu2" min="1" max="2.5" step="0.01" value="1.50">
+          <output id="mu2-out">1.50</output>
+        </div>
+
+        <div class="out">
+          <div><span>angle of refraction</span><span class="val" id="r-rr">—</span></div>
+          <div class="alarm"><span>total internal reflection</span><span class="val" id="r-tir">—</span></div>
+          <hr>
+          <div><span>reflected, s-polarised</span><span class="val" id="r-rs">—</span></div>
+          <div><span>reflected, p-polarised</span><span class="val" id="r-rp">—</span></div>
+          <div><span>reflected, unpolarised</span><span class="val" id="r-r">—</span></div>
+          <div><span>refracted</span><span class="val" id="r-t">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="runbar">
+    <button id="run">Run in Ruby</button>
+    <button id="reset" class="ghost" hidden>Reset the files</button>
+    <span class="status" id="status">Nothing is computed until Ruby boots — the physics lives in the Ruby, not in this page.</span>
+  </div>
+
+  <p class="note">
+    The two outgoing rays share the incident ray's width exactly, so four percent looks like four
+    percent. Two well-known facts fall out of these equations rather than being stated anywhere:
+    reflection reaches 1 at the critical angle, which is what the <em>total</em> in total internal
+    reflection means, and the p-polarised share reaches 0 at Brewster's angle — 56.31° for glass —
+    which is why polarised sunglasses cut glare off water.
+  </p>
+  <p class="note">
+    Approaching the critical angle the collapse is steeper than it looks. Set μ₁ 1.50 and μ₂ 1.00
+    and creep from 41.00° upward: 62% still refracts at 41.00°, 2% at 41.81°, and nothing at all a
+    hundredth of a degree later. <code>cos(rr)</code> is going to zero as the refracted ray swings
+    flat along the surface, and it takes the whole transition with it.
+  </p>
+
+  <nav class="pager">
+    <a href="refraction.html">← Refraction</a>
+    <span>End of the chapter</span>
+  </nav>
+</div>
+
+<script type="module">
+import { chapter, $, ray, label, stage, above, mirrored, below } from "../assets/phryzby.js";
+
+const HARNESS = String.raw`
+def attempt
+  yield
+rescue StandardError
+  nil
+end
+
+def trace(i_deg, mu1, mu2)
+  interface = Reflectance.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
+  trapped = attempt { interface.satisfies?(:total_internal_reflection) }
+
+  rr = trapped ? nil : attempt { interface.solve(:rr, guess: 0.4) }
+
+  shares =
+    if trapped
+      [ 1.0, 1.0, 1.0 ]
+    elsif rr
+      attempt { %i[rs rp r].map { |part| interface.solve(part, guess: 0.1) } }
+    end
+
+  ([ rr&.in_degrees, trapped ] + (shares || [ nil, nil, nil ]))
+    .map { |value| value.nil? ? "" : value.to_s }.join("|")
+end
+`;
+
+// The incident ray carries all of it, so the two outgoing widths add up to that
+// one width exactly. No floor under them: four percent should look like four
+// percent, and under total internal reflection the reflected ray takes it all.
+const FULL = 3;
+const weight = (share) => (share == null ? FULL / 2 : FULL * share);
+const alpha = (share) => (share == null ? 0.6 : 0.32 + 0.68 * share);
+const percent = (share) => `${(share * 100).toFixed(0)}%`;
+
+function paint(i, rr, trapped, reflected) {
+  const refracted = reflected == null ? null : 1 - reflected;
+  const parts = stage({ second: true });
+  const [ix, iy] = above(i);
+  parts.push(ray(ix, iy, 150, 100, FULL, 0.95));
+  parts.push(label(ix, iy - 6, "incident", "var(--ray)"));
+
+  const [fx, fy] = mirrored(i);
+  parts.push(ray(150, 100, fx, fy, weight(reflected), alpha(reflected)));
+  parts.push(label(fx + 4, fy - 6,
+    reflected == null ? "reflected" : `reflected ${percent(reflected)}`, "var(--ray)"));
+
+  if (rr != null) {
+    const [rx, ry] = below(rr);
+    parts.push(ray(150, 100, rx, ry, weight(refracted), alpha(refracted)));
+    parts.push(label(rx + 4, ry + 12,
+      refracted == null ? "refracted" : `refracted ${percent(refracted)}`, "var(--ray)"));
+  }
+  if (trapped) {
+    parts.push(label(150, 162, "no refracted ray — total internal reflection", "var(--red)"));
+  }
+  $("diagram").innerHTML = parts.join("");
+}
+
+const share = (v) => (v == null ? "—" : `${(v * 100).toFixed(1)}%`);
+
+const page = await chapter({
+  files: [
+    { path: "../lib/physics_dsl.rb", tab: 4 },
+    { path: "../lib/light/reflection.rb", tab: 3 },
+    { path: "../lib/light/refraction.rb", tab: 2 },
+    { path: "../lib/light/reflectance.rb", tab: 1 },
+  ],
+  harness: HARNESS,
+  onSolve(vm) {
+    const i = +$("i").value, mu1 = +$("mu1").value, mu2 = +$("mu2").value;
+    $("i-out").textContent = `${i.toFixed(2)}°`;
+    $("mu1-out").textContent = mu1.toFixed(2);
+    $("mu2-out").textContent = mu2.toFixed(2);
+
+    if (!vm) { paint(i, null, false, null); return; }
+
+    const [rr, tir, rs, rp, r] = vm.eval(`trace(${i}, ${mu1}, ${mu2})`).toString().split("|");
+    const num = (s) => (s === "" ? null : Number(s));
+    const trapped = tir === "" ? null : tir === "true";
+
+    $("r-rr").textContent = rr === "" ? (trapped ? "none" : "—") : `${Number(rr).toFixed(2)}°`;
+    $("r-tir").textContent = trapped == null ? "—" : (trapped ? "yes" : "no");
+    $("r-rs").textContent = share(num(rs));
+    $("r-rp").textContent = share(num(rp));
+    $("r-r").textContent = share(num(r));
+    $("r-t").textContent = num(r) == null ? "—" : share(1 - num(r));
+    paint(i, num(rr), trapped, num(r));
+  },
+});
+
+[ "i", "mu1", "mu2" ].forEach((id) => $(id).addEventListener("input", () => page.refresh()));
+page.refresh();
+</script>
+</body>
+</html>

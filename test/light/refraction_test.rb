@@ -1,11 +1,11 @@
-# ruby physics/light_ray_incidence_test.rb
+# ruby test/light/refraction_test.rb
 
 require "minitest/autorun"
-require_relative "light_ray_incidence"
+require_relative "../../lib/light/refraction"
 
-# The optics the laws are supposed to reproduce. Values are the textbook ones,
-# so a wrong solver shows up as wrong physics rather than as a wrong number.
-class LightRayIncidenceTest < Minitest::Test
+# The optics the law is supposed to reproduce. Values are the textbook ones, so
+# a wrong solver shows up as wrong physics rather than as a wrong number.
+class RefractionTest < Minitest::Test
   AIR = 1.0
   WATER = 1.33
   GLASS = 1.5
@@ -29,7 +29,8 @@ class LightRayIncidenceTest < Minitest::Test
     assert_in_delta WATER, identified(into: 32.1173, from_air_at: 45), 1e-4
   end
 
-  def test_reflection_equals_incidence
+  # Inherited from the previous chapter, and still solvable here.
+  def test_reflection_still_holds
     assert_in_delta 37.0, solved(:rl, from: AIR, into: GLASS, i: 37), 1e-6
   end
 
@@ -42,6 +43,14 @@ class LightRayIncidenceTest < Minitest::Test
 
   def test_a_wrong_angle_does_not_satisfy_snell
     refute ray(from: AIR, into: GLASS, i: 30, rr: 25).holds?(:snells_law)
+  end
+
+  # Without a declared domain the solver is free to return any root of a
+  # periodic law, and at small angles Newton's method wanders to a distant one.
+  def test_shallow_angles_stay_on_the_physical_branch
+    { 3 => 1.9990, 10 => 6.6478, 30 => 19.4712 }.each do |degrees, expected|
+      assert_in_delta expected, solved(:rr, from: AIR, into: GLASS, i: degrees), 1e-3
+    end
   end
 
   # Going the other way, past the critical angle, nothing refracts.
@@ -73,15 +82,9 @@ class LightRayIncidenceTest < Minitest::Test
   end
 
   def test_refuses_to_solve_what_is_not_determined
-    ray = LightRayIncidence.new(i: 30.deg, mu1: AIR)
+    ray = Refraction.new(i: 30.deg, mu1: AIR)
 
     assert_raises(RuntimeError) { ray.solve(:rr, guess: GUESS) }
-  end
-
-  def test_aliases_and_full_names_are_the_same_variable
-    ray = LightRayIncidence.new(angle_of_incidence: 30.deg, mu1: AIR, mu2: GLASS)
-
-    assert_in_delta 30.0, ray[:i].in_degrees, 1e-9
   end
 
   private
@@ -89,10 +92,8 @@ class LightRayIncidenceTest < Minitest::Test
   GUESS = 0.4
   CRITICAL = Math.asin(AIR / GLASS).in_degrees
 
-  # Angles are written in degrees here and converted once, so the tests read
-  # the way the optics does.
   def ray(from:, into:, **angles)
-    LightRayIncidence.new(mu1: from, mu2: into, **angles.transform_values(&:deg))
+    Refraction.new(mu1: from, mu2: into, **angles.transform_values(&:deg))
   end
 
   def solved(target, from:, into:, **angles)
@@ -102,7 +103,7 @@ class LightRayIncidenceTest < Minitest::Test
   end
 
   def identified(into:, from_air_at:)
-    ray = LightRayIncidence.new(i: from_air_at.deg, rr: into.deg, mu1: AIR)
+    ray = Refraction.new(i: from_air_at.deg, rr: into.deg, mu1: AIR)
     ray.solve(:mu2, guess: 1.0)
     ray[:mu2]
   end

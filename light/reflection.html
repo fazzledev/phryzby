@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reflection — phryzby</title>
+<link rel="stylesheet" href="../assets/phryzby.css">
+</head>
+<body>
+<div class="wrap">
+
+  <p class="crumbs"><a href="../">phryzby</a> <span>/</span> light <span>/</span> <strong>reflection</strong></p>
+
+  <h1>Reflection <small>— the angle out is the angle in</small></h1>
+  <p class="lede">
+    The smallest law there is, and enough to show what the whole thing is for. Inside the
+    <code>equation</code> block <code>i</code> and <code>rl</code> are not numbers — they are nodes
+    in an expression tree, so <code>==</code> does not answer true or false, it builds an equation
+    and hands it back. Nothing is computed until something asks for a value, which is why the same
+    one-line declaration solves forwards and backwards.
+  </p>
+
+  <div class="cols">
+    <div class="panel">
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="editor">
+        <pre id="highlight" aria-hidden="true"></pre>
+        <textarea id="source" autocomplete="off"></textarea>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2 class="head">the mirror</h2>
+      <div class="body">
+        <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray reflecting off a mirror"></svg>
+
+        <div class="field">
+          <label for="i">incidence</label>
+          <input type="range" id="i" min="0" max="89" step="0.5" value="30">
+          <output id="i-out">30.0°</output>
+        </div>
+
+        <div class="out">
+          <div><span>angle of incidence</span><span class="val" id="r-i">—</span></div>
+          <div><span>angle of reflection</span><span class="val" id="r-rl">—</span></div>
+          <div><span>solved from</span><span class="val" id="r-eq">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="runbar">
+    <button id="run">Run in Ruby</button>
+    <button id="reset" class="ghost" hidden>Reset the files</button>
+    <span class="status" id="status">Nothing is computed until Ruby boots — the physics lives in the Ruby, not in this page.</span>
+  </div>
+
+  <p class="note">
+    Run downloads CRuby compiled to WebAssembly, about 30 MB, and evaluates the two files above
+    unmodified — the same bytes the tests run. Edit either one and run it again.
+  </p>
+  <p class="note">
+    The solver is never told which way round the question goes. It finds the equation that mentions
+    the unknown and nothing else unknown, then finds a root of <code>left − right</code>. Give it
+    <code>rl</code> instead of <code>i</code> and the same declaration answers.
+  </p>
+
+  <nav class="pager">
+    <span>The beginning</span>
+    <a href="refraction.html">Refraction →</a>
+  </nav>
+</div>
+
+<script type="module">
+import { chapter, $, ray, label, stage, above, mirrored } from "../assets/phryzby.js";
+
+const HARNESS = String.raw`
+def trace(i_deg)
+  mirror = Reflection.new(i: i_deg.deg)
+  rl = mirror.solve(:rl, guess: 0.4)
+  [ rl.in_degrees, mirror.holds?(:law_of_reflection) ].join("|")
+rescue StandardError => e
+  "|#{e.message}"
+end
+`;
+
+function paint(i, rl) {
+  const parts = stage();
+  const [ix, iy] = above(i);
+  parts.push(ray(ix, iy, 150, 100));
+  parts.push(label(ix, iy - 6, "incident", "var(--ray)"));
+
+  if (rl != null) {
+    const [rx, ry] = mirrored(rl);
+    parts.push(ray(150, 100, rx, ry));
+    parts.push(label(rx + 4, ry - 6, "reflected", "var(--ray)"));
+    parts.push(label(150 - 26, 88, `${i.toFixed(1)}°`, "var(--ink-soft)"));
+    parts.push(label(150 + 26, 88, `${rl.toFixed(1)}°`, "var(--ink-soft)"));
+  }
+  $("diagram").innerHTML = parts.join("");
+}
+
+const page = await chapter({
+  files: [
+    { path: "../lib/physics_dsl.rb", tab: 2 },
+    { path: "../lib/light/reflection.rb", tab: 1 },
+  ],
+  harness: HARNESS,
+  onSolve(vm) {
+    const i = +$("i").value;
+    $("i-out").textContent = `${i.toFixed(1)}°`;
+
+    if (!vm) { paint(i, null); return; }
+
+    const [rl, holds] = vm.eval(`trace(${i})`).toString().split("|");
+    const angle = rl === "" ? null : Number(rl);
+    $("r-i").textContent = `${i.toFixed(2)}°`;
+    $("r-rl").textContent = angle == null ? holds : `${angle.toFixed(2)}°`;
+    $("r-eq").textContent = angle == null ? "—" : ":law_of_reflection";
+    paint(i, angle);
+  },
+});
+
+$("i").addEventListener("input", () => page.refresh());
+page.refresh();
+</script>
+</body>
+</html>

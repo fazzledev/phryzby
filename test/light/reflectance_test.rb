@@ -1,13 +1,12 @@
-# ruby physics/fresnel_reflectance_test.rb
+# ruby test/light/reflectance_test.rb
 
 require "minitest/autorun"
-require_relative "light_ray_incidence"
-require_relative "fresnel_reflectance"
+require_relative "../../lib/light/reflectance"
 
 # Fresnel is checked against the numbers that have names: the four percent
 # everyone quotes for glass, Brewster's angle, and the moment reflection
 # becomes total.
-class FresnelReflectanceTest < Minitest::Test
+class ReflectanceTest < Minitest::Test
   AIR = 1.0
   GLASS = 1.5
 
@@ -71,13 +70,13 @@ class FresnelReflectanceTest < Minitest::Test
 
   BREWSTER = Math.atan(GLASS / AIR).in_degrees
 
-  # Snell gives the refracted angle, Fresnel takes it from there. The two
-  # models compose; neither knows about the other.
+  # One object holds all three laws now, so the refracted angle comes from the
+  # inherited Snell and the shares are solved from it. The solver picks the
+  # equation each question needs; nothing here says which.
   def share(at:, from:, into:)
-    ray = LightRayIncidence.new(i: at.deg, mu1: from, mu2: into)
-    ray.solve(:rr, guess: 0.4)
+    interface = Reflectance.new(i: at.deg, mu1: from, mu2: into)
+    interface.solve(:rr, guess: 0.4)
 
-    fresnel = FresnelReflectance.new(i: at.deg, rr: ray[:rr], mu1: from, mu2: into)
-    %i[rs rp r].map { |part| fresnel.solve(part, guess: 0.1) }
+    %i[rs rp r].map { |part| interface.solve(part, guess: 0.1) }
   end
 end

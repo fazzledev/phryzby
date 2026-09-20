@@ -1,7 +1,7 @@
-# ruby physics/physics_dsl_test.rb
+# ruby test/physics_dsl_test.rb
 
 require "minitest/autorun"
-require_relative "physics_dsl"
+require_relative "../lib/physics_dsl"
 
 # The machinery underneath: the reason a law can be written as a block and
 # still be executable is that the variables are expression nodes, not numbers.

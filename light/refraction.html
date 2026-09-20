@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Refraction — phryzby</title>
+<link rel="stylesheet" href="../assets/phryzby.css">
+</head>
+<body>
+<div class="wrap">
+
+  <p class="crumbs"><a href="../">phryzby</a> <span>/</span> light <span>/</span> <strong>refraction</strong></p>
+
+  <h1>Refraction <small>— and the branch problem</small></h1>
+  <p class="lede">
+    <code>Refraction</code> inherits <code>Reflection</code>, so the file states only what is new:
+    Snell's law, and the condition under which there is no refracted ray at all. Because the law is
+    stored rather than compiled into a formula, one declaration answers in any direction — give it
+    two angles and it names the material.
+  </p>
+
+  <div class="cols">
+    <div class="panel">
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="editor">
+        <pre id="highlight" aria-hidden="true"></pre>
+        <textarea id="source" autocomplete="off"></textarea>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2 class="head">the interface</h2>
+      <div class="body">
+        <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray crossing between two media"></svg>
+
+        <div class="field">
+          <label for="i">incidence</label>
+          <input type="range" id="i" min="0.5" max="89.5" step="0.01" value="30">
+          <output id="i-out">30.00°</output>
+        </div>
+        <div class="field">
+          <label for="mu1">μ₁ first medium</label>
+          <input type="range" id="mu1" min="1" max="2.5" step="0.01" value="1.00">
+          <output id="mu1-out">1.00</output>
+        </div>
+        <div class="field">
+          <label for="mu2">μ₂ second medium</label>
+          <input type="range" id="mu2" min="1" max="2.5" step="0.01" value="1.50">
+          <output id="mu2-out">1.50</output>
+        </div>
+
+        <div class="out">
+          <div><span>angle of refraction</span><span class="val" id="r-rr">—</span></div>
+          <div><span>angle of reflection</span><span class="val" id="r-rl">—</span></div>
+          <div><span>critical angle</span><span class="val" id="r-crit">—</span></div>
+          <div class="alarm"><span>total internal reflection</span><span class="val" id="r-tir">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="runbar">
+    <button id="run">Run in Ruby</button>
+    <button id="reset" class="ghost" hidden>Reset the files</button>
+    <span class="status" id="status">Nothing is computed until Ruby boots — the physics lives in the Ruby, not in this page.</span>
+  </div>
+
+  <p class="note">
+    <code>within:</code> is doing real work here. <code>sin</code> is periodic, so Snell has
+    infinitely many roots and only one of them is an angle light can take. Delete the domain from
+    <code>angle_of_refraction</code>, run it again, and drag down to a few degrees: Newton's method
+    wanders off and returns a root several turns away. The declared branch is what pins it.
+  </p>
+  <p class="note">
+    Past the critical angle Snell asks for a sine greater than one. There is no refracted ray at
+    all — which is how an optical fibre keeps light inside itself. Set μ₁ above μ₂ and open the
+    angle to watch it happen.
+  </p>
+
+  <nav class="pager">
+    <a href="reflection.html">← Reflection</a>
+    <a href="reflectance.html">Reflectance →</a>
+  </nav>
+</div>
+
+<script type="module">
+import { chapter, $, ray, label, stage, above, mirrored, below } from "../assets/phryzby.js";
+
+const HARNESS = String.raw`
+def attempt
+  yield
+rescue StandardError
+  nil
+end
+
+def trace(i_deg, mu1, mu2)
+  light = Refraction.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
+  trapped = attempt { light.satisfies?(:total_internal_reflection) }
+
+  rr = trapped ? nil : attempt { light.solve(:rr, guess: 0.4) }
+  rl = attempt { light.solve(:rl, guess: 0.4) }
+  critical = mu2 < mu1 ? Math.asin(mu2 / mu1).in_degrees : nil
+
+  [ rr&.in_degrees, rl&.in_degrees, critical, trapped ]
+    .map { |value| value.nil? ? "" : value.to_s }.join("|")
+end
+`;
+
+function paint(i, rr, rl, trapped) {
+  const parts = stage({ second: true });
+  const [ix, iy] = above(i);
+  parts.push(ray(ix, iy, 150, 100));
+  parts.push(label(ix, iy - 6, "incident", "var(--ray)"));
+
+  if (rl != null) {
+    const [fx, fy] = mirrored(rl);
+    parts.push(ray(150, 100, fx, fy));
+    parts.push(label(fx + 4, fy - 6, "reflected", "var(--ray)"));
+  }
+  if (rr != null) {
+    const [rx, ry] = below(rr);
+    parts.push(ray(150, 100, rx, ry));
+    parts.push(label(rx + 4, ry + 12, "refracted", "var(--ray)"));
+  }
+  if (trapped) {
+    parts.push(label(150, 162, "no refracted ray — total internal reflection", "var(--red)"));
+  }
+  $("diagram").innerHTML = parts.join("");
+}
+
+const degrees = (v) => (v == null ? "—" : `${v.toFixed(2)}°`);
+
+const page = await chapter({
+  files: [
+    { path: "../lib/physics_dsl.rb", tab: 3 },
+    { path: "../lib/light/reflection.rb", tab: 2 },
+    { path: "../lib/light/refraction.rb", tab: 1 },
+  ],
+  harness: HARNESS,
+  onSolve(vm) {
+    const i = +$("i").value, mu1 = +$("mu1").value, mu2 = +$("mu2").value;
+    $("i-out").textContent = `${i.toFixed(2)}°`;
+    $("mu1-out").textContent = mu1.toFixed(2);
+    $("mu2-out").textContent = mu2.toFixed(2);
+
+    if (!vm) { paint(i, null, null, false); return; }
+
+    const [rr, rl, crit, tir] = vm.eval(`trace(${i}, ${mu1}, ${mu2})`).toString().split("|");
+    const num = (s) => (s === "" ? null : Number(s));
+    const trapped = tir === "" ? null : tir === "true";
+
+    $("r-rr").textContent = rr === "" ? (trapped ? "none" : "—") : degrees(num(rr));
+    $("r-rl").textContent = degrees(num(rl));
+    $("r-crit").textContent = crit === "" ? "none" : degrees(num(crit));
+    $("r-tir").textContent = trapped == null ? "—" : (trapped ? "yes" : "no");
+    paint(i, num(rr), num(rl), trapped);
+  },
+});
+
+[ "i", "mu1", "mu2" ].forEach((id) => $(id).addEventListener("input", () => page.refresh()));
+page.refresh();
+</script>
+</body>
+</html>
