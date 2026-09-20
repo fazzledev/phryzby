@@ -79,7 +79,9 @@ domain and watch the solver wander off the physical branch.
 ## Running it
 
 ```
-ruby test/physics_dsl_test.rb           #  8 runs,  17 assertions
+ruby test/physics_test.rb               #  8 runs,  17 assertions
+ruby test/physics/solver_test.rb        #  7 runs,   7 assertions
+ruby test/pythagoras_test.rb            #  8 runs,  10 assertions
 ruby test/light/reflection_test.rb      #  7 runs,   7 assertions
 ruby test/light/refraction_test.rb      # 14 runs, 106 assertions
 ruby test/light/reflectance_test.rb     #  9 runs, 189 assertions
@@ -90,7 +92,15 @@ No gems, and no comments — the prose is on the pages. Ruby 3.4.
 ## Layout
 
 ```
-lib/physics_dsl.rb     the expression tree, the declaration scope, the solver
+lib/physics.rb         requires the seven parts below
+lib/physics/
+  expression.rb        Expr, Const, Var, BinOp, Fn — every operator returns a node
+  equation.rb          Equation and Comparison: what a declaration block returns
+  scope.rb             the object a declaration block runs against
+  law.rb               Declarations, and Law — a module a model absorbs
+  solver.rb            Newton, bisection, and which one to believe
+  model.rb             holding values, choosing an equation, solving
+  degrees.rb           Numeric#deg and #in_degrees
 lib/light/*.rb         one law per file, plus the Interface that includes it
 test/                  mirrors lib/
 assets/phryzby.js      highlighting, the editor, and booting CRuby — no build step

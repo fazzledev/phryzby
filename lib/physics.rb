@@ -1,0 +1,7 @@
+require_relative "physics/expression"
+require_relative "physics/equation"
+require_relative "physics/scope"
+require_relative "physics/law"
+require_relative "physics/solver"
+require_relative "physics/model"
+require_relative "physics/degrees"

@@ -1,4 +1,4 @@
-require_relative "../physics_dsl"
+require_relative "../physics"
 
 module Reflection
   extend Physics::Law

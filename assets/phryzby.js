@@ -14,6 +14,16 @@ const SHIM = "def require_relative(_path) = true\n";
 export const RAD = Math.PI / 180;
 export const $ = (id) => document.getElementById(id);
 
+// Resolved against this module rather than the page, so a chapter one
+// directory down needs no ../ of its own. Order is the order the requires in
+// lib/physics.rb imply.
+export const ENGINE = [
+  "expression", "equation", "scope", "law", "solver", "model", "degrees",
+].map((part) => ({
+  path: new URL(`../lib/physics/${part}.rb`, import.meta.url).href,
+  label: `${part}.rb`,
+}));
+
 // --- syntax highlighting ---------------------------------------------------
 // Small enough to read, which is the point: nothing is imported to colour it.
 
@@ -181,7 +191,7 @@ async function loadVM(onStatus) {
  *   harness — Ruby that the page's controls call into
  *   onSolve — called with the vm whenever a control moves
  */
-export async function chapter({ files, harness = "", onSolve }) {
+export async function chapter({ files, harness = "", onSolve, showEngine = false }) {
   const status = $("status");
   const run = $("run");
   const reset = $("reset");
@@ -190,10 +200,11 @@ export async function chapter({ files, harness = "", onSolve }) {
     status.classList.toggle("err", bad);
   };
 
-  // Evaluated in the order given, because that is the order the requires
-  // imply. Shown in `tab` order, and not shown at all when `hidden` — the
-  // engine has to be loaded on every page but has its own page to be read on.
-  const loaded = await fetchRuby(files);
+  // The engine is loaded on every page and shown only on its own. Files are
+  // evaluated in the order given, because that is the order the requires
+  // imply, and shown in `tab` order.
+  const engine = ENGINE.map((part, index) => ({ ...part, hidden: !showEngine, tab: index - ENGINE.length }));
+  const loaded = await fetchRuby([ ...engine, ...files ]);
   const originals = loaded.map((file) => file.code);
   const tabbed = loaded.filter((file) => !file.hidden)
     .map((file, index) => ({ file, at: file.tab ?? index }))

@@ -1,4 +1,4 @@
-require_relative "physics_dsl"
+require_relative "physics"
 
 class Pythagoras < Physics::Model
   LENGTH = 0.0..20.0

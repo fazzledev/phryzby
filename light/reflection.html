@@ -112,10 +112,7 @@ function paint(i, rl) {
 }
 
 const page = await chapter({
-  files: [
-    { path: "../lib/physics_dsl.rb", hidden: true },
-    { path: "../lib/light/reflection.rb" },
-  ],
+  files: [ { path: "../lib/light/reflection.rb" } ],
   harness: HARNESS,
   onSolve(vm) {
     const i = +$("i").value;

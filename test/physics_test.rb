@@ -1,7 +1,7 @@
 require "minitest/autorun"
-require_relative "../lib/physics_dsl"
+require_relative "../lib/physics"
 
-class PhysicsDSLTest < Minitest::Test
+class PhysicsTest < Minitest::Test
   def test_equality_inside_a_block_builds_an_equation_not_a_boolean
     equation = x == 5
 
