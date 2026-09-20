@@ -112,7 +112,7 @@
 
         <div class="field">
           <label for="i">incidence</label>
-          <input type="range" id="i" min="1" max="89" step="1" value="30">
+          <input type="range" id="i" min="0.5" max="89.5" step="0.01" value="30">
           <output id="i-out">30°</output>
         </div>
         <div class="field">
@@ -482,7 +482,7 @@ const inputs = { i: $("i"), mu1: $("mu1"), mu2: $("mu2") };
 
 function echoInputs() {
   const v = { i: +inputs.i.value, mu1: +inputs.mu1.value, mu2: +inputs.mu2.value };
-  $("i-out").textContent = `${v.i}°`;
+  $("i-out").textContent = `${v.i.toFixed(2)}°`;
   $("mu1-out").textContent = v.mu1.toFixed(2);
   $("mu2-out").textContent = v.mu2.toFixed(2);
   return v;
