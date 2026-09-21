@@ -37,7 +37,9 @@
       <div class="sample">
         <div>
           <p class="cap">the whole of lib/light/refraction.rb</p>
-<pre>module Refraction
+<pre id="law">require_relative "optics"
+
+module Refraction
   extend Physics::Law
 
   uses Optics, :i, :rr, :mu1, :mu2
@@ -136,5 +138,22 @@ end</pre>
     </div>
   </div>
 </div>
+
+<script type="module">
+import { highlight } from "./assets/phryzby.js";
+
+// The caption claims this is the whole file, so fetch the whole file rather
+// than trust a copy in the markup that can quietly fall behind it.
+const law = document.getElementById("law");
+
+try {
+  const served = await fetch("lib/light/refraction.rb", { cache: "no-cache" });
+  if (served.ok) law.textContent = (await served.text()).trimEnd();
+} catch {
+  // The copy in the markup stands.
+}
+
+law.innerHTML = highlight(law.textContent);
+</script>
 </body>
 </html>
