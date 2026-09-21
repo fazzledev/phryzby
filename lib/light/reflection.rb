@@ -13,7 +13,5 @@ class Surface < Physics::Scenario
 
   ANGLE_GUESS = 0.4
 
-  def self.struck_at(angle, **rest) = new(i: angle, **rest)
-
   def angle_of_reflection = solve(:rl, guess: ANGLE_GUESS)
 end

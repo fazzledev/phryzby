@@ -7,7 +7,7 @@ class ReflectionTest < Minitest::Test
   end
 
   def test_the_surface_answers_without_being_told_how
-    assert_in_delta 37.0, Surface.struck_at(37.deg).angle_of_reflection.in_degrees, 1e-6
+    assert_in_delta 37.0, Surface.new(i: 37.deg).angle_of_reflection.in_degrees, 1e-6
   end
 
   def test_it_solves_the_other_way_round_too
