@@ -124,9 +124,13 @@ function mountTree(host, { here, loaded, open }) {
         rows.push(heading(section.dir, "dir"));
         section.files.forEach((path) => rows.push(fileRow(path, section.chapters[0].page)));
       }
+
+      // A chapter is one file, so the chapter is the row. Its files are named
+      // on the tabs; `owns` is what carries an edit mark back to the tree.
       section.chapters.forEach((chapter) => {
-        rows.push(link(TITLES[chapter.page], at(chapter.page), { current: chapter.page === here }));
-        chapter.files.forEach((path) => rows.push(fileRow(path, chapter.page)));
+        const row = link(TITLES[chapter.page], at(chapter.page), { current: chapter.page === here });
+        row.dataset.owns = chapter.files.join(" ");
+        rows.push(row);
       });
     } else {
       rows.push(link(TITLES[section.page], at(section.page), { current: section.page === here }));
@@ -611,6 +615,9 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     const dirty = new Set(keys);
     $("tree").querySelectorAll("a[data-path]").forEach((row) => {
       row.classList.toggle("changed", dirty.has(row.dataset.path));
+    });
+    $("tree").querySelectorAll("a[data-owns]").forEach((row) => {
+      row.classList.toggle("changed", row.dataset.owns.split(" ").some((key) => dirty.has(key)));
     });
   };
 
