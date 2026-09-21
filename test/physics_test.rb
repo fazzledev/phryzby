@@ -59,8 +59,15 @@ class PhysicsTest < Minitest::Test
   def var(name) = Physics::Var.new(name)
   def x = var(:x)
 
+  # A scenario holds values; only a law states equations. So the throwaway
+  # model under test is a law composed into one.
   def model(&declarations)
-    Class.new(Physics::Scenario) do
+    Physics::Scenario[law(&declarations)]
+  end
+
+  def law(&declarations)
+    Module.new do
+      extend Physics::Law
       variable :a
       variable :b
       instance_eval(&declarations) if declarations

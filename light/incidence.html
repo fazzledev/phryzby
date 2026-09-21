@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Incidence — phryzby</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="../assets/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
 <link rel="stylesheet" href="../assets/phryzby.css">
 </head>
 <body>
@@ -98,7 +101,14 @@
       </p>
       <p class="note">
         Every other law in this book begins <code>include Incidence</code>. That is the whole of
-        its job: say once what an arriving ray is, so that three laws can talk about the same one.
+        its job: say once what an arriving ray is, so that four laws can talk about the same one.
+      </p>
+      <p class="note">
+        Which is why this is the one chapter that does not say <code>extend Physics::Law</code>.
+        It is not a law — it states no relation between anything — so it extends
+        <code>Physics::Quantities</code> instead, which has no <code>equation</code> to offer and
+        cannot be asked for one. <em>Quantities</em> is what exists; <em>Law</em> is what holds
+        between the things that exist.
       </p>
     </aside>
   </div>

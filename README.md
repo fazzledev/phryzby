@@ -51,12 +51,15 @@ angle anywhere in this repository — it is Snell asked with the refracted ray
 lying flat along the surface, which is the last angle that still has one.
 `Math.asin(1.0 / 1.5).in_degrees` agrees to ten decimal places.
 
-A law states what it is about where it is written. What it shares with another
-law it gets by including it: `Incidence` says once what an arriving ray is, and
-`Reflection` and `Refraction` both begin `include Incidence`. That is the same
-`include` that composes a law into a scenario — `Physics::Law` absorbs
-declarations the moment it is included, whether the thing including it is
-another law or the scenario being solved.
+Not every chapter is a law. `Incidence` states one quantity and no equation —
+an arriving ray has an angle, and that is all — so it extends
+`Physics::Quantities`, which knows nothing about equations and cannot be asked
+for any. `Reflection` and `Refraction` are laws, extend `Physics::Law`, and
+both begin `include Incidence`.
+
+That is the same `include` that composes a law into a scenario. Anything that
+declares is absorbed the moment it is included, whether the thing including it
+is another law or the scenario being solved.
 
 The equation block is evaluated against those declarations and can see nothing
 else, so a quantity the law never named is a `NameError` at declaration rather
@@ -187,8 +190,8 @@ lib/physics/
   expression.rb        Expr, Const, Var, BinOp, Fn — every operator returns a node
   equation.rb          Equation and Comparison: what a declaration block returns
   scope.rb             the object a declaration block runs against
-  quantities.rb        declaring a quantity, and borrowing one with `uses`
-  law.rb               Declarations, Law, and `when:` — a guard on an equation
+  quantities.rb        what exists: a quantity, its short name and its branch
+  law.rb               what holds between them: equation, condition, and `when:`
   solver.rb            Newton, bisection, and which one to believe
   scenario.rb          composing laws, choosing an equation, solving what it needs
   angles.rb            Numeric#deg, #in_degrees, and the branch an angle lives on

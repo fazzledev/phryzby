@@ -8,5 +8,12 @@ module Physics
       variables[options[:alias]] = name if options[:alias]
       domains[name] = options[:within] if options[:within]
     end
+
+    def absorb(other)
+      variables.merge!(other.variables)
+      domains.merge!(other.domains)
+    end
+
+    def included(host) = host.absorb(self)
   end
 end

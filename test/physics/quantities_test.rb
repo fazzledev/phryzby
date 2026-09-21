@@ -40,15 +40,27 @@ class QuantitiesTest < Minitest::Test
     refute_respond_to quantities { variable :angle }, :equations
   end
 
-  # It is not a law, so including it into a scenario is not a way to get its
-  # quantities. A law states what it is about, in full, where it is written.
-  def test_including_bare_quantities_into_a_scenario_absorbs_nothing
+  # Quantities are includable, because naming what exists is the thing every
+  # law in a subject has in common. What they are not is a law: including them
+  # brings the nouns and nothing else, because there is nothing else to bring.
+  def test_including_quantities_brings_the_quantities
     scenario = Class.new(Physics::Scenario) { include QuantitiesTest.catalogue }
 
-    assert_empty scenario.variables
+    assert_equal :angle, scenario.variables.fetch(:a)
+    assert_equal 0.0..1.5, scenario.domains.fetch(:angle)
   end
 
-  def self.catalogue = Module.new { extend Physics::Quantities; variable :angle }
+  def test_quantities_state_no_equations_to_bring
+    refute_respond_to QuantitiesTest.catalogue, :equations
+    assert_empty Class.new(Physics::Scenario) { include QuantitiesTest.catalogue }.equations
+  end
+
+  def self.catalogue
+    Module.new do
+      extend Physics::Quantities
+      variable :angle, alias: :a, within: 0.0..1.5
+    end
+  end
 
   private
 
