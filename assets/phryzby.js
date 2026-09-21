@@ -21,7 +21,7 @@ const ROOT = new URL("../", import.meta.url);
 const at = (path) => new URL(path, ROOT).href;
 
 const PARTS = [
-  "expression", "equation", "scope", "quantities", "law", "solver", "model", "degrees",
+  "expression", "equation", "scope", "quantities", "law", "solver", "scenario", "degrees",
 ];
 
 // Order is the order the requires in lib/physics.rb imply.
@@ -253,7 +253,9 @@ async function fetchRuby(files) {
   return Promise.all(files.map(async (file) => ({
     ...file,
     label: file.label || file.key.split("/").pop(),
-    code: (await fetch(at(file.key)).then((r) => r.text())).trimEnd(),
+    // Revalidated rather than taken from cache: a stale law running against a
+    // fresh page fails in ways that look like the law is wrong.
+    code: (await fetch(at(file.key), { cache: "no-cache" }).then((r) => r.text())).trimEnd(),
   })));
 }
 

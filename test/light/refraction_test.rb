@@ -1,5 +1,4 @@
 require "minitest/autorun"
-require_relative "../../lib/light/reflection"
 require_relative "../../lib/light/refraction"
 
 class RefractionTest < Minitest::Test
@@ -69,7 +68,7 @@ class RefractionTest < Minitest::Test
   end
 
   def test_refuses_to_solve_what_is_not_determined
-    ray = Interface.new(i: 30.deg, mu1: AIR)
+    ray = Surface.new(i: 30.deg, mu1: AIR)
 
     assert_raises(RuntimeError) { ray.solve(:rr, guess: GUESS) }
   end
@@ -80,7 +79,7 @@ class RefractionTest < Minitest::Test
   CRITICAL = Math.asin(AIR / GLASS).in_degrees
 
   def ray(from:, into:, **angles)
-    Interface.new(mu1: from, mu2: into, **angles.transform_values(&:deg))
+    Surface.new(mu1: from, mu2: into, **angles.transform_values(&:deg))
   end
 
   def solved(target, from:, into:, **angles)
@@ -90,7 +89,7 @@ class RefractionTest < Minitest::Test
   end
 
   def identified(into:, from_air_at:)
-    ray = Interface.new(i: from_air_at.deg, rr: into.deg, mu1: AIR)
+    ray = Surface.new(i: from_air_at.deg, rr: into.deg, mu1: AIR)
     ray.solve(:mu2, guess: 1.0)
     ray[:mu2]
   end

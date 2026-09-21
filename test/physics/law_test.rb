@@ -15,13 +15,13 @@ class LawTest < Minitest::Test
   end
 
   def test_including_a_law_gives_the_model_its_equations
-    model = Class.new(Physics::Model) { include LawTest.trivial }
+    model = Class.new(Physics::Scenario) { include LawTest.trivial }
 
     assert model.equations.key?(:trivial)
   end
 
   def test_two_laws_can_name_the_same_quantity
-    model = Class.new(Physics::Model)
+    model = Class.new(Physics::Scenario)
     model.include(law { uses CATALOGUE, :a, :w })
     model.include(law { uses CATALOGUE, :a, :d })
 

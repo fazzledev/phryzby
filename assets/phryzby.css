@@ -73,7 +73,11 @@ code{font-family:var(--mono);font-size:.92em;}
 .tree a.elsewhere::after{content:"\2197";float:right;opacity:.5;}
 
 /* --- the editor ---------------------------------------------------------- */
-.tabs{display:flex;border-bottom:1px solid var(--rule);overflow-x:auto;flex:0 0 auto;}
+/* The strip scrolls when a page has many files, but a scrollbar sitting under
+   the tabs reads as a gap above the code. */
+.tabs{display:flex;border-bottom:1px solid var(--rule);overflow-x:auto;flex:0 0 auto;
+  scrollbar-width:none;overscroll-behavior-x:contain;}
+.tabs::-webkit-scrollbar{display:none;}
 .tabs button{flex:0 0 auto;border:0;background:transparent;color:var(--ink-soft);
   font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;
   padding:.62rem .9rem;cursor:pointer;border-bottom:2px solid transparent;border-radius:0;}
@@ -82,11 +86,14 @@ code{font-family:var(--mono);font-size:.92em;}
 /* Highlighted text sits under a transparent textarea, so it stays editable. */
 .editor{position:relative;flex:1 1 auto;min-height:0;}
 .editor pre, .editor textarea{
-  position:absolute;inset:0;margin:0;padding:.9rem 1rem;overflow:auto;
+  position:absolute;inset:0;margin:0;padding:.9rem 1rem;
   font-family:var(--mono);font-size:.78rem;line-height:1.7;
   white-space:pre;tab-size:2;border:0;letter-spacing:0;
 }
-.editor pre{color:var(--ink);pointer-events:none;}
+/* Only the textarea scrolls. The highlighted layer under it is scrolled to
+   match, so it must not draw a second pair of scrollbars. */
+.editor pre{color:var(--ink);pointer-events:none;overflow:hidden;}
+.editor textarea{overflow:auto;}
 .editor textarea{resize:none;background:transparent;color:transparent;
   caret-color:var(--ink);outline:none;}
 .tok-kw{color:var(--kw);} .tok-sym{color:var(--sym);} .tok-const{color:var(--const);}

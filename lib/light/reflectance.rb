@@ -1,4 +1,5 @@
 require_relative "optics"
+require_relative "refraction"
 
 module Reflectance
   extend Physics::Law
@@ -16,6 +17,8 @@ module Reflectance
   equation(:unpolarised) { r == (rs + rp) / 2 }
 end
 
-class Interface < Physics::Model
+class Surface < Physics::Scenario
+  include Reflection
+  include Refraction
   include Reflectance
 end

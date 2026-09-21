@@ -18,7 +18,7 @@ module Refraction
   condition(:total_internal_reflection) { sin(i) * mu1 / mu2 > 1 }
 end
 
-class Interface < Physics::Model
+class Surface < Physics::Scenario
   include Reflection
   include Refraction
 end
@@ -35,10 +35,10 @@ Because the law is stored rather than compiled into a formula, one declaration
 solves in any direction. Give it two angles and it names the material:
 
 ```ruby
-ray = Interface.new(i: 45.deg, rr: 28.9.deg, mu1: 1.0)
+ray = Surface.new(i: 45.deg, rr: 28.9.deg, mu1: 1.0)
 ray.solve(:mu2, guess: 1.2).round(2)   # => 1.46, which is silica glass
 
-ray = Interface.new(i: 45.deg, mu1: 1.0, mu2: 1.5)
+ray = Surface.new(i: 45.deg, mu1: 1.0, mu2: 1.5)
 ray.solve(:rr, guess: 0.4).in_degrees  # => 28.13
 ```
 
@@ -51,8 +51,9 @@ one several turns away.
 ## Chapters
 
 A law is a module, not a class, because a law is not a kind of another law.
-What the chapters build up is `Interface` — the surface light arrives at — and
-each chapter includes one more law into it.
+What the chapters build up is `Surface` — a scenario, the boundary light
+arrives at. Each chapter's file states every law that holds there, so loading
+one file alone gives a surface that behaves the way its chapter says.
 
 | | | |
 |---|---|---|
@@ -106,10 +107,10 @@ lib/physics/
   quantities.rb        declaring a quantity, and borrowing one with `uses`
   law.rb               Declarations, and Law — a module a model absorbs
   solver.rb            Newton, bisection, and which one to believe
-  model.rb             holding values, choosing an equation, solving
+  scenario.rb          holding values, choosing an equation, solving
   degrees.rb           Numeric#deg and #in_degrees
 lib/light/optics.rb    every optical quantity, declared once
-lib/light/*.rb         one law per file, plus the Interface that includes it
+lib/light/*.rb         one law per file, plus the Surface it composes
 test/                  mirrors lib/
 assets/phryzby.js      the tree, highlighting, the editor, booting CRuby — no build step
 assets/phryzby.css

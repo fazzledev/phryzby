@@ -8,6 +8,6 @@ module Reflection
   equation(:law_of_reflection) { i == rl }
 end
 
-class Interface < Physics::Model
+class Surface < Physics::Scenario
   include Reflection
 end

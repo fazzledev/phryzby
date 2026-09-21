@@ -48,7 +48,7 @@ class PhysicsTest < Minitest::Test
 
   def test_subclasses_do_not_share_their_parents_variables
     first = model
-    second = Class.new(Physics::Model) { variable :only_there }
+    second = Class.new(Physics::Scenario) { variable :only_there }
 
     assert first.variables.key?(:a)
     refute second.variables.key?(:a)
@@ -60,7 +60,7 @@ class PhysicsTest < Minitest::Test
   def x = var(:x)
 
   def model(&declarations)
-    Class.new(Physics::Model) do
+    Class.new(Physics::Scenario) do
       variable :a
       variable :b
       instance_eval(&declarations) if declarations

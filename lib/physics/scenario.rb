@@ -1,5 +1,5 @@
 module Physics
-  class Model
+  class Scenario
     extend Declarations
 
     class << self

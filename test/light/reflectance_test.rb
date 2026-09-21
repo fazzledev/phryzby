@@ -1,5 +1,4 @@
 require "minitest/autorun"
-require_relative "../../lib/light/refraction"
 require_relative "../../lib/light/reflectance"
 
 class ReflectanceTest < Minitest::Test
@@ -65,7 +64,7 @@ class ReflectanceTest < Minitest::Test
   BREWSTER = Math.atan(GLASS / AIR).in_degrees
 
   def share(at:, from:, into:)
-    interface = Interface.new(i: at.deg, mu1: from, mu2: into)
+    interface = Surface.new(i: at.deg, mu1: from, mu2: into)
     interface.solve(:rr, guess: 0.4)
 
     %i[rs rp r].map { |part| interface.solve(part, guess: 0.1) }

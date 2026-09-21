@@ -54,8 +54,8 @@
       <p class="head">notes</p>
       <p class="note">
         A law is a module, not a class, because a law is not a kind of another law. What the
-        chapters build up is <code>Interface</code> — the surface light arrives at — and each
-        chapter includes one more law into it. Here it knows exactly one.
+        chapters build up is <code>Surface</code> — a scenario, the boundary light arrives at — and
+        each chapter states every law that holds there. Here that is exactly one.
       </p>
       <p class="note">
         The solver is never told which way round the question goes. It finds the equation that
@@ -76,7 +76,7 @@ import { chapter, $, ray, label, stage, above, mirrored } from "../assets/phryzb
 
 const HARNESS = String.raw`
 def trace(i_deg)
-  mirror = Interface.new(i: i_deg.deg)
+  mirror = Surface.new(i: i_deg.deg)
   rl = mirror.solve(:rl, guess: 0.4)
   [ rl.in_degrees, mirror.holds?(:law_of_reflection) ].join("|")
 rescue StandardError => e

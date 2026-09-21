@@ -43,7 +43,7 @@ class QuantitiesTest < Minitest::Test
   # It is not a law, so including it into a model is not a way to get its
   # quantities. A law has to name what it uses.
   def test_including_a_catalogue_into_a_model_absorbs_nothing
-    model = Class.new(Physics::Model) { include CATALOGUE }
+    model = Class.new(Physics::Scenario) { include CATALOGUE }
 
     assert_empty model.variables
   end

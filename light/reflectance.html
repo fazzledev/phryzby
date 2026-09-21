@@ -32,8 +32,8 @@
       <h1>Reflectance <small>— how much, rather than which way</small></h1>
       <p class="lede">
         Fresnel gives the shares, and they depend on polarisation — two equations and an average
-        for ordinary light. With the third law included, <code>Interface</code> holds all of them,
-        and the solver picks whichever equation a question needs.
+        for ordinary light. <code>Surface</code> names all three laws now, and the solver picks
+        whichever equation a question needs.
       </p>
 
       <p class="head">the split</p>
@@ -94,7 +94,7 @@ rescue StandardError
 end
 
 def trace(i_deg, mu1, mu2)
-  interface = Interface.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
+  interface = Surface.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
   trapped = attempt { interface.satisfies?(:total_internal_reflection) }
 
   rr = trapped ? nil : attempt { interface.solve(:rr, guess: 0.4) }

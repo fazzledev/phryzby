@@ -1,4 +1,5 @@
 require_relative "optics"
+require_relative "reflection"
 
 module Refraction
   extend Physics::Law
@@ -10,6 +11,7 @@ module Refraction
   condition(:total_internal_reflection) { sin(i) * mu1 / mu2 > 1 }
 end
 
-class Interface < Physics::Model
+class Surface < Physics::Scenario
+  include Reflection
   include Refraction
 end

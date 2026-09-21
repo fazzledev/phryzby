@@ -31,9 +31,10 @@
     <aside class="pane side">
       <h1>Refraction <small>— and the branch problem</small></h1>
       <p class="lede">
-        A ray meeting glass does both things at once, so <code>Interface</code> now includes two
-        laws rather than one. Neither inherits the other — refraction is not a kind of reflection
-        — and each names every quantity it mentions.
+        A ray meeting glass does both things at once, and the demo shows both, so
+        <code>Surface</code> says so: it includes <code>Reflection</code> as well as
+        <code>Refraction</code>. Neither law inherits the other — refraction is not a kind of
+        reflection — and neither mentions the other; only the scenario composes them.
       </p>
 
       <p class="head">the interface</p>
@@ -93,7 +94,7 @@ rescue StandardError
 end
 
 def trace(i_deg, mu1, mu2)
-  light = Interface.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
+  light = Surface.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
   trapped = attempt { light.satisfies?(:total_internal_reflection) }
 
   rr = trapped ? nil : attempt { light.solve(:rr, guess: 0.4) }
