@@ -13,10 +13,10 @@ module Physics
 
     def initialize(**values)
       @env = {}
-      values.each { |key, value| @env[self.class.variables.fetch(key)] = value }
+      values.each { |key, value| @env[self.class.quantities.fetch(key)] = value }
     end
 
-    def [](name) = @env[self.class.variables.fetch(name)]
+    def [](name) = @env[self.class.quantities.fetch(name)]
 
     def holds?(name, tolerance: 1e-9)
       self.class.equations.fetch(name).residual(@env).abs < tolerance
@@ -25,7 +25,7 @@ module Physics
     def satisfies?(name) = self.class.conditions.fetch(name).satisfied?(@env)
 
     def solve(target, range: nil)
-      key = self.class.variables.fetch(target)
+      key = self.class.quantities.fetch(target)
 
       @env.fetch(key) { determine(key, range, [ key ]) }
     end
@@ -52,7 +52,7 @@ module Physics
     # the order the laws happened to be included in.
     def candidates(key)
       applicable = self.class.equations.select do |name, equation|
-        equation.variables.include?(key) && applies?(name)
+        equation.quantities.include?(key) && applies?(name)
       end
 
       special, general = applicable.partition { |name, _| self.class.guards.key?(name) }
@@ -68,7 +68,7 @@ module Physics
     end
 
     def supply(equation, key, pending)
-      (equation.variables - @env.keys - [ key ]).all? do |missing|
+      (equation.quantities - @env.keys - [ key ]).all? do |missing|
         next false if pending.include?(missing)
 
         determine(missing, nil, pending + [ missing ])

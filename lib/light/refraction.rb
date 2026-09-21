@@ -4,9 +4,9 @@ module Refraction
   extend Physics::Law
   include Incidence
 
-  variable :angle_of_refraction, alias: :rr, within: Physics::A_RIGHT_ANGLE
-  variable :refractive_index_of_first_medium,  alias: :mu1
-  variable :refractive_index_of_second_medium, alias: :mu2
+  quantity :angle_of_refraction, variable: :rr, within: Physics::A_RIGHT_ANGLE
+  quantity :refractive_index_of_first_medium,  variable: :mu1
+  quantity :refractive_index_of_second_medium, variable: :mu2
 
   equation(:snells_law) { mu2 / mu1 == sin(i) / sin(rr) }
 

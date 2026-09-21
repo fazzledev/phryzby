@@ -14,10 +14,10 @@ class LawTest < Minitest::Test
 
   def test_two_laws_can_name_the_same_quantity
     model = Class.new(Physics::Scenario)
-    model.include(law { variable :angle, alias: :a; variable :width, alias: :w })
-    model.include(law { variable :angle, alias: :a; variable :depth, alias: :d })
+    model.include(law { quantity :angle, variable: :a; quantity :width, variable: :w })
+    model.include(law { quantity :angle, variable: :a; quantity :depth, variable: :d })
 
-    assert_equal %i[angle width depth], model.variables.values.uniq
+    assert_equal %i[angle width depth], model.quantities.values.uniq
   end
 
   def test_a_guarded_equation_is_passed_over_while_its_condition_is_false
@@ -38,8 +38,8 @@ class LawTest < Minitest::Test
 
   def regime(**values)
     law = self.class.law do
-      variable :x, within: 0.0..50.0
-      variable :y, within: 0.0..50.0
+      quantity :x, within: 0.0..50.0
+      quantity :y, within: 0.0..50.0
 
       condition(:extreme) { x > 10 }
       equation(:ordinary) { y == x }
@@ -50,7 +50,7 @@ class LawTest < Minitest::Test
   end
 
   def self.trivial
-    law { variable :thing; equation(:trivial) { thing == 1 } }
+    law { quantity :thing; equation(:trivial) { thing == 1 } }
   end
 
   def self.law(&declarations)

@@ -5,9 +5,9 @@ module Pythagoras
 
   LENGTH = 0.0..20.0
 
-  variable :leg_a,      alias: :a, within: LENGTH
-  variable :leg_b,      alias: :b, within: LENGTH
-  variable :hypotenuse, alias: :c, within: LENGTH
+  quantity :leg_a,      variable: :a, within: LENGTH
+  quantity :leg_b,      variable: :b, within: LENGTH
+  quantity :hypotenuse, variable: :c, within: LENGTH
 
   equation(:pythagoras) { c ** 2 == a ** 2 + b ** 2 }
 end

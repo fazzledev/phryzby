@@ -21,9 +21,9 @@ module Physics
 
     def equation(name, **options, &block)
       guards[name] = options[:when] if options[:when]
-      equations[name] = Scope.new(variables).instance_eval(&block)
+      equations[name] = Scope.new(quantities).instance_eval(&block)
     end
 
-    def condition(name, &block) = conditions[name] = Scope.new(variables).instance_eval(&block)
+    def condition(name, &block) = conditions[name] = Scope.new(quantities).instance_eval(&block)
   end
 end

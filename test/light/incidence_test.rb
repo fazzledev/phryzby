@@ -6,7 +6,7 @@ class IncidenceTest < Minitest::Test
 
   def test_it_states_a_quantity_and_is_not_a_law
     assert_equal({ angle_of_incidence: :angle_of_incidence, i: :angle_of_incidence },
-                 Incidence.variables)
+                 Incidence.quantities)
 
     refute_respond_to Incidence, :equations
     refute_respond_to Incidence, :equation
@@ -35,7 +35,7 @@ class IncidenceTest < Minitest::Test
   def test_a_law_that_includes_it_says_the_same_thing
     require_relative "../../lib/light/reflection"
 
-    assert_equal :angle_of_incidence, Reflection.variables.fetch(:i)
+    assert_equal :angle_of_incidence, Reflection.quantities.fetch(:i)
     assert_equal Physics::A_RIGHT_ANGLE, Reflection.domains.fetch(:angle_of_incidence)
   end
 end

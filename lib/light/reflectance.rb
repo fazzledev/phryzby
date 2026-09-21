@@ -4,9 +4,9 @@ module Reflectance
   extend Physics::Law
   include Refraction
 
-  variable :reflectance_s_polarised, alias: :rs
-  variable :reflectance_p_polarised, alias: :rp
-  variable :reflectance,             alias: :r
+  quantity :reflectance_s_polarised, variable: :rs
+  quantity :reflectance_p_polarised, variable: :rp
+  quantity :reflectance,             variable: :r
 
   equation(:s_polarised) do
     rs == ((mu1 * cos(i) - mu2 * cos(rr)) / (mu1 * cos(i) + mu2 * cos(rr))) ** 2

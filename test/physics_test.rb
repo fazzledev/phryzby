@@ -19,7 +19,7 @@ class PhysicsTest < Minitest::Test
   end
 
   def test_an_equation_knows_which_variables_it_mentions
-    assert_equal %i[a b c], (var(:a) + var(:b) == var(:c)).variables
+    assert_equal %i[a b c], (var(:a) + var(:b) == var(:c)).quantities
   end
 
   def test_comparisons_build_conditions
@@ -48,10 +48,10 @@ class PhysicsTest < Minitest::Test
 
   def test_subclasses_do_not_share_their_parents_variables
     first = model
-    second = Class.new(Physics::Scenario) { variable :only_there }
+    second = Class.new(Physics::Scenario) { quantity :only_there }
 
-    assert first.variables.key?(:a)
-    refute second.variables.key?(:a)
+    assert first.quantities.key?(:a)
+    refute second.quantities.key?(:a)
   end
 
   private
@@ -68,8 +68,8 @@ class PhysicsTest < Minitest::Test
   def law(&declarations)
     Module.new do
       extend Physics::Law
-      variable :a
-      variable :b
+      quantity :a
+      quantity :b
       instance_eval(&declarations) if declarations
     end
   end

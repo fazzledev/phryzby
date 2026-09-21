@@ -89,9 +89,11 @@
         this.
       </p>
       <p class="note">
-        <code>alias: :i</code> is why <code>sin(i)</code> can appear in Snell's law two chapters
-        from now and still mean this. Both names lead to the same variable, so a value given as
-        <code>angle_of_incidence:</code> is readable as <code>[:i]</code> and the other way round.
+        The quantity is <em>the angle of incidence</em>; the variable is <code>i</code>, which is
+        what you write when you put it in an equation. That is why <code>sin(i)</code> can appear
+        in Snell's law two chapters from now and still mean this one. Both names lead to the same
+        quantity, so a value given as <code>angle_of_incidence:</code> is readable as
+        <code>[:i]</code> and the other way round.
       </p>
       <p class="note">
         <code>within:</code> is the branch the quantity physically lives on. It does nothing yet —
@@ -153,7 +155,7 @@ const page = await chapter({
   examples: [
     "surface[:i].in_degrees",
     "Physics::Scenario[Incidence].new.solve(:i)",
-    "Incidence.variables",
+    "Incidence.quantities",
     "Incidence.equations",
     "Incidence.domains",
   ],

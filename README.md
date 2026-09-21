@@ -20,9 +20,9 @@ module Refraction
   extend Physics::Law
   include Incidence
 
-  variable :angle_of_refraction, alias: :rr, within: Physics::A_RIGHT_ANGLE
-  variable :refractive_index_of_first_medium,  alias: :mu1
-  variable :refractive_index_of_second_medium, alias: :mu2
+  quantity :angle_of_refraction, variable: :rr, within: Physics::A_RIGHT_ANGLE
+  quantity :refractive_index_of_first_medium,  variable: :mu1
+  quantity :refractive_index_of_second_medium, variable: :mu2
 
   equation(:snells_law) { mu2 / mu1 == sin(i) / sin(rr) }
 
@@ -190,7 +190,7 @@ lib/physics/
   expression.rb        Expr, Const, Var, BinOp, Fn — every operator returns a node
   equation.rb          Equation and Comparison: what a declaration block returns
   scope.rb             the object a declaration block runs against
-  quantities.rb        what exists: a quantity, its short name and its branch
+  quantities.rb        what exists: a quantity, the variable it is written as, its branch
   law.rb               what holds between them: equation, condition, and `when:`
   solver.rb            Newton, bisection, and which one to believe
   scenario.rb          composing laws, choosing an equation, solving what it needs

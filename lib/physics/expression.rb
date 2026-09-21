@@ -21,7 +21,7 @@ module Physics
   class Const < Expr
     def initialize(value) = @value = value
     def evaluate(_env) = @value
-    def variables = []
+    def quantities = []
     def to_s = @value.to_s
   end
 
@@ -34,7 +34,7 @@ module Physics
       env.fetch(@name) { raise KeyError, "no value for #{@name}" }
     end
 
-    def variables = [ @name ]
+    def quantities = [ @name ]
     def to_s = @name.to_s
   end
 
@@ -46,7 +46,7 @@ module Physics
     end
 
     def evaluate(env) = @left.evaluate(env).public_send(@op, @right.evaluate(env))
-    def variables = @left.variables | @right.variables
+    def quantities = @left.quantities | @right.quantities
     def to_s = "(#{@left} #{@op} #{@right})"
   end
 
@@ -57,7 +57,7 @@ module Physics
     end
 
     def evaluate(env) = Math.public_send(@name, @arg.evaluate(env))
-    def variables = @arg.variables
+    def quantities = @arg.quantities
     def to_s = "#{@name}(#{@arg})"
   end
 end
