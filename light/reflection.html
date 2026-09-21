@@ -24,6 +24,7 @@
     <div class="pane code">
       <div class="tabs" id="tabs" role="tablist"></div>
       <div class="editor">
+        <div class="gutter" id="gutter" aria-hidden="true"></div>
         <pre id="highlight" aria-hidden="true"></pre>
         <textarea id="source" autocomplete="off"></textarea>
       </div>
@@ -68,6 +69,12 @@
         Drag the dividers to resize the panes; double-click one to put it back. Tick
         <em>auto-run</em> and the laws re-evaluate when you stop typing, and the page boots Ruby
         by itself next time. Both settings are remembered between visits.
+      </p>
+      <p class="note">
+        Anything you change is marked the way an editor marks it: a bar in the gutter beside every
+        line you touched — green for new, blue for altered — a red wedge where lines were taken
+        out, a dot on the tab and an <strong>M</strong> in the tree. <em>Revert edits</em> puts
+        this repository's own text back.
       </p>
       <p class="note">
         The console under the code is a real irb against the same VM. Start with

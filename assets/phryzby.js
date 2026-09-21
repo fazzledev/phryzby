@@ -388,15 +388,121 @@ function mountConsole({ log, form, input, hint }, { evaluate, examples = [] }) {
 
 // --- the editor ------------------------------------------------------------
 
-function mountEditor(files, { tabs, pre, textarea }, announce = () => {}) {
+/**
+ * Per-line marks for the gutter: which lines of `after` are new or altered,
+ * and where lines were taken out. Matching head and tail are trimmed first, so
+ * the quadratic part only ever sees the region that actually differs.
+ */
+function changeMarks(before, after) {
+  const line = new Array(after.length).fill(null);
+  const cut = new Set();
+  const cutTop = new Set();
+
+  let head = 0;
+  while (head < before.length && head < after.length && before[head] === after[head]) head++;
+
+  let tail = 0;
+  while (tail < before.length - head && tail < after.length - head &&
+         before[before.length - 1 - tail] === after[after.length - 1 - tail]) tail++;
+
+  const gone = before.slice(head, before.length - tail);
+  const come = after.slice(head, after.length - tail);
+  if (!gone.length && !come.length) return { line, cut, cutTop };
+
+  if (gone.length * come.length > 250000) {
+    come.forEach((_, n) => { line[head + n] = gone.length ? "mod" : "add"; });
+    return { line, cut, cutTop };
+  }
+
+  const ops = align(gone, come);
+  let k = 0;
+
+  while (k < ops.length) {
+    if (ops[k].kind === "same") { k++; continue; }
+
+    const at = ops[k].j;
+    const added = [];
+    let removed = 0;
+
+    while (k < ops.length && ops[k].kind !== "same") {
+      if (ops[k].kind === "add") added.push(ops[k].j); else removed++;
+      k++;
+    }
+
+    if (added.length) added.forEach((j) => { line[head + j] = removed ? "mod" : "add"; });
+    else if (head + at === 0) cutTop.add(0);
+    else cut.add(head + at - 1);
+  }
+
+  return { line, cut, cutTop };
+}
+
+function align(before, after) {
+  const n = before.length, m = after.length;
+  const common = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      common[i][j] = before[i] === after[j]
+        ? common[i + 1][j + 1] + 1
+        : Math.max(common[i + 1][j], common[i][j + 1]);
+    }
+  }
+
+  const ops = [];
+  let i = 0, j = 0;
+
+  while (i < n && j < m) {
+    if (before[i] === after[j]) { ops.push({ kind: "same", j }); i++; j++; }
+    else if (common[i + 1][j] >= common[i][j + 1]) { ops.push({ kind: "gone", j }); i++; }
+    else { ops.push({ kind: "add", j }); j++; }
+  }
+  while (i < n) { ops.push({ kind: "gone", j }); i++; }
+  while (j < m) { ops.push({ kind: "add", j }); j++; }
+
+  return ops;
+}
+
+function mountEditor(files, { tabs, pre, textarea, gutter },
+                     { announce = () => {}, changed = () => {} } = {}) {
   let active = 0;
 
   const remember = () => { if (textarea.value !== "") files[active].code = textarea.value; };
+  const textOf = (index) => (index === active ? textarea.value : files[index].code);
+  const edited = (index) => textOf(index) !== files[index].original;
+
+  // Only the textarea scrolls; the highlighted layer and the gutter follow it.
+  const sync = () => {
+    pre.scrollTop = textarea.scrollTop;
+    pre.scrollLeft = textarea.scrollLeft;
+    if (gutter) gutter.scrollTop = textarea.scrollTop;
+  };
+
+  const rule = () => {
+    if (!gutter) return;
+
+    const after = textarea.value.split("\n");
+    const marks = changeMarks((files[active].original ?? "").split("\n"), after);
+
+    gutter.replaceChildren(...after.map((_, n) => {
+      const row = document.createElement("div");
+      row.className = [ "gline", marks.line[n], marks.cut.has(n) && "cut",
+                        marks.cutTop.has(n) && "cut-top" ].filter(Boolean).join(" ");
+      row.textContent = String(n + 1);
+      return row;
+    }));
+  };
+
+  const flag = () => {
+    [ ...tabs.children ].forEach((button, n) => button.classList.toggle("changed", edited(n)));
+    changed(files.filter((_, n) => edited(n)).map((file) => file.key));
+  };
 
   const repaint = () => {
     pre.innerHTML = highlight(textarea.value) + "\n";
-    pre.scrollTop = textarea.scrollTop;
-    pre.scrollLeft = textarea.scrollLeft;
+    rule();
+    sync();
+    flag();
   };
 
   const show = (index) => {
@@ -413,13 +519,13 @@ function mountEditor(files, { tabs, pre, textarea }, announce = () => {}) {
     const button = document.createElement("button");
     button.type = "button";
     button.setAttribute("role", "tab");
-    button.textContent = file.label;
+    button.append(file.label, Object.assign(document.createElement("span"), { className: "dot" }));
     button.addEventListener("click", () => show(index));
     tabs.append(button);
   });
 
   textarea.addEventListener("input", repaint);
-  textarea.addEventListener("scroll", repaint);
+  textarea.addEventListener("scroll", sync);
   textarea.spellcheck = false;
 
   show(0);
@@ -428,8 +534,8 @@ function mountEditor(files, { tabs, pre, textarea }, announce = () => {}) {
     showPath: (key) => show(Math.max(0, files.findIndex((file) => file.key === key))),
     // Not via show(), whose first act is to remember the textarea — which is
     // exactly the text being thrown away.
-    reset: (restore) => {
-      files.forEach((file) => { file.code = restore(file); });
+    reset: () => {
+      files.forEach((file) => { file.code = file.original; });
       textarea.value = files[active].code;
       repaint();
       announce(files[active].key);
@@ -440,13 +546,15 @@ function mountEditor(files, { tabs, pre, textarea }, announce = () => {}) {
 // --- the page --------------------------------------------------------------
 
 async function fetchRuby(files) {
-  return Promise.all(files.map(async (file) => ({
-    ...file,
-    label: file.label || file.key.split("/").pop(),
+  return Promise.all(files.map(async (file) => {
     // Revalidated rather than taken from cache: a stale law running against a
     // fresh page fails in ways that look like the law is wrong.
-    code: (await fetch(at(file.key), { cache: "no-cache" }).then((r) => r.text())).trimEnd(),
-  })));
+    const code = (await fetch(at(file.key), { cache: "no-cache" }).then((r) => r.text())).trimEnd();
+
+    // `original` is what the repository says, `code` what the reader has done
+    // to it since. The gutter and Revert both measure from it.
+    return { ...file, label: file.label || file.key.split("/").pop(), code, original: code };
+  }));
 }
 
 async function loadVM(onStatus) {
@@ -495,14 +603,25 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   // imply, and shown in `tab` order.
   const engine = ENGINE.map((key, index) => ({ key, hidden: !showEngine, tab: index - ENGINE.length }));
   const loaded = await fetchRuby([ ...engine, ...files ]);
-  const originals = loaded.map((file) => file.code);
   const tabbed = loaded.filter((file) => !file.hidden)
     .map((file, index) => ({ file, at: file.tab ?? index }))
     .sort((a, b) => a.at - b.at).map((entry) => entry.file);
 
+  // VS Code's habit: a bar in the gutter beside every line you touched, a dot
+  // on the tab, an M on the file in the tree.
+  const markChanged = (keys) => {
+    const dirty = new Set(keys);
+    $("tree").querySelectorAll("a[data-path]").forEach((row) => {
+      row.classList.toggle("changed", dirty.has(row.dataset.path));
+    });
+  };
+
   let markTree = () => {};
-  const editor = mountEditor(tabbed, { tabs: $("tabs"), pre: $("highlight"), textarea: $("source") },
-    (key) => markTree(key));
+  const editor = mountEditor(
+    tabbed,
+    { tabs: $("tabs"), pre: $("highlight"), textarea: $("source"), gutter: $("gutter") },
+    { announce: (key) => markTree(key), changed: markChanged },
+  );
   markTree = mountTree($("tree"), {
     here: page,
     loaded: new Set(tabbed.map((file) => file.key)),
@@ -588,7 +707,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
 
   if (reset) {
     reset.addEventListener("click", () => {
-      editor.reset((file) => originals[loaded.indexOf(file)]);
+      editor.reset();
       if (vm) rerun();
     });
   }

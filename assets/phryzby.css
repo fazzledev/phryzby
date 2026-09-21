@@ -2,7 +2,7 @@
   --paper:#FFFFFF; --ink:#1A1A1A; --ink-mid:#3A3A3A; --ink-soft:#6E6E6E;
   --rule:#E4E4E2; --wash:#FAFAF9; --red:#C8102E; --ray:#1F6FEB;
   --kw:#A626A4; --sym:#0184BC; --const:#B36C00; --num:#986801; --com:#9A9BA1;
-  --op:#4A4A4A; --str:#3C8A3C;
+  --op:#4A4A4A; --str:#3C8A3C; --new:#1A7F37;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
   --tree:15rem; --side:26rem;
@@ -12,14 +12,14 @@
     --paper:#131315; --ink:#ECECEC; --ink-mid:#C4C4C4; --ink-soft:#8C8C8C;
     --rule:#2C2C30; --wash:#191919; --red:#FF6B81; --ray:#6BA8FF;
     --kw:#C678DD; --sym:#56B6C2; --const:#E5C07B; --num:#D19A66; --com:#5C6370;
-    --op:#ABB2BF; --str:#98C379;
+    --op:#ABB2BF; --str:#98C379; --new:#3FB950;
   }
 }
 :root[data-theme="dark"]{
   --paper:#131315; --ink:#ECECEC; --ink-mid:#C4C4C4; --ink-soft:#8C8C8C;
   --rule:#2C2C30; --wash:#191919; --red:#FF6B81; --ray:#6BA8FF;
   --kw:#C678DD; --sym:#56B6C2; --const:#E5C07B; --num:#D19A66; --com:#5C6370;
-  --op:#ABB2BF; --str:#98C379;
+  --op:#ABB2BF; --str:#98C379; --new:#3FB950;
 }
 *{box-sizing:border-box;}
 html,body{height:100%;}
@@ -79,6 +79,8 @@ code{font-family:var(--mono);font-size:.92em;}
   color:var(--ink);box-shadow:inset 2px 0 0 var(--ray);}
 .tree a.elsewhere{color:var(--ink-soft);}
 .tree a.elsewhere::after{content:"\2197";float:right;opacity:.5;}
+.tree a.changed{color:var(--ray);}
+.tree a.changed::after{content:"M";float:right;font-size:.64rem;opacity:.75;}
 
 /* --- the editor ---------------------------------------------------------- */
 /* The strip scrolls when a page has many files, but a scrollbar sitting under
@@ -91,13 +93,36 @@ code{font-family:var(--mono);font-size:.92em;}
   padding:.62rem .9rem;cursor:pointer;border-bottom:2px solid transparent;border-radius:0;}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ray);}
 
+.tabs button .dot{display:inline-block;width:.42rem;height:.42rem;margin-left:.45rem;
+  border-radius:50%;background:var(--ray);vertical-align:middle;opacity:0;}
+.tabs button.changed .dot{opacity:1;}
+
 /* Highlighted text sits under a transparent textarea, so it stays editable. */
-.editor{position:relative;flex:1 1 auto;min-height:0;}
+.editor{position:relative;flex:1 1 auto;min-height:0;--gutter:3.2rem;}
 .editor pre, .editor textarea{
-  position:absolute;inset:0;margin:0;padding:.9rem 1rem;
+  position:absolute;inset:0;margin:0;padding:.9rem 1rem .9rem var(--gutter);
   font-family:var(--mono);font-size:.78rem;line-height:1.7;
   white-space:pre;tab-size:2;border:0;letter-spacing:0;
 }
+
+/* Line numbers and change bars, scrolled to match the textarea like the
+   highlighted layer is. Deletions have no line to sit on, so they become a
+   wedge at the junction where the lines used to be. */
+.editor .gutter{position:absolute;left:0;top:0;bottom:0;width:var(--gutter);
+  margin:0;padding:.9rem 0;overflow:hidden;pointer-events:none;
+  font-family:var(--mono);font-size:.78rem;line-height:1.7;
+  background:var(--paper);}
+.editor .gline{position:relative;height:1.7em;padding-right:.6rem;text-align:right;
+  color:var(--ink-soft);opacity:.5;}
+.editor .gline::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;}
+.editor .gline.add::before{background:var(--new);}
+.editor .gline.mod::before{background:var(--ray);}
+.editor .gline.add,.editor .gline.mod{opacity:.85;}
+.editor .gline.cut::after,.editor .gline.cut-top::after{content:"";position:absolute;left:0;
+  width:0;height:0;border-left:5px solid var(--red);
+  border-top:3px solid transparent;border-bottom:3px solid transparent;}
+.editor .gline.cut::after{bottom:-3px;}
+.editor .gline.cut-top::after{top:-3px;}
 /* Only the textarea scrolls. The highlighted layer under it is scrolled to
    match, so it must not draw a second pair of scrollbars. */
 .editor pre{color:var(--ink);pointer-events:none;overflow:hidden;}
