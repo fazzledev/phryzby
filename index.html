@@ -3,28 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>phryzby — physics written in Ruby</title>
+<title>phryzby — play with the laws of physics</title>
 <link rel="stylesheet" href="assets/phryzby.css">
 </head>
 <body>
 <div class="app">
   <header class="bar">
     <a class="brand" href="./">phryzby</a>
-    <span class="where">physics written in Ruby</span>
+    <span class="where">play with the laws of physics</span>
     <span class="grow"></span>
     <a href="https://github.com/fazzledev/phryzby" class="where">github.com/fazzledev/phryzby</a>
   </header>
 
   <div class="pane cover-pane" style="overflow:auto">
     <div class="cover">
-      <h1>phryzby <small>— physics written in Ruby</small></h1>
+      <h1>phryzby <small>— play with the laws of physics</small></h1>
       <p class="lede">
         You write a law down once, the way it appears on a blackboard, and never rearrange it.
-        Inside an <code>equation</code> block the names are not numbers — they are nodes in an
-        expression tree, so <code>==</code> builds an equation instead of answering true or false.
-        Asking is a separate act: name the unknown, and a solver finds a root of
-        <code>left&nbsp;−&nbsp;right</code>. That is why one declaration answers in every
-        direction.
+        Which means you can change it. Say a mirror should turn light by half the angle it arrives
+        at rather than all of it — edit that line in the browser, and every answer on the page
+        follows the law you just invented. There is no derivation to redo, because there was never
+        a formula: only an expression tree and a root to find.
+      </p>
+      <p class="lede">
+        Inside an <code>equation</code> block the names are not numbers — they are nodes in that
+        tree, so <code>==</code> builds an equation instead of answering true or false. Asking is a
+        separate act: name the unknown, and a solver finds a root of
+        <code>left&nbsp;−&nbsp;right</code>. The solver never learns what the law says, which is
+        why one declaration answers in every direction — and why an invented law costs exactly
+        what a true one does.
       </p>
 
       <div class="sample">

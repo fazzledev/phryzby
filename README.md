@@ -1,12 +1,19 @@
 # phryzby
 
-Physics written as Ruby, and still executable.
+Play with the laws of physics.
 
 You write a law down once, the way it appears on a blackboard, and never
-rearrange it. Inside an `equation` block the names are not numbers — they are
-expression nodes, so `==` builds an equation rather than answering true or
-false. Asking is a separate act: name the unknown, and the solver finds a root
-of `left - right`.
+rearrange it — which means you can change it. Say a mirror should turn light by
+half the angle it arrives at rather than all of it. Edit that line in the
+browser and every answer on the page follows the law you just invented, because
+there is no derivation to redo: there was never a formula, only an expression
+tree and a root to find.
+
+Inside an `equation` block the names are not numbers — they are nodes in that
+tree, so `==` builds an equation rather than answering true or false. Asking is
+a separate act: name the unknown, and the solver finds a root of
+`left - right`. It never learns what the law says, which is why an invented law
+costs exactly what a true one does.
 
 ```ruby
 module Refraction
