@@ -94,16 +94,18 @@ rescue StandardError
 end
 
 def trace(i_deg, mu1, mu2)
-  interface = Surface.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
-  trapped = attempt { interface.satisfies?(:total_internal_reflection) }
+  surface = Surface.between(mu1, mu2, i: i_deg.deg)
+  trapped = attempt { surface.traps? }
 
-  rr = trapped ? nil : attempt { interface.solve(:rr, guess: 0.4) }
+  rr = trapped ? nil : attempt { surface.angle_of_refraction }
 
   shares =
     if trapped
       [ 1.0, 1.0, 1.0 ]
     elsif rr
-      attempt { %i[rs rp r].map { |part| interface.solve(part, guess: 0.1) } }
+      attempt do
+        [ surface.s_polarised_share, surface.p_polarised_share, surface.reflected_share ]
+      end
     end
 
   ([ rr&.in_degrees, trapped ] + (shares || [ nil, nil, nil ]))

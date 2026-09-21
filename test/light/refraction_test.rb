@@ -57,6 +57,18 @@ class RefractionTest < Minitest::Test
     refute traps?(from: GLASS, into: AIR, at: CRITICAL)
   end
 
+  # Not a rearranged formula: it is Snell asked with the refracted ray lying
+  # flat along the surface, which is the last angle that still has one.
+  def test_the_critical_angle_is_solved_through_snell
+    found = ray(from: GLASS, into: AIR, i: 10).critical_angle
+
+    assert_in_delta CRITICAL, found.in_degrees, 1e-6
+  end
+
+  def test_there_is_no_critical_angle_going_into_a_denser_medium
+    assert_nil ray(from: AIR, into: GLASS, i: 10).critical_angle
+  end
+
   def test_going_into_a_denser_medium_never_traps_the_ray
     (1..89).each do |degrees|
       refute traps?(from: AIR, into: GLASS, at: degrees), "trapped at #{degrees} deg"
@@ -79,7 +91,7 @@ class RefractionTest < Minitest::Test
   CRITICAL = Math.asin(AIR / GLASS).in_degrees
 
   def ray(from:, into:, **angles)
-    Surface.new(mu1: from, mu2: into, **angles.transform_values(&:deg))
+    Surface.between(from, into, **angles.transform_values(&:deg))
   end
 
   def solved(target, from:, into:, **angles)
@@ -89,12 +101,8 @@ class RefractionTest < Minitest::Test
   end
 
   def identified(into:, from_air_at:)
-    ray = Surface.new(i: from_air_at.deg, rr: into.deg, mu1: AIR)
-    ray.solve(:mu2, guess: 1.0)
-    ray[:mu2]
+    Surface.new(i: from_air_at.deg, rr: into.deg, mu1: AIR).second_medium
   end
 
-  def traps?(from:, into:, at:)
-    ray(from: from, into: into, i: at).satisfies?(:total_internal_reflection)
-  end
+  def traps?(from:, into:, at:) = ray(from: from, into: into, i: at).traps?
 end

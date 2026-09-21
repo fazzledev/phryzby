@@ -73,7 +73,9 @@
       <p class="note">
         Past the critical angle Snell asks for a sine greater than one. There is no refracted ray
         at all — which is how an optical fibre keeps light inside itself. Set μ₁ above μ₂ and open
-        the angle to watch it happen.
+        the angle to watch it happen. The critical angle above is not a rearranged formula: it is
+        this same law asked with the refracted ray lying flat along the surface, which is the last
+        angle that still has one.
       </p>
       <p class="note">
         Because a law is stored rather than compiled into a formula, one declaration answers in any
@@ -94,14 +96,14 @@ rescue StandardError
 end
 
 def trace(i_deg, mu1, mu2)
-  light = Surface.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
-  trapped = attempt { light.satisfies?(:total_internal_reflection) }
+  light = Surface.between(mu1, mu2, i: i_deg.deg)
+  trapped = attempt { light.traps? }
 
-  rr = trapped ? nil : attempt { light.solve(:rr, guess: 0.4) }
-  rl = attempt { light.solve(:rl, guess: 0.4) }
-  critical = mu2 < mu1 ? Math.asin(mu2 / mu1).in_degrees : nil
-
-  [ rr&.in_degrees, rl&.in_degrees, critical, trapped ]
+  [ (attempt { light.angle_of_refraction } unless trapped),
+    attempt { light.angle_of_reflection },
+    attempt { light.critical_angle },
+    trapped ]
+    .map { |value| value.is_a?(Float) ? value.in_degrees : value }
     .map { |value| value.nil? ? "" : value.to_s }.join("|")
 end
 `;

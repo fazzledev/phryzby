@@ -35,11 +35,21 @@ Because the law is stored rather than compiled into a formula, one declaration
 solves in any direction. Give it two angles and it names the material:
 
 ```ruby
-ray = Surface.new(i: 45.deg, rr: 28.9.deg, mu1: 1.0)
-ray.solve(:mu2, guess: 1.2).round(2)   # => 1.46, which is silica glass
+Surface.new(i: 45.deg, rr: 28.9.deg, mu1: 1.0).second_medium
+# => 1.46, which is silica glass
 
-ray = Surface.new(i: 45.deg, mu1: 1.0, mu2: 1.5)
-ray.solve(:rr, guess: 0.4).in_degrees  # => 28.13
+Surface.between(1.0, 1.5, i: 45.deg).angle_of_refraction.in_degrees
+# => 28.13
+```
+
+The critical angle is the same idea taken one step further. It is not a
+rearranged formula anywhere in this repository — it is Snell asked with the
+refracted ray lying flat along the surface, which is the last angle that still
+has one:
+
+```ruby
+Surface.between(1.5, 1.0, i: 10.deg).critical_angle.in_degrees  # => 41.8103
+Math.asin(1.0 / 1.5).in_degrees                                 # => 41.8103
 ```
 
 `within:` is the branch a quantity physically lives on — a refracted angle is
@@ -89,9 +99,9 @@ ruby test/physics/law_test.rb           #  3 runs,   4 assertions
 ruby test/physics/quantities_test.rb    #  7 runs,  10 assertions
 ruby test/physics/solver_test.rb        #  7 runs,   7 assertions
 ruby test/pythagoras_test.rb            #  8 runs,  10 assertions
-ruby test/light/reflection_test.rb      #  7 runs,   7 assertions
-ruby test/light/refraction_test.rb      # 14 runs, 106 assertions
-ruby test/light/reflectance_test.rb     #  9 runs, 189 assertions
+ruby test/light/reflection_test.rb      #  8 runs,   8 assertions
+ruby test/light/refraction_test.rb      # 16 runs, 108 assertions
+ruby test/light/reflectance_test.rb     # 10 runs, 190 assertions
 ```
 
 No gems, and no comments — the prose is on the pages. Ruby 3.4.
@@ -110,7 +120,7 @@ lib/physics/
   scenario.rb          holding values, choosing an equation, solving
   degrees.rb           Numeric#deg and #in_degrees
 lib/light/optics.rb    every optical quantity, declared once
-lib/light/*.rb         one law per file, plus the Surface it composes
+lib/light/*.rb         one law per file, plus what a Surface can be asked
 test/                  mirrors lib/
 assets/phryzby.js      the tree, highlighting, the editor, booting CRuby — no build step
 assets/phryzby.css

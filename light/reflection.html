@@ -76,8 +76,9 @@ import { chapter, $, ray, label, stage, above, mirrored } from "../assets/phryzb
 
 const HARNESS = String.raw`
 def trace(i_deg)
-  mirror = Surface.new(i: i_deg.deg)
-  rl = mirror.solve(:rl, guess: 0.4)
+  mirror = Surface.struck_at(i_deg.deg)
+  rl = mirror.angle_of_reflection
+
   [ rl.in_degrees, mirror.holds?(:law_of_reflection) ].join("|")
 rescue StandardError => e
   "|#{e.message}"

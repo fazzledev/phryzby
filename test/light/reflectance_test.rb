@@ -59,14 +59,19 @@ class ReflectanceTest < Minitest::Test
     assert_in_delta (rs + rp) / 2, r, 1e-9
   end
 
+  def test_the_two_shares_account_for_all_of_the_light
+    surface = Surface.between(AIR, GLASS, i: 40.deg)
+
+    assert_in_delta 1.0, surface.reflected_share + surface.refracted_share, 1e-12
+  end
+
   private
 
   BREWSTER = Math.atan(GLASS / AIR).in_degrees
 
   def share(at:, from:, into:)
-    interface = Surface.new(i: at.deg, mu1: from, mu2: into)
-    interface.solve(:rr, guess: 0.4)
+    surface = Surface.between(from, into, i: at.deg)
 
-    %i[rs rp r].map { |part| interface.solve(part, guess: 0.1) }
+    [ surface.s_polarised_share, surface.p_polarised_share, surface.reflected_share ]
   end
 end
