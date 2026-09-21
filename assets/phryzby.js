@@ -233,6 +233,19 @@ export function stage({ second = null } = {}) {
 
 // --- resizing --------------------------------------------------------------
 
+const AUTO_RUN = "phryzby.autorun";
+
+// Reads the setting with no argument, writes it with one.
+function autoRun(next) {
+  try {
+    if (next === undefined) return localStorage.getItem(AUTO_RUN) === "on";
+    localStorage.setItem(AUTO_RUN, next ? "on" : "off");
+  } catch {
+    // A browser that refuses storage still toggles; it just forgets.
+  }
+  return next;
+}
+
 const LAYOUT = "phryzby.layout";
 const DEFAULTS = { tree: 240, side: 416, console: 208 };
 
@@ -413,9 +426,13 @@ function mountEditor(files, { tabs, pre, textarea }, announce = () => {}) {
   return {
     remember,
     showPath: (key) => show(Math.max(0, files.findIndex((file) => file.key === key))),
+    // Not via show(), whose first act is to remember the textarea — which is
+    // exactly the text being thrown away.
     reset: (restore) => {
       files.forEach((file) => { file.code = restore(file); });
-      show(active);
+      textarea.value = files[active].code;
+      repaint();
+      announce(files[active].key);
     },
   };
 }
@@ -528,9 +545,21 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     if (harness) vm.eval(harness);
   };
 
-  run.addEventListener("click", async () => {
+  let booting = false;
+
+  const rerun = () => {
     try {
-      if (vm) { evaluate(); view.refresh(); return; }
+      evaluate();
+      view.refresh();
+    } catch (error) {
+      say(String(error).split("\n")[0], true);
+    }
+  };
+
+  const boot = async () => {
+    if (vm || booting) return;
+    booting = true;
+    try {
       run.disabled = true;
       say("Fetching CRuby…");
       vm = await loadVM(say);
@@ -538,20 +567,44 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       evaluate();
       repl.ask("RUBY_VERSION");
       run.textContent = "Re-run the laws";
-      run.disabled = false;
       if (reset) reset.hidden = false;
       view.refresh();
     } catch (error) {
       say(String(error).split("\n")[0], true);
+    } finally {
+      booting = false;
       run.disabled = false;
     }
-  });
+  };
+
+  run.addEventListener("click", () => (vm ? rerun() : boot()));
 
   if (reset) {
     reset.addEventListener("click", () => {
       editor.reset((file) => originals[loaded.indexOf(file)]);
-      if (vm) { evaluate(); view.refresh(); }
+      if (vm) rerun();
     });
+  }
+
+  // Auto-run waits for a pause in typing, because a law is a syntax error for
+  // most of the time it takes to write one.
+  const auto = $("auto");
+  if (auto) {
+    let pending = null;
+    auto.checked = autoRun();
+    auto.addEventListener("change", () => {
+      autoRun(auto.checked);
+      if (auto.checked) (vm ? rerun() : boot());
+    });
+
+    $("source").addEventListener("input", () => {
+      if (!auto.checked || !vm || booting) return;
+      clearTimeout(pending);
+      say("Waiting for you to stop typing…");
+      pending = setTimeout(rerun, 700);
+    });
+
+    if (auto.checked) boot();
   }
 
   return view;

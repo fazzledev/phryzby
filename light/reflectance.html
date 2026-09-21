@@ -13,6 +13,7 @@
     <span class="where">light <strong>/ reflectance</strong></span>
     <span class="grow"></span>
     <span class="status" id="status">Nothing is computed until Ruby boots.</span>
+    <label class="toggle"><input type="checkbox" id="auto"> auto-run</label>
     <button id="reset" class="ghost" hidden>Reset</button>
     <button id="run">Run in Ruby</button>
   </header>
@@ -78,8 +79,9 @@
 
       <p class="head">notes</p>
       <p class="note">
-        Drag the dividers to resize the panes; double-click one to put it back. The layout is
-        remembered between visits.
+        Drag the dividers to resize the panes; double-click one to put it back. Tick
+        <em>auto-run</em> and the laws re-evaluate when you stop typing, and the page boots Ruby
+        by itself next time. Both settings are remembered between visits.
       </p>
       <p class="note">
         The console under the code is a real irb against the same VM. <code>surface</code> is bound
