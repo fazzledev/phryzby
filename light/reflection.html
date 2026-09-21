@@ -84,10 +84,11 @@
         re-run.
       </p>
       <p class="note">
-        A law is a module, not a class, because a law is not a kind of another law. Nothing holds
-        values until you ask: <code>Physics::Scenario[Reflection]</code> composes the laws you name
-        into something that does. Here that is one law; the next chapters add more to the same
-        brackets.
+        A law is a module, not a class, because a law is not a kind of another law. It states what
+        it is about where it is written — full name, short name, and the branch each quantity lives
+        on — so this file can be read on its own. Nothing holds values until you ask:
+        <code>Physics::Scenario[Reflection]</code> composes the laws you name into something that
+        does. Here that is one law; the next chapters add more to the same brackets.
       </p>
       <p class="note">
         The solver is never told which way round the question goes. It finds the equation that
@@ -137,10 +138,7 @@ function paint(i, rl) {
 
 const page = await chapter({
   page: "light/reflection.html",
-  files: [
-    { key: "lib/light/optics.rb", tab: 2 },
-    { key: "lib/light/reflection.rb", tab: 1 },
-  ],
+  files: [ { key: "lib/light/reflection.rb" } ],
   harness: HARNESS,
   opening: [ "surface.solve(:rl).in_degrees" ],
   examples: [

@@ -96,9 +96,10 @@
       </p>
       <p class="note">
         <code>within:</code> is doing real work here. <code>sin</code> is periodic, so Snell has
-        infinitely many roots and only one of them is an angle light can take. Delete the domain
-        from <code>angle_of_refraction</code>, run it again, and drag down to a few degrees:
-        Newton's method wanders off and returns a root several turns away.
+        infinitely many roots and only one of them is an angle light can take. Delete
+        <code>within: Physics::A_RIGHT_ANGLE</code> from <code>angle_of_refraction</code> above,
+        run it again, and drag down to a few degrees: Newton's method wanders off and returns a
+        root several turns away.
       </p>
       <p class="note">
         Past the critical angle Snell asks for a sine greater than one. There is no refracted ray
@@ -106,6 +107,12 @@
         the angle to watch it happen. The critical angle above is not a rearranged formula: it is
         this same law asked with the refracted ray lying flat along the surface, which is the last
         angle that still has one.
+      </p>
+      <p class="note">
+        Notice the two refractive indices declare no <code>within:</code> at all. They appear
+        linearly in Snell's law, so it has exactly one root for them and a range would be
+        decoration. A domain earns its place where an equation has more than one root — which here
+        means the angles, and nothing else.
       </p>
       <p class="note">
         Because a law is stored rather than compiled into a formula, one declaration answers in any
@@ -176,7 +183,6 @@ const degrees = (v) => (v == null ? "—" : `${v.toFixed(2)}°`);
 const page = await chapter({
   page: "light/refraction.html",
   files: [
-    { key: "lib/light/optics.rb", tab: 3 },
     { key: "lib/light/reflection.rb", tab: 2 },
     { key: "lib/light/refraction.rb", tab: 1 },
   ],

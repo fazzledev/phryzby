@@ -2,57 +2,66 @@ require "minitest/autorun"
 require_relative "../../lib/physics"
 
 class QuantitiesTest < Minitest::Test
-  CATALOGUE = Module.new do
-    extend Physics::Quantities
+  def test_a_quantity_answers_to_its_alias_and_its_full_name
+    declared = quantities { variable :angle, alias: :a }
 
-    variable :angle, alias: :a, within: 0.0..1.5
-    variable :width, alias: :w, within: 0.0..9.0
-    variable :depth, alias: :d
+    assert_equal :angle, declared.variables.fetch(:a)
+    assert_equal :angle, declared.variables.fetch(:angle)
   end
 
-  def test_uses_brings_the_alias_with_it
-    borrower = catalogue { uses CATALOGUE, :a }
-
-    assert_equal :angle, borrower.variables.fetch(:a)
-    assert_equal :angle, borrower.variables.fetch(:angle)
-  end
-
-  def test_uses_brings_the_domain_with_it
-    assert_equal 0.0..1.5, catalogue { uses CATALOGUE, :a }.domains.fetch(:angle)
+  def test_a_declared_domain_is_kept_under_the_full_name
+    assert_equal 0.0..1.5, quantities { variable :angle, alias: :a, within: 0.0..1.5 }
+                             .domains.fetch(:angle)
   end
 
   def test_a_quantity_with_no_domain_declares_none
-    refute catalogue { uses CATALOGUE, :d }.domains.key?(:depth)
+    refute quantities { variable :depth }.domains.key?(:depth)
   end
 
-  def test_uses_takes_only_what_it_names
-    borrower = catalogue { uses CATALOGUE, :a }
+  def test_an_alias_is_optional
+    declared = quantities { variable :depth }
 
-    refute borrower.variables.key?(:w)
-    refute borrower.variables.key?(:width)
+    assert_equal({ depth: :depth }, declared.variables)
   end
 
-  def test_a_quantity_that_is_not_in_the_catalogue_is_an_error
-    assert_raises(KeyError) { catalogue { uses CATALOGUE, :nonesuch } }
+  def test_two_laws_naming_the_same_quantity_mean_the_same_variable
+    first = law { variable :angle, alias: :a; variable :width, alias: :w
+                  equation(:one) { a == w } }
+    second = law { variable :angle, alias: :a; variable :depth, alias: :d
+                   equation(:two) { a == d * 2 } }
+
+    scenario = Physics::Scenario[first, second].new(w: 3.0)
+
+    assert_in_delta 1.5, scenario.solve(:d), 1e-9
+    assert_equal %i[angle width depth], scenario.class.variables.values.uniq
   end
 
-  def test_a_catalogue_states_no_equations
-    refute_respond_to CATALOGUE, :equations
+  def test_declaring_quantities_states_no_equations
+    refute_respond_to quantities { variable :angle }, :equations
   end
 
-  # It is not a law, so including it into a model is not a way to get its
-  # quantities. A law has to name what it uses.
-  def test_including_a_catalogue_into_a_model_absorbs_nothing
-    model = Class.new(Physics::Scenario) { include CATALOGUE }
+  # It is not a law, so including it into a scenario is not a way to get its
+  # quantities. A law states what it is about, in full, where it is written.
+  def test_including_bare_quantities_into_a_scenario_absorbs_nothing
+    scenario = Class.new(Physics::Scenario) { include QuantitiesTest.catalogue }
 
-    assert_empty model.variables
+    assert_empty scenario.variables
   end
+
+  def self.catalogue = Module.new { extend Physics::Quantities; variable :angle }
 
   private
 
-  def catalogue(&declarations)
+  def quantities(&declarations)
     Module.new do
       extend Physics::Quantities
+      instance_eval(&declarations)
+    end
+  end
+
+  def law(&declarations)
+    Module.new do
+      extend Physics::Law
       instance_eval(&declarations)
     end
   end

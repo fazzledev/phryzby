@@ -2,14 +2,6 @@ require "minitest/autorun"
 require_relative "../../lib/physics"
 
 class LawTest < Minitest::Test
-  CATALOGUE = Module.new do
-    extend Physics::Quantities
-
-    variable :angle, alias: :a, within: 0.0..1.5
-    variable :width, alias: :w, within: 0.0..9.0
-    variable :depth, alias: :d
-  end
-
   def test_a_law_is_not_a_model
     refute_operator law { }, :respond_to?, :new
   end
@@ -22,8 +14,8 @@ class LawTest < Minitest::Test
 
   def test_two_laws_can_name_the_same_quantity
     model = Class.new(Physics::Scenario)
-    model.include(law { uses CATALOGUE, :a, :w })
-    model.include(law { uses CATALOGUE, :a, :d })
+    model.include(law { variable :angle, alias: :a; variable :width, alias: :w })
+    model.include(law { variable :angle, alias: :a; variable :depth, alias: :d })
 
     assert_equal %i[angle width depth], model.variables.values.uniq
   end

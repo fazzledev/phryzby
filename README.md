@@ -19,7 +19,10 @@ costs exactly what a true one does.
 module Refraction
   extend Physics::Law
 
-  uses Optics, :i, :rr, :mu1, :mu2
+  variable :angle_of_incidence,  alias: :i,  within: Physics::A_RIGHT_ANGLE
+  variable :angle_of_refraction, alias: :rr, within: Physics::A_RIGHT_ANGLE
+  variable :refractive_index_of_first_medium,  alias: :mu1
+  variable :refractive_index_of_second_medium, alias: :mu2
 
   equation(:snells_law) { mu2 / mu1 == sin(i) / sin(rr) }
 
@@ -48,12 +51,15 @@ angle anywhere in this repository — it is Snell asked with the refracted ray
 lying flat along the surface, which is the last angle that still has one.
 `Math.asin(1.0 / 1.5).in_degrees` agrees to ten decimal places.
 
-A quantity is declared once, in `lib/light/optics.rb`, with its symbol and the
-branch it lives on. That file is a catalogue, not a law: it extends
-`Physics::Quantities`, so it has no equations and cannot be included into a
-scenario to smuggle its whole contents in. A law then says which quantities it
-mentions — and it has to name them all, because the equation block is evaluated
-against the law's own variables and can see nothing else.
+A law states what it is about where it is written: the full name of each
+quantity, the short name the equation uses, and the branch it lives on. Nothing
+is borrowed from elsewhere, so a law file can be read on its own. Two laws
+naming the same quantity mean the same variable — they unify on the name, which
+is why a scenario can hold both.
+
+The equation block is evaluated against those declarations and can see nothing
+else, so a quantity the law never named is a `NameError` at declaration rather
+than a wrong answer later.
 
 ## Asking for one thing gets you the rest
 
@@ -75,11 +81,16 @@ Snell. Each step is a root found numerically, not a substitution.
 
 ## `within:`
 
-`within:` is the branch a quantity physically lives on — a refracted angle is
-between zero and a right angle, a reflectance is a fraction. It matters: `sin`
-is periodic, so without a declared domain a solver is free to return any of the
-infinitely many roots of Snell's law, and Newton's method will happily hand you
-one several turns away.
+`within:` is the branch a quantity physically lives on. Only the angles declare
+one, because only they need it: `sin` is periodic, so Snell's law has
+infinitely many roots and all but one of them are angles light cannot take.
+Newton's method will happily hand you one several turns away.
+
+A refractive index and a reflectance declare no domain at all. They appear
+linearly in their equations, which therefore have exactly one root, and a
+declared range would only be decoration — removing them moved no answer by more
+than 1e-12 across 308 cases. A domain earns its place where an equation has
+more than one root, and nowhere else.
 
 It is also the only thing the solver is told. Nothing supplies a starting
 point: Newton begins at the middle of the declared branch, and a root found
@@ -147,9 +158,8 @@ lib/physics/
   law.rb               Declarations, and Law — a module a scenario absorbs
   solver.rb            Newton, bisection, and which one to believe
   scenario.rb          composing laws, choosing an equation, solving what it needs
-  degrees.rb           Numeric#deg and #in_degrees
-lib/light/optics.rb    every optical quantity, declared once
-lib/light/*.rb         one law per file, and nothing else
+  angles.rb            Numeric#deg, #in_degrees, and the branch an angle lives on
+lib/light/*.rb         one law per file, declaring its own quantities
 test/                  mirrors lib/
 assets/phryzby.js      the tree, highlighting, the editor, booting CRuby — no build step
 assets/phryzby.css

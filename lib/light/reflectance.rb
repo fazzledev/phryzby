@@ -1,9 +1,15 @@
-require_relative "optics"
+require_relative "../physics"
 
 module Reflectance
   extend Physics::Law
 
-  uses Optics, :i, :rr, :mu1, :mu2, :rs, :rp, :r
+  variable :angle_of_incidence,  alias: :i,  within: Physics::A_RIGHT_ANGLE
+  variable :angle_of_refraction, alias: :rr, within: Physics::A_RIGHT_ANGLE
+  variable :refractive_index_of_first_medium,  alias: :mu1
+  variable :refractive_index_of_second_medium, alias: :mu2
+  variable :reflectance_s_polarised, alias: :rs
+  variable :reflectance_p_polarised, alias: :rp
+  variable :reflectance,             alias: :r
 
   equation(:s_polarised) do
     rs == ((mu1 * cos(i) - mu2 * cos(rr)) / (mu1 * cos(i) + mu2 * cos(rr))) ** 2
