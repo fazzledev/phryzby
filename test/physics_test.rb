@@ -19,7 +19,7 @@ class PhysicsTest < Minitest::Test
   end
 
   def test_an_equation_knows_which_variables_it_mentions
-    assert_equal %i[a b c], (var(:a) + var(:b) == var(:c)).quantities
+    assert_equal %i[a b c], (var(:a) + var(:b) == var(:c)).variables
   end
 
   def test_comparisons_build_conditions

@@ -8,7 +8,7 @@ module Physics
     end
 
     def residual(env) = @left.evaluate(env) - @right.evaluate(env)
-    def quantities = @left.quantities | @right.quantities
+    def variables = @left.variables | @right.variables
     def to_s = "#{@left} == #{@right}"
   end
 
@@ -20,7 +20,7 @@ module Physics
     end
 
     def satisfied?(env) = @left.evaluate(env).public_send(@op, @right.evaluate(env))
-    def quantities = @left.quantities | @right.quantities
+    def variables = @left.variables | @right.variables
     def to_s = "#{@left} #{@op} #{@right}"
   end
 end

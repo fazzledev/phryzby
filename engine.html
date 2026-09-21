@@ -116,6 +116,15 @@
         different unknown.
       </p>
       <p class="note">
+        Two vocabularies meet in this chapter, and the names say which is which.
+        <code>expression.rb</code>, <code>equation.rb</code> and <code>solver.rb</code> are
+        algebra: they hold <em>variables</em> and know no physics at all — grep them for the word
+        and you get nothing. <code>quantities.rb</code>, <code>law.rb</code> and
+        <code>scenario.rb</code> are physics: they hold <em>quantities</em>. The seam is one line
+        in <code>scenario.rb</code>, where a quantity is looked up and then an equation is asked
+        which variables it involves.
+      </p>
+      <p class="note">
         <code>within:</code> earns its keep even here. Squaring loses the sign, so the residual for
         <code>a</code> has a root at −3 as well as 3, and bisection scanning from the bottom would
         find the negative one first.

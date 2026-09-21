@@ -52,7 +52,7 @@ module Physics
     # the order the laws happened to be included in.
     def candidates(key)
       applicable = self.class.equations.select do |name, equation|
-        equation.quantities.include?(key) && applies?(name)
+        equation.variables.include?(key) && applies?(name)
       end
 
       special, general = applicable.partition { |name, _| self.class.guards.key?(name) }
@@ -68,7 +68,7 @@ module Physics
     end
 
     def supply(equation, key, pending)
-      (equation.quantities - @env.keys - [ key ]).all? do |missing|
+      (equation.variables - @env.keys - [ key ]).all? do |missing|
         next false if pending.include?(missing)
 
         determine(missing, nil, pending + [ missing ])
