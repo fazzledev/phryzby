@@ -33,6 +33,12 @@ class SolverTest < Minitest::Test
     assert_in_delta 30.0, root.in_degrees, 1e-6
   end
 
+  # Nothing supplies a starting point: it comes from the declared range, which
+  # is the only thing anyone knew about the answer in the first place.
+  def test_it_starts_from_the_middle_of_the_range_when_not_told_where
+    assert_in_delta Math::PI, Solver.root(->(x) { Math.sin(x) }, within: 2.0..4.0), 1e-9
+  end
+
   def test_a_domain_error_is_not_a_root
     assert_nil Solver.newton(->(x) { Math.asin(x) - 2 }, 0.5)
   end

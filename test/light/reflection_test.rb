@@ -20,7 +20,7 @@ class ReflectionTest < Minitest::Test
 
   def test_a_solved_ray_satisfies_the_law_it_was_solved_from
     ray = Surface.new(i: 37.deg)
-    ray.solve(:rl, guess: 0.4)
+    ray.solve(:rl)
 
     assert ray.holds?(:law_of_reflection)
   end
@@ -36,14 +36,14 @@ class ReflectionTest < Minitest::Test
   end
 
   def test_refuses_to_solve_what_is_not_determined
-    assert_raises(RuntimeError) { Surface.new.solve(:rl, guess: 0.4) }
+    assert_raises(RuntimeError) { Surface.new.solve(:rl) }
   end
 
   private
 
   def solved(target, **angles)
     ray = Surface.new(**angles.transform_values(&:deg))
-    ray.solve(target, guess: 0.4)
+    ray.solve(target)
     ray[target].in_degrees
   end
 end

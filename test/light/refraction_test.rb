@@ -29,7 +29,7 @@ class RefractionTest < Minitest::Test
 
   def test_a_solved_ray_satisfies_the_law_it_was_solved_from
     ray = ray(from: AIR, into: GLASS, i: 30)
-    ray.solve(:rr, guess: GUESS)
+    ray.solve(:rr)
 
     assert ray.holds?(:snells_law)
   end
@@ -82,12 +82,11 @@ class RefractionTest < Minitest::Test
   def test_refuses_to_solve_what_is_not_determined
     ray = Surface.new(i: 30.deg, mu1: AIR)
 
-    assert_raises(RuntimeError) { ray.solve(:rr, guess: GUESS) }
+    assert_raises(RuntimeError) { ray.solve(:rr) }
   end
 
   private
 
-  GUESS = 0.4
   CRITICAL = Math.asin(AIR / GLASS).in_degrees
 
   def ray(from:, into:, **angles)
@@ -96,7 +95,7 @@ class RefractionTest < Minitest::Test
 
   def solved(target, from:, into:, **angles)
     ray = ray(from: from, into: into, **angles)
-    ray.solve(target, guess: GUESS)
+    ray.solve(target)
     ray[target].in_degrees
   end
 

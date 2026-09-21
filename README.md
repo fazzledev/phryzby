@@ -58,6 +58,10 @@ is periodic, so without a declared domain a solver is free to return any of the
 infinitely many roots of Snell's law, and Newton's method will happily hand you
 one several turns away.
 
+It is also the only thing the solver is told. Nothing supplies a starting
+point: Newton begins at the middle of the declared branch, and a root found
+outside it is discarded in favour of bisecting inside it.
+
 ## Chapters
 
 A law is a module, not a class, because a law is not a kind of another law.
@@ -97,7 +101,7 @@ domain and watch the solver wander off the physical branch.
 ruby test/physics_test.rb               #  8 runs,  17 assertions
 ruby test/physics/law_test.rb           #  3 runs,   4 assertions
 ruby test/physics/quantities_test.rb    #  7 runs,  10 assertions
-ruby test/physics/solver_test.rb        #  7 runs,   7 assertions
+ruby test/physics/solver_test.rb        #  8 runs,   8 assertions
 ruby test/pythagoras_test.rb            #  8 runs,  10 assertions
 ruby test/light/reflection_test.rb      #  8 runs,   8 assertions
 ruby test/light/refraction_test.rb      # 16 runs, 108 assertions

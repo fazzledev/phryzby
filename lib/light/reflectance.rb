@@ -22,7 +22,6 @@ class Surface < Physics::Scenario
   include Refraction
   include Reflectance
 
-  SHARE_GUESS = 0.1
 
   def s_polarised_share = share(:rs)
 
@@ -40,6 +39,6 @@ class Surface < Physics::Scenario
 
   def share(part)
     angle_of_refraction unless self[:rr]
-    solve(part, guess: SHARE_GUESS)
+    solve(part)
   end
 end

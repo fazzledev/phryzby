@@ -11,7 +11,5 @@ end
 class Surface < Physics::Scenario
   include Reflection
 
-  ANGLE_GUESS = 0.4
-
-  def angle_of_reflection = solve(:rl, guess: ANGLE_GUESS)
+  def angle_of_reflection = solve(:rl)
 end

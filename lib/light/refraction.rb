@@ -19,16 +19,16 @@ class Surface < Physics::Scenario
 
   def self.between(first, second, **angles) = new(mu1: first, mu2: second, **angles)
 
-  def angle_of_refraction = solve(:rr, guess: ANGLE_GUESS)
+  def angle_of_refraction = solve(:rr)
 
-  def second_medium = solve(:mu2, guess: 1.0)
+  def second_medium = solve(:mu2)
 
   def traps? = satisfies?(:total_internal_reflection)
 
   def critical_angle
     return nil unless self[:mu2] < self[:mu1]
 
-    lying_flat.solve(:i, guess: 0.7)
+    lying_flat.solve(:i)
   end
 
   private

@@ -4,11 +4,13 @@ module Physics
 
     module_function
 
-    def root(residual, guess:, within: DEFAULT_RANGE)
+    def root(residual, within: DEFAULT_RANGE, guess: midpoint(within))
       found = newton(residual, guess)
       found = nil unless found && within.cover?(found)
       found || bisect(residual, within)
     end
+
+    def midpoint(range) = (range.begin + range.end) / 2.0
 
     def newton(residual, guess, steps: 50, tolerance: 1e-12)
       x = guess

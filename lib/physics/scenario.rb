@@ -22,13 +22,12 @@ module Physics
 
     def satisfies?(name) = self.class.conditions.fetch(name).satisfied?(@env)
 
-    def solve(target, guess: 0.5, range: nil)
+    def solve(target, range: nil)
       key = self.class.variables.fetch(target)
       equation = equation_for(key)
       residual = ->(x) { equation.residual(@env.merge(key => x)) }
-      within = range || self.class.domains[key] || Solver::DEFAULT_RANGE
 
-      root = Solver.root(residual, guess: guess, within: within)
+      root = Solver.root(residual, within: range || self.class.domains[key] || Solver::DEFAULT_RANGE)
       raise "could not solve for #{target}" unless root
 
       @env[key] = root
