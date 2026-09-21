@@ -231,6 +231,92 @@ export function stage({ second = null } = {}) {
   return parts;
 }
 
+// --- resizing --------------------------------------------------------------
+
+const LAYOUT = "phryzby.layout";
+const DEFAULTS = { tree: 240, side: 416, console: 208 };
+
+const remembered = () => {
+  try {
+    return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(LAYOUT) || "{}") };
+  } catch {
+    return { ...DEFAULTS };
+  }
+};
+
+function mountPanes() {
+  const panes = document.querySelector(".panes");
+  const code = document.querySelector(".pane.code");
+  const editor = document.querySelector(".editor");
+  const box = document.querySelector(".console");
+  if (!panes) return;
+
+  const sizes = remembered();
+  const apply = () => {
+    const root = document.documentElement.style;
+    root.setProperty("--tree", `${sizes.tree}px`);
+    root.setProperty("--side", `${sizes.side}px`);
+    root.setProperty("--console", `${sizes.console}px`);
+    try {
+      localStorage.setItem(LAYOUT, JSON.stringify(sizes));
+    } catch {
+      // A browser that refuses storage still resizes; it just forgets.
+    }
+  };
+
+  const grip = (axis) => {
+    const node = document.createElement("div");
+    node.className = axis === "y" ? "grip row" : "grip";
+    return node;
+  };
+
+  // Each grip owns one measurement. `sign` is which way dragging grows it.
+  const drags = (node, { axis, key, sign, min, max }) => {
+    // Tracked on the window rather than the grip, so a fast drag that outruns
+    // the pointer does not drop the gesture.
+    node.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      node.classList.add("dragging");
+      const from = axis === "y" ? event.clientY : event.clientX;
+      const origin = sizes[key];
+
+      const move = (moved) => {
+        const travelled = (axis === "y" ? moved.clientY : moved.clientX) - from;
+        sizes[key] = Math.round(Math.min(max(), Math.max(min, origin + sign * travelled)));
+        apply();
+      };
+      const stop = () => {
+        node.classList.remove("dragging");
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", stop);
+        window.removeEventListener("pointercancel", stop);
+      };
+
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", stop);
+      window.addEventListener("pointercancel", stop);
+    });
+
+    node.addEventListener("dblclick", () => { sizes[key] = DEFAULTS[key]; apply(); });
+  };
+
+  const left = grip("x");
+  const right = grip("x");
+  panes.insertBefore(left, panes.children[1]);
+  panes.insertBefore(right, panes.children[3]);
+  drags(left, { axis: "x", key: "tree", sign: 1, min: 140, max: () => innerWidth * 0.4 });
+  drags(right, { axis: "x", key: "side", sign: -1, min: 260, max: () => innerWidth * 0.55 });
+
+  if (box && editor) {
+    const between = grip("y");
+    code.insertBefore(between, box);
+    drags(between, { axis: "y", key: "console", sign: -1, min: 64,
+                     max: () => code.clientHeight - 120 });
+  }
+
+  apply();
+}
+
 // --- the console -----------------------------------------------------------
 
 function mountConsole({ log, form, input, hint }, { evaluate, examples = [] }) {
@@ -407,6 +493,8 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   markTree(tabbed[0].key);
 
   let vm = null;
+
+  mountPanes();
 
   const repl = mountConsole(
     { log: $("log"), form: $("ask"), input: $("line"), hint: $("hint") },
