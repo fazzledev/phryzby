@@ -47,11 +47,13 @@
     <aside class="pane side">
       <h1>The engine <small>— what a law is made of</small></h1>
       <p class="lede">
-        Eight small files under everything else. A declaration block does not run arithmetic: the
+        Nine small files under everything else. A declaration block does not run arithmetic: the
         names inside it are nodes in an expression tree, every operator returns another node, and
         <code>==</code> is overridden to build an <code>Equation</code>. What the class stores is
         the law as written.
       </p>
+
+      <section id="statement"></section>
 
       <p class="head">one law, asked three ways</p>
       <div class="field">
@@ -124,6 +126,13 @@
         thing.
       </p>
       <p class="note">
+        The panel above was not written; it was generated. <code>notation.rb</code> walks the same
+        tree the solver walks and emits MathML instead of a root, so a law states itself — its
+        quantities, what each is written as, the branch it lives on, and every equation typeset.
+        Edit <code>pythagoras.rb</code> and it restates itself. Nothing is loaded to draw it:
+        browsers render MathML natively.
+      </p>
+      <p class="note">
         Two vocabularies meet in this chapter, and the names say which is which.
         <code>expression.rb</code>, <code>equation.rb</code> and <code>solver.rb</code> are
         algebra: they hold <em>variables</em> and know no physics at all — grep them for the word
@@ -165,6 +174,7 @@ const page = await chapter({
   showEngine: true,
   files: [ { key: "lib/pythagoras.rb", tab: 99 } ],
   harness: HARNESS,
+  presents: "Pythagoras",
   opening: [ "Physics::Scenario[Pythagoras].new(a: 3, b: 4).solve(:c)" ],
   examples: [
     "Physics::Scenario[Pythagoras].new(a: 3, b: 4).solve(:c)",

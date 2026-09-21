@@ -52,6 +52,8 @@
         does not answer true or false, it builds an equation and hands it back.
       </p>
 
+      <section id="statement"></section>
+
       <p class="head">the mirror</p>
       <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray reflecting off a mirror"></svg>
 
@@ -146,6 +148,7 @@ const page = await chapter({
     { key: "lib/light/reflection.rb", tab: 1 },
   ],
   harness: HARNESS,
+  presents: "Reflection",
   opening: [ "surface.solve(:rl).in_degrees" ],
   examples: [
     "surface.solve(:rl).in_degrees",

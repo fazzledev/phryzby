@@ -91,6 +91,24 @@ underneath it — `snells_law.to_s` is `mu21 == (sin(i) / sin(rr))`. A
 was typed as. Solving goes by the quantity, which is what lets two laws written
 in different letters agree about the same thing.
 
+## The law states itself
+
+The expression tree is walked twice. The solver walks it for a root; `notation
+.rb` walks it for MathML, so a chapter page shows its law typeset — generated,
+not transcribed. Edit the law in the browser and the formula restates itself
+along with the answer.
+
+```ruby
+Refraction.to_html
+# => the quantities, what each is written as, the branch it lives on,
+#    which law it came from, and every equation and condition as MathML
+```
+
+No renderer is loaded to draw it; browsers do MathML natively, which keeps
+"no gems, no build step" literally true. What the module cannot produce is the
+prose and the diagrams — prose has nowhere to live in a file with no comments,
+and the SVG is optics rather than algebra.
+
 ## `within:`
 
 `within:` is the branch a quantity physically lives on. Only the angles declare
@@ -203,6 +221,7 @@ lib/physics/
   solver.rb            Newton, bisection, and which one to believe
   scenario.rb          composing laws, choosing an equation, solving what it needs
   angles.rb            Numeric#deg, #in_degrees, and the branch an angle lives on
+  notation.rb          the same tree walked again, as MathML
 lib/light/incidence.rb what every optical law includes
 lib/light/*.rb         one law per file, each including the one before it
 test/                  mirrors lib/

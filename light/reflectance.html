@@ -53,6 +53,8 @@
         one question, no order given.
       </p>
 
+      <section id="statement"></section>
+
       <p class="head">the split</p>
       <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray dividing at an interface"></svg>
 
@@ -205,6 +207,7 @@ const page = await chapter({
     { key: "lib/light/reflectance.rb", tab: 1 },
   ],
   harness: HARNESS,
+  presents: "Reflectance",
   opening: [ "surface.solve(:r)" ],
   examples: [
     "surface.solve(:r)",

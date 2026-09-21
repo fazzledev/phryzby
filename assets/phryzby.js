@@ -53,6 +53,7 @@ const at = (path) => new URL(path, ROOT).href;
 
 const PARTS = [
   "expression", "equation", "scope", "quantities", "law", "solver", "scenario", "angles",
+  "notation",
 ];
 
 // Order is the order the requires in lib/physics.rb imply.
@@ -596,7 +597,7 @@ async function loadVM(onStatus) {
  *   opening — the chapter's one move, run in the console the moment Ruby boots
  */
 export async function chapter({ page, files, harness = "", onSolve, showEngine = false,
-                                examples = [], opening = [] }) {
+                                examples = [], opening = [], presents = null }) {
   const status = $("status");
   const run = $("run");
   const reset = $("reset");
@@ -668,11 +669,19 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     },
   };
 
+  // The law states itself. Not a copy of the source: a second walk of the
+  // same tree the solver uses, so an edited law restates itself too.
+  const present = () => {
+    const into = $("statement");
+    if (into && presents) into.innerHTML = vm.eval(`${presents}.to_html`).toString();
+  };
+
   const evaluate = () => {
     editor.remember();
     loaded.forEach((file) => vm.eval(file.code));
     vm.eval(CONSOLE);
     if (harness) vm.eval(harness);
+    present();
   };
 
   let booting = false;

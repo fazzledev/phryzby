@@ -54,6 +54,8 @@
         <em>total</em> stops being a claim in prose.
       </p>
 
+      <section id="statement"></section>
+
       <p class="head">the trap</p>
       <svg id="diagram" viewBox="0 0 300 200" aria-label="A ray trapped at an interface"></svg>
 
@@ -200,6 +202,7 @@ const page = await chapter({
     { key: "lib/light/total_internal_reflection.rb", tab: 1 },
   ],
   harness: HARNESS,
+  presents: "TotalInternalReflection",
   opening: [ "surface.solve(:r)" ],
   examples: [
     "surface.solve(:r)",

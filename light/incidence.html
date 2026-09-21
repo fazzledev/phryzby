@@ -53,6 +53,8 @@
         clearest way to see what the rest of the engine is doing.
       </p>
 
+      <section id="statement"></section>
+
       <p class="head">the ray</p>
       <svg id="diagram" viewBox="0 0 300 200" aria-label="A ray arriving at a surface"></svg>
 
@@ -151,6 +153,7 @@ const page = await chapter({
   page: "light/incidence.html",
   files: [ { key: "lib/light/incidence.rb" } ],
   harness: HARNESS,
+  presents: "Incidence",
   opening: [ "surface[:i].in_degrees" ],
   examples: [
     "surface[:i].in_degrees",

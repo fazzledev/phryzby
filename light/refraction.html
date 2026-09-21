@@ -58,6 +58,8 @@
         are composed where the question is asked instead.
       </p>
 
+      <section id="statement"></section>
+
       <p class="head">the crossing</p>
       <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray crossing between two media"></svg>
 
@@ -204,6 +206,7 @@ const page = await chapter({
     { key: "lib/light/refraction.rb", tab: 1 },
   ],
   harness: HARNESS,
+  presents: "Refraction",
   opening: [ "surface.solve(:rr).in_degrees" ],
   examples: [
     "surface.solve(:rr).in_degrees",
