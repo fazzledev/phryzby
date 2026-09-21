@@ -37,10 +37,12 @@ module Reload
 end
 `;
 
-// module Refraction / class Numeric — what a file puts at the top level.
-const DECLARES = /^\s*(?:module|class)\s+([A-Z]\w*)/gm;
+// module Refraction, class Numeric, Crossing = … — what a file puts at the
+// top level, however it puts it there.
+const DECLARES = /^(?:\s*(?:module|class)\s+([A-Z]\w*)|([A-Z]\w*)\s*=[^=])/gm;
 
-const declared = (source) => [ ...source.matchAll(DECLARES) ].map((found) => found[1]);
+const declared = (source) =>
+  [ ...source.matchAll(DECLARES) ].map((found) => found[1] || found[2]);
 
 // The console runs against the top-level binding, so locals persist between
 // lines and every constant the laws defined is in scope. Printed output comes
@@ -643,8 +645,13 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   const engine = ENGINE.map((key, index) => ({ key, hidden: !showEngine, tab: index - ENGINE.length }));
 
   // How a chapter is shown comes after the laws it shows, because it composes
-  // them. Machinery, so it is loaded and never tabbed.
-  const shown = shows ? [ "lib/light/picture.rb", shows.file ].map((key) => ({ key, hidden: true })) : [];
+  // them. The vocabulary it draws with is machinery and stays out of the way;
+  // the declaration itself sits beside the law, because changing it is the
+  // point.
+  const shown = shows
+    ? [ { key: "lib/light/picture.rb", hidden: true },
+        { key: shows.file, label: "shown.rb", tab: 1.5 } ]
+    : [];
   const loaded = await fetchRuby([ ...engine, ...files, ...shown ]);
   const tabbed = loaded.filter((file) => !file.hidden)
     .map((file, index) => ({ file, at: file.tab ?? index }))

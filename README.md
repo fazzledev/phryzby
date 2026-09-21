@@ -203,9 +203,11 @@ and the reflected ray swings to half the angle, the reading changes, and the
 typeset formula redraws as `i = rl ⋅ 2`.
 
 A demonstration is never in a law file. A slider range is not physics, and a
-law that carried one would stop being only a law. It is not a second tab on any
-chapter either: how a chapter is shown is machinery, so it is loaded like the
-engine and never tabbed. What does live in a law file is its own name and
+law that carried one would stop being only a law. But it is on the page, as
+`shown.rb` beside the law, because a declaration you cannot reach is only
+hardcoding that has moved. Delete the reflected ray from the `draws` block and
+it leaves the picture; rename it and the label changes; widen a `vary` range
+and the slider widens. What does live in a law file is its own name and
 description — `called`, `about`, `describes` — because a law naming itself is a
 fact about the law.
 
@@ -259,8 +261,8 @@ lib/physics/
   angles.rb            Numeric#deg, #in_degrees, and the branch an angle lives on
   notation.rb          the same tree walked again, as MathML
   showing.rb           what can be varied, what to read, what to draw
-lib/light/picture.rb   rays and media: how optics is drawn
-lib/shown/light/*.rb   one per chapter, how that chapter is demonstrated
+lib/light/picture.rb   rays and media: the vocabulary optics is drawn in
+lib/shown/light/*.rb   one per chapter, shown beside the law it demonstrates
 lib/light/incidence.rb what every optical law includes
 lib/light/*.rb         one law per file, each including the one before it
 test/                  mirrors lib/
