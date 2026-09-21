@@ -40,19 +40,21 @@
       <div class="sample">
         <div>
           <p class="cap">the whole of lib/light/refraction.rb</p>
-<pre id="law">require_relative "../physics"
+<pre id="law">require_relative "incidence"
 
 module Refraction
   extend Physics::Law
+  include Incidence
 
-  quantity :angle_of_incidence,  variable: :i,  within: Physics::A_RIGHT_ANGLE
   quantity :angle_of_refraction, variable: :rr, within: Physics::A_RIGHT_ANGLE
   quantity :refractive_index_of_first_medium,  variable: :mu1
   quantity :refractive_index_of_second_medium, variable: :mu2
+  quantity :relative_refractive_index,         variable: :mu21
 
-  equation(:snells_law) { mu2 / mu1 == sin(i) / sin(rr) }
+  equation(:relative_index) { mu21 == mu2 / mu1 }
+  equation(:snells_law)     { mu21 == sin(i) / sin(rr) }
 
-  condition(:total_internal_reflection) { sin(i) * mu1 / mu2 &gt; 1 }
+  condition(:no_refracted_ray) { sin(i) / mu21 &gt; 1 }
 end</pre>
         </div>
         <div>

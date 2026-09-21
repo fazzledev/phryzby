@@ -22,6 +22,37 @@ class RefractionTest < Minitest::Test
     assert_in_delta 30.0, solved(:i, from: AIR, into: GLASS, rr: 19.4712), 1e-3
   end
 
+  def test_the_ratio_is_a_quantity_of_its_own_worked_out_from_the_two_media
+    ray = ray(from: AIR, into: GLASS, i: 30)
+    ray.solve(:rr)
+
+    assert_in_delta 1.5, ray[:mu21], 1e-9
+  end
+
+  def test_snells_law_is_written_as_the_ratio
+    assert_equal "mu21 == (sin(i) / sin(rr))",
+                 Refraction.equations.fetch(:snells_law).to_s
+  end
+
+  def test_the_ratio_can_be_asked_for_directly_from_two_angles
+    ray = ray(from: AIR, into: GLASS, i: 30, rr: 19.4712)
+
+    assert_in_delta 1.5, ray.solve(:mu21), 1e-4
+  end
+
+  def test_a_condition_works_out_the_quantities_it_mentions
+    ray = ray(from: GLASS, into: AIR, i: 50)
+
+    assert ray.satisfies?(:no_refracted_ray)
+    assert_in_delta 1.0 / 1.5, ray[:mu21], 1e-9
+  end
+
+  def test_checking_a_law_never_makes_it_true
+    wrong = ray(from: AIR, into: GLASS, i: 30, rr: 25)
+
+    refute wrong.holds?(:snells_law)
+  end
+
   def test_identifies_the_medium_from_two_measured_angles
     assert_in_delta GLASS, identified(into: 19.4712, from_air_at: 30), 1e-4
     assert_in_delta WATER, identified(into: 32.1173, from_air_at: 45), 1e-4

@@ -117,10 +117,18 @@
         angle that still has one.
       </p>
       <p class="note">
-        Notice the two refractive indices declare no <code>within:</code> at all. They appear
-        linearly in Snell's law, so it has exactly one root for them and a range would be
-        decoration. A domain earns its place where an equation has more than one root — which here
-        means the angles, and nothing else.
+        <code>mu21</code> is a quantity like any other, and the only one here nothing hands you.
+        It is the refractive index of the second medium <em>relative to</em> the first, which is
+        how a textbook writes Snell: sin i / sin r = <sub>1</sub>μ<sub>2</sub>. Declaring it means
+        the ratio is written once rather than spelled out in both the law and its condition — and
+        the solver finds it on the way to whatever you actually asked for. Drag the sliders and
+        watch it appear in <code>surface[:mu21]</code>.
+      </p>
+      <p class="note">
+        None of the three refractive indices declares a <code>within:</code>. They appear
+        They appear linearly in the equations that mention them, so those have exactly one root
+        and a range would be decoration. A domain earns its place where an equation has more than
+        one root — which here means the angles, and nothing else.
       </p>
       <p class="note">
         Because a law is stored rather than compiled into a formula, one declaration answers in any
@@ -201,6 +209,7 @@ const page = await chapter({
     "surface.solve(:rr).in_degrees",
     "surface.satisfies?(:no_refracted_ray)",
     "Physics::Scenario[Refraction].new(mu1: 1.5, mu2: 1.0, rr: 90.deg).solve(:i).in_degrees",
+    "surface.solve(:mu21)",
     "Physics::Scenario[Refraction].new(i: 45.deg, rr: 28.9.deg, mu1: 1.0).solve(:mu2)",
   ],
   onSolve(vm) {

@@ -18,11 +18,29 @@ module Physics
 
     def [](name) = @env[self.class.quantities.fetch(name)]
 
+    # Anything the equation mentions and does not yet know is worked out
+    # first — but never from the equation being checked, or it would make
+    # itself true. What still cannot be known is left to name itself.
     def holds?(name, tolerance: 1e-9)
-      self.class.equations.fetch(name).residual(@env).abs < tolerance
+      equation = self.class.equations.fetch(name)
+
+      (equation.variables - @env.keys).each do |key|
+        determine(key, nil, [ key ], except: name)
+      rescue RuntimeError
+        nil
+      end
+
+      equation.residual(@env).abs < tolerance
     end
 
-    def satisfies?(name) = self.class.conditions.fetch(name).satisfied?(@env)
+    # Like solve, a condition is asked rather than looked up: whatever it
+    # mentions and does not yet know, it works out first.
+    def satisfies?(name)
+      condition = self.class.conditions.fetch(name)
+      condition.variables.each { |key| solve(key) unless @env.key?(key) }
+
+      condition.satisfied?(@env)
+    end
 
     def solve(target, range: nil)
       key = self.class.quantities.fetch(target)
@@ -32,11 +50,11 @@ module Physics
 
     private
 
-    def determine(key, range, pending)
-      candidates(key).each do |equation|
+    def determine(key, range, pending, except: nil)
+      candidates(key, except).each do |equation|
         restore = @env.dup
 
-        if supply(equation, key, pending)
+        if supply(equation, key, pending, except)
           found = root_of(equation, key, range)
           return @env[key] = found if found
         end
@@ -50,9 +68,9 @@ module Physics
     # A guarded equation states a special case, so it is tried before the
     # general one it stands in for. Without that the answer would depend on
     # the order the laws happened to be included in.
-    def candidates(key)
+    def candidates(key, except = nil)
       applicable = self.class.equations.select do |name, equation|
-        equation.variables.include?(key) && applies?(name)
+        name != except && equation.variables.include?(key) && applies?(name)
       end
 
       special, general = applicable.partition { |name, _| self.class.guards.key?(name) }
@@ -63,15 +81,15 @@ module Physics
       guard = self.class.guards[name]
 
       guard.nil? || satisfies?(guard)
-    rescue KeyError
+    rescue KeyError, RuntimeError
       false
     end
 
-    def supply(equation, key, pending)
+    def supply(equation, key, pending, except = nil)
       (equation.variables - @env.keys - [ key ]).all? do |missing|
         next false if pending.include?(missing)
 
-        determine(missing, nil, pending + [ missing ])
+        determine(missing, nil, pending + [ missing ], except: except)
       rescue RuntimeError
         false
       end

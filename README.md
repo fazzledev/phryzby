@@ -23,10 +23,12 @@ module Refraction
   quantity :angle_of_refraction, variable: :rr, within: Physics::A_RIGHT_ANGLE
   quantity :refractive_index_of_first_medium,  variable: :mu1
   quantity :refractive_index_of_second_medium, variable: :mu2
+  quantity :relative_refractive_index,         variable: :mu21
 
-  equation(:snells_law) { mu2 / mu1 == sin(i) / sin(rr) }
+  equation(:relative_index) { mu21 == mu2 / mu1 }
+  equation(:snells_law)     { mu21 == sin(i) / sin(rr) }
 
-  condition(:no_refracted_ray) { sin(i) * mu1 / mu2 > 1 }
+  condition(:no_refracted_ray) { sin(i) / mu21 > 1 }
 end
 ```
 
@@ -84,7 +86,7 @@ mean needs both polarisations, each of those needs `rr`, and `rr` comes from
 Snell. Each step is a root found numerically, not a substitution.
 
 An equation prints back the notation it was written in, not the quantities
-underneath it — `snells_law.to_s` is `(mu2 / mu1) == (sin(i) / sin(rr))`. A
+underneath it — `snells_law.to_s` is `mu21 == (sin(i) / sin(rr))`. A
 `Var` carries both names: the quantity it is looked up by, and the variable it
 was typed as. Solving goes by the quantity, which is what lets two laws written
 in different letters agree about the same thing.
