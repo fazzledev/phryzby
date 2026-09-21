@@ -45,141 +45,29 @@
     </div>
 
     <aside class="pane side">
-      <h1>Incidence <small>— a quantity, and no law at all</small></h1>
-      <p class="lede">
-        A ray arrives at a surface at some angle. That is the whole chapter: one quantity, its full
-        name, the short name the equations will use, and the branch it lives on. There is no
-        <code>equation</code> here, so there is nothing to solve — and that turns out to be the
-        clearest way to see what the rest of the engine is doing.
-      </p>
-
-      <section id="statement"></section>
-
-      <p class="head">the ray</p>
-      <svg id="diagram" viewBox="0 0 300 200" aria-label="A ray arriving at a surface"></svg>
-
-      <div class="field" style="margin-top:.9rem">
-        <label for="i">incidence</label>
-        <input type="range" id="i" min="0.5" max="89.5" step="0.1" value="30">
-        <output id="i-out">30.0°</output>
-      </div>
-
-      <div class="out">
-        <div><span>held</span><span class="val" id="r-held">—</span></div>
-        <div><span>declared branch</span><span class="val" id="r-branch">—</span></div>
-        <div class="alarm"><span>asked to solve it</span><span class="val" id="r-solve">—</span></div>
-      </div>
-
-      <p class="head">notes</p>
-      <p class="note">
-        Drag the dividers to resize the panes; double-click one to put it back. Tick
-        <em>auto-run</em> and the laws re-evaluate when you stop typing, and the page boots Ruby
-        by itself next time. Both settings are remembered between visits.
-      </p>
-      <p class="note">
-        Anything you change is marked the way an editor marks it: a bar in the gutter beside every
-        line you touched — green for new, blue for altered — a red wedge where lines were taken
-        out, a dot on the tab and an <strong>M</strong> in the tree. <em>Revert edits</em> puts
-        this repository's own text back.
-      </p>
-      <p class="note">
-        Declaring is not solving. <code>surface[:i]</code> hands back the number you gave it, and
-        so does <code>surface.solve(:i)</code> — an answer already known is not solved twice. Ask a
-        scenario that was given nothing, though, and it refuses: nothing here determines an angle
-        of incidence. It is what you bring to the problem, not what the problem tells you. Every
-        later chapter adds an equation, and from then on there is always a law in the way of seeing
-        this.
-      </p>
-      <p class="note">
-        The quantity is <em>the angle of incidence</em>; the variable is <code>i</code>, which is
-        what you write when you put it in an equation. That is why <code>sin(i)</code> can appear
-        in Snell's law two chapters from now and still mean this one. Both names lead to the same
-        quantity, so a value given as <code>angle_of_incidence:</code> is readable as
-        <code>[:i]</code> and the other way round.
-      </p>
-      <p class="note">
-        <code>within:</code> is the branch the quantity physically lives on. It does nothing yet —
-        with no equation there is no root to find — but it travels with the quantity into every law
-        that includes this one, and in chapter 1.3 it is the difference between an answer and a
-        root several turns away.
-      </p>
-      <p class="note">
-        Every other law in this book begins <code>include Incidence</code>. That is the whole of
-        its job: say once what an arriving ray is, so that four laws can talk about the same one.
-      </p>
-      <p class="note">
-        Which is why this is the one chapter that does not say <code>extend Physics::Law</code>.
-        It is not a law — it states no relation between anything — so it extends
-        <code>Physics::Quantities</code> instead, which has no <code>equation</code> to offer and
-        cannot be asked for one. <em>Quantities</em> is what exists; <em>Law</em> is what holds
-        between the things that exist.
-      </p>
+      <section id="law"></section>
+      <section id="demo"></section>
     </aside>
   </div>
 </div>
 
 <script type="module">
-import { chapter, $, ray, label, stage, above } from "../assets/phryzby.js";
+import { chapter } from "../assets/phryzby.js";
 
-const HARNESS = String.raw`
-def surface = Physics::Scenario[Incidence].new(i: Console.inputs[:i].deg)
-
-def trace(i_deg)
-  arriving = Physics::Scenario[Incidence].new(i: i_deg.deg)
-
-  # Nothing given, so there is nothing to read back and no law to work from.
-  refusal =
-    begin
-      Physics::Scenario[Incidence].new.solve(:i)
-      "it answered, which it should not have"
-    rescue RuntimeError => e
-      e.message
-    end
-
-  [ arriving[:i].in_degrees, Incidence.domains.fetch(:angle_of_incidence), refusal ].join("|")
-end
-`;
-
-function paint(i) {
-  const parts = stage({ surface: "surface" });
-  const [ix, iy] = above(i);
-  parts.push(ray(ix, iy, 150, 100));
-  parts.push(label(ix, iy - 6, "incident", "var(--ray)"));
-  parts.push(label(150 - 26, 88, `${i.toFixed(1)}°`, "var(--ink-soft)"));
-  $("diagram").innerHTML = parts.join("");
-}
-
-const page = await chapter({
+await chapter({
   page: "light/incidence.html",
-  files: [ { key: "lib/light/incidence.rb" } ],
-  harness: HARNESS,
-  presents: "Incidence",
+  files: [
+    { key: "lib/light/incidence.rb", tab: 1 },
+  ],
+  shows: { named: "Arriving", file: "lib/shown/light/incidence.rb" },
   opening: [ "surface[:i].in_degrees" ],
   examples: [
     "surface[:i].in_degrees",
     "Physics::Scenario[Incidence].new.solve(:i)",
     "Incidence.quantities",
-    "Incidence.equations",
     "Incidence.domains",
   ],
-  onSolve(vm) {
-    const i = +$("i").value;
-    $("i-out").textContent = `${i.toFixed(1)}°`;
-
-    if (!vm) { paint(i); return; }
-
-    vm.eval(`Console.inputs = { i: ${i} }`);
-
-    const [held, branch, refusal] = vm.eval(`trace(${i})`).toString().split("|");
-    $("r-held").textContent = `${Number(held).toFixed(2)}°`;
-    $("r-branch").textContent = branch;
-    $("r-solve").textContent = refusal;
-    paint(i);
-  },
 });
-
-$("i").addEventListener("input", () => page.refresh());
-page.refresh();
 </script>
 </body>
 </html>

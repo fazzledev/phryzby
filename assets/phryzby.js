@@ -84,7 +84,7 @@ const at = (path) => new URL(path, ROOT).href;
 
 const PARTS = [
   "expression", "equation", "scope", "quantities", "law", "solver", "scenario", "angles",
-  "notation",
+  "notation", "showing",
 ];
 
 // Order is the order the requires in lib/physics.rb imply.
@@ -628,7 +628,7 @@ async function loadVM(onStatus) {
  *   opening — the chapter's one move, run in the console the moment Ruby boots
  */
 export async function chapter({ page, files, harness = "", onSolve, showEngine = false,
-                                examples = [], opening = [], presents = null }) {
+                                examples = [], opening = [], presents = null, shows = null }) {
   const status = $("status");
   const run = $("run");
   const reset = $("reset");
@@ -641,7 +641,11 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   // evaluated in the order given, because that is the order the requires
   // imply, and shown in `tab` order.
   const engine = ENGINE.map((key, index) => ({ key, hidden: !showEngine, tab: index - ENGINE.length }));
-  const loaded = await fetchRuby([ ...engine, ...files ]);
+
+  // How a chapter is shown comes after the laws it shows, because it composes
+  // them. Machinery, so it is loaded and never tabbed.
+  const shown = shows ? [ "lib/light/picture.rb", shows.file ].map((key) => ({ key, hidden: true })) : [];
+  const loaded = await fetchRuby([ ...engine, ...files, ...shown ]);
   const tabbed = loaded.filter((file) => !file.hidden)
     .map((file, index) => ({ file, at: file.tab ?? index }))
     .sort((a, b) => a.at - b.at).map((entry) => entry.file);
@@ -690,9 +694,10 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     get vm() { return vm; },
     say,
     refresh() {
-      if (!vm) return onSolve(null);
+      if (!vm) return onSolve ? onSolve(null) : undefined;
       try {
-        onSolve(vm);
+        if (onSolve) onSolve(vm);
+        if (shows) move();
         say("Solved in Ruby.");
       } catch (error) {
         say(String(error).split("\n")[0], true);
@@ -700,16 +705,60 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     },
   };
 
-  // The law states itself. Not a copy of the source: a second walk of the
-  // same tree the solver uses, so an edited law restates itself too.
-  const present = () => {
-    const into = $("statement");
-    if (into && presents) into.innerHTML = vm.eval(`${presents}.to_html`).toString();
-  };
-
   // Every constant any run has defined, so a module renamed in the editor
   // takes its old name away with it.
   const defined = new Set(loaded.flatMap((file) => declared(file.original)));
+
+  // A page that is shown rather than drawn: the law states itself into one
+  // half, the demonstration into the other, and nothing here knows optics.
+  const reading = () => {
+    const pairs = [ ...document.querySelectorAll("#demo [data-vary]") ]
+      .map((control) => `${control.dataset.vary}: ${control.value}`);
+
+    return pairs.length ? `{ ${pairs.join(", ")} }` : `${shows.named}.showing_of.opening`;
+  };
+
+  const move = () => {
+    vm.eval(`Console.inputs = ${reading()}`);
+    const [ picture, readouts, labels ] =
+      vm.eval(`${shows.named}.showing_of.moved(${reading()})`).toString().split("\u0000");
+
+    $("picture").innerHTML = picture;
+    $("readouts").innerHTML = readouts;
+    labels.split("\u0002").forEach((pair) => {
+      const [ name, text ] = pair.split("\u0001");
+      const shown = document.getElementById(`${name}-out`);
+      if (shown) shown.textContent = text;
+    });
+  };
+
+  // The law states itself. Not a copy of the source: a second walk of the
+  // same tree the solver uses, so an edited law restates itself too.
+  const present = () => {
+    const statement = $("statement");
+    if (statement && presents) statement.innerHTML = vm.eval(`${presents}.to_html`).toString();
+    if (!shows) return;
+
+    const held = [ ...document.querySelectorAll("#demo [data-vary]") ]
+      .map((control) => [ control.dataset.vary, control.value ]);
+
+    $("law").innerHTML = vm.eval(`${shows.named}.showing_of.law.to_html`).toString();
+    $("demo").innerHTML = vm.eval(`${shows.named}.showing_of.to_html(${reading()})`).toString();
+
+    // Re-rendering draws the controls back at their declared start, so where
+    // they had been dragged to is put back.
+    held.forEach(([ name, value ]) => {
+      const control = document.querySelector(`#demo [data-vary="${name}"]`);
+      if (control) control.value = value;
+    });
+
+    vm.eval(`def surface = ${shows.named}.new(**Console.inputs)`);
+    move();
+  };
+
+  if (shows) $("demo").addEventListener("input", (event) => {
+    if (event.target.dataset.vary) move();
+  });
 
   const evaluate = () => {
     editor.remember();

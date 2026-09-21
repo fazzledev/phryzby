@@ -173,6 +173,42 @@ Nothing outside the laws decides which. That matters because it used to: the
 reflectance page had `[1.0, 1.0, 1.0]` written into its JavaScript, and it was
 the one claim on the site not made by a law.
 
+## The page is the law
+
+A chapter page holds no description of itself. Its right-hand panel is two
+calls: the law states itself, and the demonstration states the playground.
+
+```ruby
+Crossing = Physics::Scenario[Reflection, Refraction].showing do
+  titled Refraction
+
+  vary :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
+  vary :mu2, INDEX, step: 0.01, at: 1.5, as: "μ₂ second"
+
+  show :rr, in: :degrees
+  show :no_refracted_ray, in: :plain, alarm: true
+
+  draws Light::Picture do
+    media :mu1, :mu2
+    ray "incident",  arriving_at: :i
+    ray "refracted", crossing_at: :rr, unless: :no_refracted_ray
+    note "no refracted ray", when: :no_refracted_ray
+  end
+end
+```
+
+The sliders, the readings, the rays and their labels all come out of that.
+Edit the law and the panel follows: change `{ i == rl }` to `{ i == rl * 2 }`
+and the reflected ray swings to half the angle, the reading changes, and the
+typeset formula redraws as `i = rl ⋅ 2`.
+
+A demonstration is never in a law file. A slider range is not physics, and a
+law that carried one would stop being only a law. It is not a second tab on any
+chapter either: how a chapter is shown is machinery, so it is loaded like the
+engine and never tabbed. What does live in a law file is its own name and
+description — `called`, `about`, `describes` — because a law naming itself is a
+fact about the law.
+
 ## The demo
 
 **[Open it](https://fazzle.dev/phryzby/)** — one page per chapter: file tree on
@@ -222,6 +258,9 @@ lib/physics/
   scenario.rb          composing laws, choosing an equation, solving what it needs
   angles.rb            Numeric#deg, #in_degrees, and the branch an angle lives on
   notation.rb          the same tree walked again, as MathML
+  showing.rb           what can be varied, what to read, what to draw
+lib/light/picture.rb   rays and media: how optics is drawn
+lib/shown/light/*.rb   one per chapter, how that chapter is demonstrated
 lib/light/incidence.rb what every optical law includes
 lib/light/*.rb         one law per file, each including the one before it
 test/                  mirrors lib/

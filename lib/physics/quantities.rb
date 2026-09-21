@@ -7,6 +7,7 @@ module Physics
     def forget
       quantities.clear
       domains.clear
+      @called = @about = @describes = nil
     end
 
     def quantities = @quantities ||= {}

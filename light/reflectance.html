@@ -45,160 +45,16 @@
     </div>
 
     <aside class="pane side">
-      <h1>Reflectance <small>— how much, rather than which way</small></h1>
-      <p class="lede">
-        Fresnel gives the shares, and they depend on polarisation — two equations and an average
-        for ordinary light. Ask for <code>r</code> alone and the solver works backwards to what it
-        needs: Snell for the refracted angle, then each polarisation, then the mean. Five equations,
-        one question, no order given.
-      </p>
-
-      <section id="statement"></section>
-
-      <p class="head">the split</p>
-      <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray dividing at an interface"></svg>
-
-      <div class="field" style="margin-top:.9rem">
-        <label for="i">incidence</label>
-        <input type="range" id="i" min="0.5" max="89.5" step="0.01" value="30">
-        <output id="i-out">30.00°</output>
-      </div>
-      <div class="field">
-        <label for="mu1">μ₁ first</label>
-        <input type="range" id="mu1" min="1" max="2.5" step="0.01" value="1.00">
-        <output id="mu1-out">1.00</output>
-      </div>
-      <div class="field">
-        <label for="mu2">μ₂ second</label>
-        <input type="range" id="mu2" min="1" max="2.5" step="0.01" value="1.50">
-        <output id="mu2-out">1.50</output>
-      </div>
-
-      <div class="out">
-        <div><span>angle of refraction</span><span class="val" id="r-rr">—</span></div>
-        <div class="alarm"><span>no refracted ray</span><span class="val" id="r-tir">—</span></div>
-        <hr>
-        <div><span>reflected, s-polarised</span><span class="val" id="r-rs">—</span></div>
-        <div><span>reflected, p-polarised</span><span class="val" id="r-rp">—</span></div>
-        <div><span>reflected, unpolarised</span><span class="val" id="r-r">—</span></div>
-        <div><span>refracted</span><span class="val" id="r-t">—</span></div>
-      </div>
-
-      <p class="head">notes</p>
-      <p class="note">
-        Drag the dividers to resize the panes; double-click one to put it back. Tick
-        <em>auto-run</em> and the laws re-evaluate when you stop typing, and the page boots Ruby
-        by itself next time. Both settings are remembered between visits.
-      </p>
-      <p class="note">
-        Anything you change is marked the way an editor marks it: a bar in the gutter beside every
-        line you touched — green for new, blue for altered — a red wedge where lines were taken
-        out, a dot on the tab and an <strong>M</strong> in the tree. <em>Revert edits</em> puts
-        this repository's own text back.
-      </p>
-      <p class="note">
-        The console under the code is a real irb against the same VM. Start with
-        <code>surface.solve(:r)</code> — one question, five equations. <code>surface</code> is
-        bound to whatever the sliders say, and anything you redefine in the editor is live there
-        the moment you re-run.
-      </p>
-      <p class="note">
-        Fresnel needs the refracted angle, and only Snell determines it. So asking for
-        <code>r</code> reaches backwards: the mean needs both polarisations, each of those needs
-        <code>rr</code>, and <code>rr</code> comes from a law in another file. Ask
-        <code>surface[:rr]</code> afterwards and it is there, found on the way to something else.
-        Nothing said in what order.
-      </p>
-      <p class="note">
-        The two outgoing rays share the incident ray's width exactly, so four percent looks like
-        four percent. Two well-known facts fall out of these equations rather than being stated:
-        reflection reaches 1 at the critical angle, which is what the <em>total</em> in total
-        internal reflection means, and the p-polarised share reaches 0 at Brewster's angle —
-        56.31° for glass — which is why polarised sunglasses cut glare off water.
-      </p>
-      <p class="note">
-        Approaching the critical angle the collapse is steeper than it looks. Set μ₁ 1.50 and μ₂
-        1.00 and creep from 41.00° upward: 62% still refracts at 41.00°, 2% at 41.81°, and nothing
-        at all a hundredth of a degree later. <code>cos(rr)</code> is going to zero as the
-        refracted ray swings flat along the surface, and it takes the whole transition with it.
-      </p>
-      <p class="note">
-        Then it stops answering altogether. Every equation on this page needs <code>rr</code>, and
-        past the critical angle Snell has no solution to give — so the panel says <em>no
-        answer</em> rather than guessing. What happens there is a different law, and it is
-        <a href="total-internal-reflection.html">chapter 1.5</a>.
-      </p>
+      <section id="law"></section>
+      <section id="demo"></section>
     </aside>
   </div>
 </div>
 
 <script type="module">
-import { chapter, $, ray, label, stage, above, mirrored, below } from "../assets/phryzby.js";
+import { chapter } from "../assets/phryzby.js";
 
-const HARNESS = String.raw`
-def attempt
-  yield
-rescue StandardError
-  nil
-end
-
-def surface_at(degrees)
-  Physics::Scenario[Reflection, Refraction, Reflectance].new(
-    i: degrees.deg, mu1: Console.inputs[:mu1], mu2: Console.inputs[:mu2])
-end
-
-def surface
-  Physics::Scenario[Reflection, Refraction, Reflectance].new(
-    i: Console.inputs[:i].deg, mu1: Console.inputs[:mu1], mu2: Console.inputs[:mu2])
-end
-
-def trace(i_deg, mu1, mu2)
-  light = Physics::Scenario[Reflection, Refraction, Reflectance].new(
-    i: i_deg.deg, mu1: mu1, mu2: mu2)
-  trapped = attempt { light.satisfies?(:no_refracted_ray) }
-
-  shares = attempt { light.solve(:r); [ light[:rs], light[:rp], light[:r] ] } unless trapped
-
-  ([ (light[:rr]&.in_degrees unless trapped), trapped ] + (shares || [ nil, nil, nil ]))
-    .map { |value| value.nil? ? "" : value.to_s }.join("|")
-end
-`;
-
-// The incident ray carries all of it, so the two outgoing widths add up to that
-// one width exactly. No floor under them: four percent should look like four
-// percent, and under total internal reflection the reflected ray takes it all.
-const FULL = 3;
-const weight = (share) => (share == null ? FULL / 2 : FULL * share);
-const alpha = (share) => (share == null ? 0.6 : 0.32 + 0.68 * share);
-const percent = (share) => `${(share * 100).toFixed(0)}%`;
-
-function paint(i, rr, trapped, reflected) {
-  const refracted = reflected == null ? null : 1 - reflected;
-  const parts = stage({ second: true });
-  const [ix, iy] = above(i);
-  parts.push(ray(ix, iy, 150, 100, FULL, 0.95));
-  parts.push(label(ix, iy - 6, "incident", "var(--ray)"));
-
-  const [fx, fy] = mirrored(i);
-  parts.push(ray(150, 100, fx, fy, weight(reflected), alpha(reflected)));
-  parts.push(label(fx + 4, fy - 6,
-    reflected == null ? "reflected" : `reflected ${percent(reflected)}`, "var(--ray)"));
-
-  if (rr != null) {
-    const [rx, ry] = below(rr);
-    parts.push(ray(150, 100, rx, ry, weight(refracted), alpha(refracted)));
-    parts.push(label(rx + 4, ry + 12,
-      refracted == null ? "refracted" : `refracted ${percent(refracted)}`, "var(--ray)"));
-  }
-  if (trapped) {
-    parts.push(label(150, 162, "no refracted ray — Fresnel has nothing to say", "var(--red)"));
-  }
-  $("diagram").innerHTML = parts.join("");
-}
-
-const share = (v) => (v == null ? "—" : `${(v * 100).toFixed(1)}%`);
-
-const page = await chapter({
+await chapter({
   page: "light/reflectance.html",
   files: [
     { key: "lib/light/incidence.rb", tab: 4 },
@@ -206,46 +62,14 @@ const page = await chapter({
     { key: "lib/light/refraction.rb", tab: 2 },
     { key: "lib/light/reflectance.rb", tab: 1 },
   ],
-  harness: HARNESS,
-  presents: "Reflectance",
+  shows: { named: "Split", file: "lib/shown/light/reflectance.rb" },
   opening: [ "surface.solve(:r)" ],
   examples: [
     "surface.solve(:r)",
     "surface.solve(:rp)",
     "s = surface; s.solve(:r); [ s[:rr].in_degrees, s[:rs], s[:rp] ]",
-    "(1..89).map { |d| surface_at(d).solve(:r).round(3) }",
   ],
-  onSolve(vm) {
-    const i = +$("i").value, mu1 = +$("mu1").value, mu2 = +$("mu2").value;
-    $("i-out").textContent = `${i.toFixed(2)}°`;
-    $("mu1-out").textContent = mu1.toFixed(2);
-    $("mu2-out").textContent = mu2.toFixed(2);
-
-    if (!vm) { paint(i, null, false, null); return; }
-
-    // What the console's `surface` is built from, so the panel and the prompt
-    // are always looking at the same ray.
-    vm.eval(`Console.inputs = { i: ${i}, mu1: ${mu1}, mu2: ${mu2} }`);
-
-    const [rr, tir, rs, rp, r] = vm.eval(`trace(${i}, ${mu1}, ${mu2})`).toString().split("|");
-    const num = (s) => (s === "" ? null : Number(s));
-    const trapped = tir === "" ? null : tir === "true";
-
-    $("r-rr").textContent = rr === "" ? (trapped ? "none" : "—") : `${Number(rr).toFixed(2)}°`;
-    $("r-tir").textContent = trapped == null ? "—" : (trapped ? "yes" : "no");
-    // Past the critical angle Fresnel has nothing to say: its equations need a
-    // refracted angle, and there is not one. Chapter 1.5 is what answers here.
-    const stuck = trapped ? "no answer" : "—";
-    $("r-rs").textContent = num(rs) == null ? stuck : share(num(rs));
-    $("r-rp").textContent = num(rp) == null ? stuck : share(num(rp));
-    $("r-r").textContent = num(r) == null ? stuck : share(num(r));
-    $("r-t").textContent = num(r) == null ? stuck : share(1 - num(r));
-    paint(i, num(rr), trapped, num(r));
-  },
 });
-
-[ "i", "mu1", "mu2" ].forEach((id) => $(id).addEventListener("input", () => page.refresh()));
-page.refresh();
 </script>
 </body>
 </html>

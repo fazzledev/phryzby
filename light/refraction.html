@@ -45,202 +45,31 @@
     </div>
 
     <aside class="pane side">
-      <h1>Refraction <small>— and the branch problem</small></h1>
-      <p class="lede">
-        A ray meeting glass does both things at once, so the question names both laws:
-        <code>Physics::Scenario[Reflection, Refraction]</code>. Neither law inherits the other —
-        refraction is not a kind of reflection — and neither file mentions the other.
-      </p>
-      <p class="lede">
-        A law includes only what it <em>presupposes</em>. Snell's law is about a ray that has
-        already arrived, so this file begins <code>include Incidence</code>; it is not about a
-        reflected one, so it says nothing of reflection. Two laws that merely both happen to hold
-        are composed where the question is asked instead.
-      </p>
-
-      <section id="statement"></section>
-
-      <p class="head">the crossing</p>
-      <svg id="diagram" viewBox="0 0 300 200" aria-label="Ray crossing between two media"></svg>
-
-      <div class="field" style="margin-top:.9rem">
-        <label for="i">incidence</label>
-        <input type="range" id="i" min="0.5" max="89.5" step="0.01" value="30">
-        <output id="i-out">30.00°</output>
-      </div>
-      <div class="field">
-        <label for="mu1">μ₁ first</label>
-        <input type="range" id="mu1" min="1" max="2.5" step="0.01" value="1.00">
-        <output id="mu1-out">1.00</output>
-      </div>
-      <div class="field">
-        <label for="mu2">μ₂ second</label>
-        <input type="range" id="mu2" min="1" max="2.5" step="0.01" value="1.50">
-        <output id="mu2-out">1.50</output>
-      </div>
-
-      <div class="out">
-        <div><span>angle of refraction</span><span class="val" id="r-rr">—</span></div>
-        <div><span>angle of reflection</span><span class="val" id="r-rl">—</span></div>
-        <div><span>critical angle</span><span class="val" id="r-crit">—</span></div>
-        <div class="alarm"><span>no refracted ray</span><span class="val" id="r-tir">—</span></div>
-      </div>
-
-      <p class="head">notes</p>
-      <p class="note">
-        Drag the dividers to resize the panes; double-click one to put it back. Tick
-        <em>auto-run</em> and the laws re-evaluate when you stop typing, and the page boots Ruby
-        by itself next time. Both settings are remembered between visits.
-      </p>
-      <p class="note">
-        Anything you change is marked the way an editor marks it: a bar in the gutter beside every
-        line you touched — green for new, blue for altered — a red wedge where lines were taken
-        out, a dot on the tab and an <strong>M</strong> in the tree. <em>Revert edits</em> puts
-        this repository's own text back.
-      </p>
-      <p class="note">
-        The console under the code is a real irb against the same VM. Start with
-        <code>surface.solve(:rr)</code>, then ask the same law backwards — give it two angles and
-        it names the material. <code>surface</code> is bound to whatever the sliders say, and
-        anything you redefine in the editor is live there the moment you re-run.
-      </p>
-      <p class="note">
-        <code>within:</code> is doing real work here. <code>sin</code> is periodic, so Snell has
-        infinitely many roots and only one of them is an angle light can take. Delete
-        <code>within: Physics::A_RIGHT_ANGLE</code> from <code>angle_of_refraction</code> above,
-        run it again, and drag down to a few degrees: Newton's method wanders off and returns a
-        root several turns away.
-      </p>
-      <p class="note">
-        Past the critical angle Snell asks for a sine greater than one. There is no refracted ray
-        at all — which is how an optical fibre keeps light inside itself. Set μ₁ above μ₂ and open
-        the angle to watch it happen. The critical angle above is not a rearranged formula: it is
-        this same law asked with the refracted ray lying flat along the surface, which is the last
-        angle that still has one.
-      </p>
-      <p class="note">
-        <code>mu21</code> is a quantity like any other, and the only one here nothing hands you.
-        It is the refractive index of the second medium <em>relative to</em> the first, which is
-        how a textbook writes Snell: sin i / sin r = <sub>1</sub>μ<sub>2</sub>. Declaring it means
-        the ratio is written once rather than spelled out in both the law and its condition — and
-        the solver finds it on the way to whatever you actually asked for. Drag the sliders and
-        watch it appear in <code>surface[:mu21]</code>.
-      </p>
-      <p class="note">
-        None of the three refractive indices declares a <code>within:</code>. They appear
-        They appear linearly in the equations that mention them, so those have exactly one root
-        and a range would be decoration. A domain earns its place where an equation has more than
-        one root — which here means the angles, and nothing else.
-      </p>
-      <p class="note">
-        Because a law is stored rather than compiled into a formula, one declaration answers in any
-        direction: give it two angles and it names the material.
-      </p>
+      <section id="law"></section>
+      <section id="demo"></section>
     </aside>
   </div>
 </div>
 
 <script type="module">
-import { chapter, $, ray, label, stage, above, mirrored, below } from "../assets/phryzby.js";
+import { chapter } from "../assets/phryzby.js";
 
-const HARNESS = String.raw`
-def attempt
-  yield
-rescue StandardError
-  nil
-end
-
-def surface
-  Physics::Scenario[Reflection, Refraction].new(
-    i: Console.inputs[:i].deg, mu1: Console.inputs[:mu1], mu2: Console.inputs[:mu2])
-end
-
-def critical_angle(mu1, mu2)
-  return nil unless mu2 < mu1
-
-  Physics::Scenario[Refraction].new(mu1: mu1, mu2: mu2, rr: 90.deg).solve(:i)
-end
-
-def trace(i_deg, mu1, mu2)
-  light = Physics::Scenario[Reflection, Refraction].new(i: i_deg.deg, mu1: mu1, mu2: mu2)
-  trapped = attempt { light.satisfies?(:no_refracted_ray) }
-
-  [ (attempt { light.solve(:rr) } unless trapped),
-    attempt { light.solve(:rl) },
-    attempt { critical_angle(mu1, mu2) },
-    trapped ]
-    .map { |value| value.is_a?(Float) ? value.in_degrees : value }
-    .map { |value| value.nil? ? "" : value.to_s }.join("|")
-end
-`;
-
-function paint(i, rr, rl, trapped) {
-  const parts = stage({ second: true });
-  const [ix, iy] = above(i);
-  parts.push(ray(ix, iy, 150, 100));
-  parts.push(label(ix, iy - 6, "incident", "var(--ray)"));
-
-  if (rl != null) {
-    const [fx, fy] = mirrored(rl);
-    parts.push(ray(150, 100, fx, fy));
-    parts.push(label(fx + 4, fy - 6, "reflected", "var(--ray)"));
-  }
-  if (rr != null) {
-    const [rx, ry] = below(rr);
-    parts.push(ray(150, 100, rx, ry));
-    parts.push(label(rx + 4, ry + 12, "refracted", "var(--ray)"));
-  }
-  if (trapped) {
-    parts.push(label(150, 162, "no refracted ray — total internal reflection", "var(--red)"));
-  }
-  $("diagram").innerHTML = parts.join("");
-}
-
-const degrees = (v) => (v == null ? "—" : `${v.toFixed(2)}°`);
-
-const page = await chapter({
+await chapter({
   page: "light/refraction.html",
   files: [
     { key: "lib/light/incidence.rb", tab: 3 },
     { key: "lib/light/reflection.rb", tab: 2 },
     { key: "lib/light/refraction.rb", tab: 1 },
   ],
-  harness: HARNESS,
-  presents: "Refraction",
+  shows: { named: "Crossing", file: "lib/shown/light/refraction.rb" },
   opening: [ "surface.solve(:rr).in_degrees" ],
   examples: [
     "surface.solve(:rr).in_degrees",
     "surface.satisfies?(:no_refracted_ray)",
     "Physics::Scenario[Refraction].new(mu1: 1.5, mu2: 1.0, rr: 90.deg).solve(:i).in_degrees",
     "surface.solve(:mu21)",
-    "Physics::Scenario[Refraction].new(i: 45.deg, rr: 28.9.deg, mu1: 1.0).solve(:mu2)",
   ],
-  onSolve(vm) {
-    const i = +$("i").value, mu1 = +$("mu1").value, mu2 = +$("mu2").value;
-    $("i-out").textContent = `${i.toFixed(2)}°`;
-    $("mu1-out").textContent = mu1.toFixed(2);
-    $("mu2-out").textContent = mu2.toFixed(2);
-
-    if (!vm) { paint(i, null, null, false); return; }
-
-    // What the console's `surface` is built from, so the panel and the prompt
-    // are always looking at the same ray.
-    vm.eval(`Console.inputs = { i: ${i}, mu1: ${mu1}, mu2: ${mu2} }`);
-
-    const [rr, rl, crit, tir] = vm.eval(`trace(${i}, ${mu1}, ${mu2})`).toString().split("|");
-    const num = (s) => (s === "" ? null : Number(s));
-    const trapped = tir === "" ? null : tir === "true";
-
-    $("r-rr").textContent = rr === "" ? (trapped ? "none" : "—") : degrees(num(rr));
-    $("r-rl").textContent = degrees(num(rl));
-    $("r-crit").textContent = crit === "" ? "none" : degrees(num(crit));
-    $("r-tir").textContent = trapped == null ? "—" : (trapped ? "yes" : "no");
-    paint(i, num(rr), num(rl), trapped);
-  },
 });
-
-[ "i", "mu1", "mu2" ].forEach((id) => $(id).addEventListener("input", () => page.refresh()));
-page.refresh();
 </script>
 </body>
 </html>

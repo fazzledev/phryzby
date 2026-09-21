@@ -84,7 +84,13 @@ end
 
 module Physics
   module Quantities
-    def title = name.to_s.gsub(/([a-z])([A-Z])/) { "#{$1} #{$2.downcase}" }
+    def called(name) = @called = name
+    def about(phrase) = @about = phrase
+    def describes(prose) = @describes = prose
+
+    def heading = @about ? "#{title} <small>\u2014 #{@about}</small>" : title
+    def prose = @describes
+    def title = @called || name.to_s.gsub(/([a-z])([A-Z])/) { "#{$1} #{$2.downcase}" }
 
     def borrowed = included_modules.select { |part| part.respond_to?(:quantities) }
 
@@ -92,7 +98,13 @@ module Physics
 
     def written(key) = quantities.find { |name, means| means == key && name != key }&.first
 
-    def to_html = "<h2>#{title} <small>— as the module states it</small></h2>#{quantity_rows}"
+    # A law states itself whole: what it is called, what it is about, what it
+    # is made of. Nothing here knows what else is on the page.
+    def to_html
+      [ "<h1>#{heading}</h1>",
+        prose ? "<p class=\"lede\">#{prose}</p>" : "",
+        quantity_rows ].join
+    end
 
     private
 

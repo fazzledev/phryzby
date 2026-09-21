@@ -249,3 +249,11 @@ figure.condition{border-style:dashed;}
 figure.law figcaption{font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;
   text-transform:uppercase;color:var(--ink-soft);margin-top:.5rem;}
 figure.law .when{margin-left:.55rem;color:var(--ray);text-transform:none;letter-spacing:0;}
+
+/* --- a panel the page did not write -------------------------------------- */
+#law h1{margin-bottom:.45rem;}
+#law .lede{margin-bottom:.9rem;}
+#picture{margin:.2rem 0 1rem;}
+#picture svg{display:block;width:100%;height:auto;border:1px solid var(--rule);
+  border-radius:6px;background:var(--wash);}
+#demo .field:first-of-type{margin-top:.2rem;}
