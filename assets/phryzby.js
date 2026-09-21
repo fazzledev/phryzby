@@ -383,7 +383,7 @@ function mountConsole({ log, form, input, hint }, { evaluate, examples = [] }) {
     hint.append(button);
   });
 
-  return { clear: () => log.replaceChildren(), ask };
+  return { clear: () => log.replaceChildren(), note: (text) => write(text, "noted"), ask };
 }
 
 // --- the editor ------------------------------------------------------------
@@ -478,9 +478,10 @@ async function loadVM(onStatus) {
  *   files   — the .rb files to fetch, evaluate in order, and show as tabs
  *   harness — Ruby that the page's controls call into
  *   onSolve — called with the vm whenever a control moves
+ *   opening — the chapter's one move, run in the console the moment Ruby boots
  */
 export async function chapter({ page, files, harness = "", onSolve, showEngine = false,
-                                examples = [] }) {
+                                examples = [], opening = [] }) {
   const status = $("status");
   const run = $("run");
   const reset = $("reset");
@@ -565,10 +566,12 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       vm = await loadVM(say);
       vm.eval(SHIM);
       evaluate();
-      repl.ask("RUBY_VERSION");
       run.textContent = "Re-run the laws";
       if (reset) reset.hidden = false;
       view.refresh();
+      repl.clear();
+      repl.ask("RUBY_VERSION");
+      opening.forEach((line) => repl.ask(line));
     } catch (error) {
       say(String(error).split("\n")[0], true);
     } finally {
@@ -576,6 +579,10 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       run.disabled = false;
     }
   };
+
+  if (opening.length) {
+    repl.note(`Press “Run in Ruby” to boot, then try:  ${opening[opening.length - 1]}`);
+  }
 
   run.addEventListener("click", () => (vm ? rerun() : boot()));
 

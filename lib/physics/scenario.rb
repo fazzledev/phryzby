@@ -3,6 +3,8 @@ module Physics
     extend Declarations
 
     class << self
+      def [](*laws) = Class.new(self) { laws.each { |law| include law } }
+
       def inherited(subclass)
         super
         subclass.absorb(self)
@@ -24,23 +26,45 @@ module Physics
 
     def solve(target, range: nil)
       key = self.class.variables.fetch(target)
-      equation = equation_for(key)
-      residual = ->(x) { equation.residual(@env.merge(key => x)) }
 
-      root = Solver.root(residual, within: range || self.class.domains[key] || Solver::DEFAULT_RANGE)
-      raise "could not solve for #{target}" unless root
-
-      @env[key] = root
+      @env.fetch(key) { determine(key, range, [ key ]) }
     end
 
     private
 
-    def equation_for(key)
-      known = @env.keys
-      candidate = self.class.equations.values.find do |equation|
-        equation.variables.include?(key) && (equation.variables - known - [ key ]).empty?
+    def determine(key, range, pending)
+      candidates(key).each do |equation|
+        restore = @env.dup
+
+        if supply(equation, key, pending)
+          found = root_of(equation, key, range)
+          return @env[key] = found if found
+        end
+
+        @env.replace(restore)
       end
-      candidate || raise("no equation determines #{key} from what is known")
+
+      raise "no equation determines #{key} from what is known"
+    end
+
+    def candidates(key)
+      self.class.equations.values.select { |equation| equation.variables.include?(key) }
+    end
+
+    def supply(equation, key, pending)
+      (equation.variables - @env.keys - [ key ]).all? do |missing|
+        next false if pending.include?(missing)
+
+        determine(missing, nil, pending + [ missing ])
+      rescue RuntimeError
+        false
+      end
+    end
+
+    def root_of(equation, key, range)
+      residual = ->(x) { equation.residual(@env.merge(key => x)) }
+
+      Solver.root(residual, within: range || self.class.domains[key] || Solver::DEFAULT_RANGE)
     end
   end
 end

@@ -1,6 +1,8 @@
 require_relative "physics"
 
-class Pythagoras < Physics::Scenario
+module Pythagoras
+  extend Physics::Law
+
   LENGTH = 0.0..20.0
 
   variable :leg_a,      alias: :a, within: LENGTH

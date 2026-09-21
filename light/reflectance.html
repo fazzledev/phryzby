@@ -14,7 +14,7 @@
     <span class="grow"></span>
     <span class="status" id="status">Nothing is computed until Ruby boots.</span>
     <label class="toggle"><input type="checkbox" id="auto"> auto-run</label>
-    <button id="reset" class="ghost" hidden>Reset</button>
+    <button id="reset" class="ghost" title="Put this repository's own code back, discarding your edits" hidden>Revert edits</button>
     <button id="run">Run in Ruby</button>
   </header>
 
@@ -44,8 +44,9 @@
       <h1>Reflectance <small>— how much, rather than which way</small></h1>
       <p class="lede">
         Fresnel gives the shares, and they depend on polarisation — two equations and an average
-        for ordinary light. <code>Surface</code> names all three laws now, and the solver picks
-        whichever equation a question needs.
+        for ordinary light. Ask for <code>r</code> alone and the solver works backwards to what it
+        needs: Snell for the refracted angle, then each polarisation, then the mean. Five equations,
+        one question, no order given.
       </p>
 
       <p class="head">the split</p>
@@ -84,9 +85,17 @@
         by itself next time. Both settings are remembered between visits.
       </p>
       <p class="note">
-        The console under the code is a real irb against the same VM. <code>surface</code> is bound
-        to whatever the sliders say, locals persist between lines, and anything you redefine in the
-        editor is live there the moment you re-run.
+        The console under the code is a real irb against the same VM. Start with
+        <code>surface.solve(:r)</code> — one question, five equations. <code>surface</code> is
+        bound to whatever the sliders say, and anything you redefine in the editor is live there
+        the moment you re-run.
+      </p>
+      <p class="note">
+        Fresnel needs the refracted angle, and only Snell determines it. So asking for
+        <code>r</code> reaches backwards: the mean needs both polarisations, each of those needs
+        <code>rr</code>, and <code>rr</code> comes from a law in another file. Ask
+        <code>surface[:rr]</code> afterwards and it is there, found on the way to something else.
+        Nothing said in what order.
       </p>
       <p class="note">
         The two outgoing rays share the incident ray's width exactly, so four percent looks like
@@ -115,26 +124,29 @@ rescue StandardError
   nil
 end
 
+def surface_at(degrees)
+  Physics::Scenario[Reflection, Refraction, Reflectance].new(
+    i: degrees.deg, mu1: Console.inputs[:mu1], mu2: Console.inputs[:mu2])
+end
+
 def surface
-  Surface.between(Console.inputs[:mu1], Console.inputs[:mu2], i: Console.inputs[:i].deg)
+  Physics::Scenario[Reflection, Refraction, Reflectance].new(
+    i: Console.inputs[:i].deg, mu1: Console.inputs[:mu1], mu2: Console.inputs[:mu2])
 end
 
 def trace(i_deg, mu1, mu2)
-  surface = Surface.between(mu1, mu2, i: i_deg.deg)
-  trapped = attempt { surface.traps? }
-
-  rr = trapped ? nil : attempt { surface.angle_of_refraction }
+  light = Physics::Scenario[Reflection, Refraction, Reflectance].new(
+    i: i_deg.deg, mu1: mu1, mu2: mu2)
+  trapped = attempt { light.satisfies?(:total_internal_reflection) }
 
   shares =
     if trapped
       [ 1.0, 1.0, 1.0 ]
-    elsif rr
-      attempt do
-        [ surface.s_polarised_share, surface.p_polarised_share, surface.reflected_share ]
-      end
+    else
+      attempt { light.solve(:r); [ light[:rs], light[:rp], light[:r] ] }
     end
 
-  ([ rr&.in_degrees, trapped ] + (shares || [ nil, nil, nil ]))
+  ([ (light[:rr]&.in_degrees unless trapped), trapped ] + (shares || [ nil, nil, nil ]))
     .map { |value| value.nil? ? "" : value.to_s }.join("|")
 end
 `;
@@ -182,11 +194,12 @@ const page = await chapter({
     { key: "lib/light/reflectance.rb", tab: 1 },
   ],
   harness: HARNESS,
+  opening: [ "surface.solve(:r)" ],
   examples: [
-    "surface.reflected_share",
-    "surface.p_polarised_share",
-    "Surface.between(1.0, 1.5, i: Math.atan(1.5)).p_polarised_share",
-    "(1..89).map { |d| Surface.between(1.0, 1.5, i: d.deg).reflected_share.round(3) }",
+    "surface.solve(:r)",
+    "surface.solve(:rp)",
+    "s = surface; s.solve(:r); [ s[:rr].in_degrees, s[:rs], s[:rp] ]",
+    "(1..89).map { |d| surface_at(d).solve(:r).round(3) }",
   ],
   onSolve(vm) {
     const i = +$("i").value, mu1 = +$("mu1").value, mu2 = +$("mu2").value;

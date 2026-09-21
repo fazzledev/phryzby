@@ -2,6 +2,8 @@ require "minitest/autorun"
 require_relative "../lib/pythagoras"
 
 class PythagorasTest < Minitest::Test
+  TRIANGLE = Physics::Scenario[Pythagoras]
+
   def test_the_block_returned_an_equation_rather_than_a_boolean
     assert_kind_of Physics::Equation, Pythagoras.equations.fetch(:pythagoras)
   end
@@ -12,7 +14,7 @@ class PythagorasTest < Minitest::Test
   end
 
   def test_an_alias_and_its_full_name_are_the_same_variable
-    assert_in_delta 3.0, Pythagoras.new(leg_a: 3).[](:a), 1e-9
+    assert_in_delta 3.0, TRIANGLE.new(leg_a: 3).[](:a), 1e-9
   end
 
   def test_it_solves_for_the_hypotenuse
@@ -29,20 +31,20 @@ class PythagorasTest < Minitest::Test
   end
 
   def test_a_solved_triangle_satisfies_the_law_it_was_solved_from
-    triangle = Pythagoras.new(a: 3, b: 4)
+    triangle = TRIANGLE.new(a: 3, b: 4)
     triangle.solve(:c)
 
     assert triangle.holds?(:pythagoras)
   end
 
   def test_refuses_to_solve_what_is_not_determined
-    assert_raises(RuntimeError) { Pythagoras.new(a: 3).solve(:c) }
+    assert_raises(RuntimeError) { TRIANGLE.new(a: 3).solve(:c) }
   end
 
   private
 
   def solved(target, **known)
-    triangle = Pythagoras.new(**known)
+    triangle = TRIANGLE.new(**known)
     triangle.solve(target)
     triangle[target]
   end

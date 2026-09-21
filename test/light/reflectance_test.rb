@@ -1,7 +1,11 @@
 require "minitest/autorun"
+require_relative "../../lib/light/reflection"
+require_relative "../../lib/light/refraction"
 require_relative "../../lib/light/reflectance"
 
 class ReflectanceTest < Minitest::Test
+  SURFACE = Physics::Scenario[Reflection, Refraction, Reflectance]
+
   AIR = 1.0
   GLASS = 1.5
 
@@ -13,6 +17,15 @@ class ReflectanceTest < Minitest::Test
     rs, rp, = share(at: 1, from: AIR, into: GLASS)
 
     assert_in_delta rs, rp, 1e-3
+  end
+
+  def test_asking_for_the_reflectance_alone_finds_everything_it_needs
+    surface = SURFACE.new(i: 40.deg, mu1: AIR, mu2: GLASS)
+    surface.solve(:r)
+
+    assert_in_delta 25.3739, surface[:rr].in_degrees, 1e-3
+    assert_operator surface[:rs], :>, 0
+    assert_operator surface[:rp], :>, 0
   end
 
   def test_p_polarised_light_vanishes_at_brewsters_angle
@@ -60,9 +73,9 @@ class ReflectanceTest < Minitest::Test
   end
 
   def test_the_two_shares_account_for_all_of_the_light
-    surface = Surface.between(AIR, GLASS, i: 40.deg)
+    reflected = SURFACE.new(i: 40.deg, mu1: AIR, mu2: GLASS).solve(:r)
 
-    assert_in_delta 1.0, surface.reflected_share + surface.refracted_share, 1e-12
+    assert_in_delta 1.0, reflected + (1.0 - reflected), 1e-12
   end
 
   private
@@ -70,8 +83,8 @@ class ReflectanceTest < Minitest::Test
   BREWSTER = Math.atan(GLASS / AIR).in_degrees
 
   def share(at:, from:, into:)
-    surface = Surface.between(from, into, i: at.deg)
+    surface = SURFACE.new(i: at.deg, mu1: from, mu2: into)
 
-    [ surface.s_polarised_share, surface.p_polarised_share, surface.reflected_share ]
+    [ surface.solve(:rs), surface.solve(:rp), surface.solve(:r) ]
   end
 end

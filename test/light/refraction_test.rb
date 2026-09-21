@@ -1,7 +1,11 @@
 require "minitest/autorun"
+require_relative "../../lib/light/reflection"
 require_relative "../../lib/light/refraction"
 
 class RefractionTest < Minitest::Test
+  SURFACE = Physics::Scenario[Reflection, Refraction]
+  FLAT_ALONG_THE_SURFACE = Math::PI / 2
+
   AIR = 1.0
   WATER = 1.33
   GLASS = 1.5
@@ -57,16 +61,10 @@ class RefractionTest < Minitest::Test
     refute traps?(from: GLASS, into: AIR, at: CRITICAL)
   end
 
-  # Not a rearranged formula: it is Snell asked with the refracted ray lying
-  # flat along the surface, which is the last angle that still has one.
-  def test_the_critical_angle_is_solved_through_snell
-    found = ray(from: GLASS, into: AIR, i: 10).critical_angle
+  def test_the_critical_angle_is_snell_with_the_refracted_ray_lying_flat
+    found = SURFACE.new(mu1: GLASS, mu2: AIR, rr: FLAT_ALONG_THE_SURFACE).solve(:i)
 
     assert_in_delta CRITICAL, found.in_degrees, 1e-6
-  end
-
-  def test_there_is_no_critical_angle_going_into_a_denser_medium
-    assert_nil ray(from: AIR, into: GLASS, i: 10).critical_angle
   end
 
   def test_going_into_a_denser_medium_never_traps_the_ray
@@ -80,7 +78,7 @@ class RefractionTest < Minitest::Test
   end
 
   def test_refuses_to_solve_what_is_not_determined
-    ray = Surface.new(i: 30.deg, mu1: AIR)
+    ray = SURFACE.new(i: 30.deg, mu1: AIR)
 
     assert_raises(RuntimeError) { ray.solve(:rr) }
   end
@@ -90,7 +88,7 @@ class RefractionTest < Minitest::Test
   CRITICAL = Math.asin(AIR / GLASS).in_degrees
 
   def ray(from:, into:, **angles)
-    Surface.between(from, into, **angles.transform_values(&:deg))
+    SURFACE.new(mu1: from, mu2: into, **angles.transform_values(&:deg))
   end
 
   def solved(target, from:, into:, **angles)
@@ -100,8 +98,10 @@ class RefractionTest < Minitest::Test
   end
 
   def identified(into:, from_air_at:)
-    Surface.new(i: from_air_at.deg, rr: into.deg, mu1: AIR).second_medium
+    SURFACE.new(i: from_air_at.deg, rr: into.deg, mu1: AIR).solve(:mu2)
   end
 
-  def traps?(from:, into:, at:) = ray(from: from, into: into, i: at).traps?
+  def traps?(from:, into:, at:)
+    ray(from: from, into: into, i: at).satisfies?(:total_internal_reflection)
+  end
 end

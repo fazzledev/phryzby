@@ -14,7 +14,7 @@
     <span class="grow"></span>
     <span class="status" id="status">Nothing is computed until Ruby boots.</span>
     <label class="toggle"><input type="checkbox" id="auto"> auto-run</label>
-    <button id="reset" class="ghost" hidden>Reset</button>
+    <button id="reset" class="ghost" title="Put this repository's own code back, discarding your edits" hidden>Revert edits</button>
     <button id="run">Run in Ruby</button>
   </header>
 
@@ -122,8 +122,8 @@ def law = Pythagoras.equations.fetch(:pythagoras)
 
 def demo(target, given)
   values = given.split(",").map { |pair| k, v = pair.split(":"); [ k.to_sym, v.to_f ] }.to_h
-  triangle = Pythagoras.new(**values)
-  answer = triangle.solve(target.to_sym, guess: 1.0)
+  triangle = Physics::Scenario[Pythagoras].new(**values)
+  answer = triangle.solve(target.to_sym)
 
   [ answer, triangle.holds?(:pythagoras), law.class, law.to_s ].join("|")
 rescue StandardError => e
@@ -138,11 +138,12 @@ const page = await chapter({
   showEngine: true,
   files: [ { key: "lib/pythagoras.rb", tab: 99 } ],
   harness: HARNESS,
+  opening: [ "Physics::Scenario[Pythagoras].new(a: 3, b: 4).solve(:c)" ],
   examples: [
+    "Physics::Scenario[Pythagoras].new(a: 3, b: 4).solve(:c)",
+    "Physics::Scenario[Pythagoras].new(b: 4, c: 5).solve(:a)",
     "Pythagoras.equations[:pythagoras].to_s",
     "Pythagoras.equations[:pythagoras].class",
-    "Pythagoras.new(a: 3, b: 4).solve(:c)",
-    "Pythagoras.new(b: 4, c: 5).solve(:a)",
     "Physics::Solver.root(->(x) { Math.sin(x) }, within: 2.0..4.0)",
   ],
   onSolve(vm) {

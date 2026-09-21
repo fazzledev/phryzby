@@ -14,7 +14,7 @@
     <span class="grow"></span>
     <span class="status" id="status">Nothing is computed until Ruby boots.</span>
     <label class="toggle"><input type="checkbox" id="auto"> auto-run</label>
-    <button id="reset" class="ghost" hidden>Reset</button>
+    <button id="reset" class="ghost" title="Put this repository's own code back, discarding your edits" hidden>Revert edits</button>
     <button id="run">Run in Ruby</button>
   </header>
 
@@ -43,10 +43,10 @@
     <aside class="pane side">
       <h1>Refraction <small>— and the branch problem</small></h1>
       <p class="lede">
-        A ray meeting glass does both things at once, and the demo shows both, so
-        <code>Surface</code> says so: it includes <code>Reflection</code> as well as
-        <code>Refraction</code>. Neither law inherits the other — refraction is not a kind of
-        reflection — and neither mentions the other; only the scenario composes them.
+        A ray meeting glass does both things at once, so the question names both laws:
+        <code>Physics::Scenario[Reflection, Refraction]</code>. Neither law inherits the other —
+        refraction is not a kind of reflection — and neither file mentions the other. They are
+        composed where the question is asked, not where they are written.
       </p>
 
       <p class="head">the interface</p>
@@ -82,9 +82,10 @@
         by itself next time. Both settings are remembered between visits.
       </p>
       <p class="note">
-        The console under the code is a real irb against the same VM. <code>surface</code> is bound
-        to whatever the sliders say, locals persist between lines, and anything you redefine in the
-        editor is live there the moment you re-run.
+        The console under the code is a real irb against the same VM. Start with
+        <code>surface.solve(:rr)</code>, then ask the same law backwards — give it two angles and
+        it names the material. <code>surface</code> is bound to whatever the sliders say, and
+        anything you redefine in the editor is live there the moment you re-run.
       </p>
       <p class="note">
         <code>within:</code> is doing real work here. <code>sin</code> is periodic, so Snell has
@@ -118,16 +119,23 @@ rescue StandardError
 end
 
 def surface
-  Surface.between(Console.inputs[:mu1], Console.inputs[:mu2], i: Console.inputs[:i].deg)
+  Physics::Scenario[Reflection, Refraction].new(
+    i: Console.inputs[:i].deg, mu1: Console.inputs[:mu1], mu2: Console.inputs[:mu2])
+end
+
+def critical_angle(mu1, mu2)
+  return nil unless mu2 < mu1
+
+  Physics::Scenario[Refraction].new(mu1: mu1, mu2: mu2, rr: 90.deg).solve(:i)
 end
 
 def trace(i_deg, mu1, mu2)
-  light = Surface.between(mu1, mu2, i: i_deg.deg)
-  trapped = attempt { light.traps? }
+  light = Physics::Scenario[Reflection, Refraction].new(i: i_deg.deg, mu1: mu1, mu2: mu2)
+  trapped = attempt { light.satisfies?(:total_internal_reflection) }
 
-  [ (attempt { light.angle_of_refraction } unless trapped),
-    attempt { light.angle_of_reflection },
-    attempt { light.critical_angle },
+  [ (attempt { light.solve(:rr) } unless trapped),
+    attempt { light.solve(:rl) },
+    attempt { critical_angle(mu1, mu2) },
     trapped ]
     .map { |value| value.is_a?(Float) ? value.in_degrees : value }
     .map { |value| value.nil? ? "" : value.to_s }.join("|")
@@ -166,12 +174,12 @@ const page = await chapter({
     { key: "lib/light/refraction.rb", tab: 1 },
   ],
   harness: HARNESS,
+  opening: [ "surface.solve(:rr).in_degrees" ],
   examples: [
-    "surface.angle_of_refraction.in_degrees",
-    "surface.critical_angle&.in_degrees",
-    "surface.traps?",
-    "Surface.new(i: 45.deg, rr: 28.9.deg, mu1: 1.0).second_medium",
-    "Surface.between(1.0, 1.33, i: 45.deg).angle_of_refraction.in_degrees",
+    "surface.solve(:rr).in_degrees",
+    "surface.satisfies?(:total_internal_reflection)",
+    "Physics::Scenario[Refraction].new(mu1: 1.5, mu2: 1.0, rr: 90.deg).solve(:i).in_degrees",
+    "Physics::Scenario[Refraction].new(i: 45.deg, rr: 28.9.deg, mu1: 1.0).solve(:mu2)",
   ],
   onSolve(vm) {
     const i = +$("i").value, mu1 = +$("mu1").value, mu2 = +$("mu2").value;

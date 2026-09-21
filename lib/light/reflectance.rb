@@ -1,5 +1,4 @@
 require_relative "optics"
-require_relative "refraction"
 
 module Reflectance
   extend Physics::Law
@@ -15,30 +14,4 @@ module Reflectance
   end
 
   equation(:unpolarised) { r == (rs + rp) / 2 }
-end
-
-class Surface < Physics::Scenario
-  include Reflection
-  include Refraction
-  include Reflectance
-
-
-  def s_polarised_share = share(:rs)
-
-  def p_polarised_share = share(:rp)
-
-  def reflected_share
-    s_polarised_share
-    p_polarised_share
-    share(:r)
-  end
-
-  def refracted_share = 1.0 - reflected_share
-
-  private
-
-  def share(part)
-    angle_of_refraction unless self[:rr]
-    solve(part)
-  end
 end
