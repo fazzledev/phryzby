@@ -11,6 +11,37 @@ const BINARY = "https://cdn.jsdelivr.net/npm/@ruby/3.4-wasm-wasi@2.10.1/dist/rub
 // the page is meant to be showing you.
 const SHIM = "def require_relative(_path) = true\n";
 
+// The console runs against the top-level binding, so locals persist between
+// lines and every constant the laws defined is in scope. Printed output comes
+// back alongside the value, the way irb shows both.
+const CONSOLE = String.raw`
+require "stringio"
+
+module Console
+  SEPARATOR = "\u0000"
+
+  class << self
+    attr_accessor :inputs
+  end
+  self.inputs = {}
+
+  def self.run(source)
+    printed = StringIO.new
+    previous = $stdout
+    $stdout = printed
+    value = eval(source, TOPLEVEL_BINDING)
+    [ "ok", printed.string, value.inspect ].join(SEPARATOR)
+  rescue Exception => error
+    [ "error", printed.string, "#{error.class}: #{error.message}" ].join(SEPARATOR)
+  ensure
+    $stdout = previous
+  end
+end
+`;
+
+// Single-quoted, so nothing the reader types is interpolated on the way in.
+const asRubyString = (text) => `'${text.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+
 export const RAD = Math.PI / 180;
 export const $ = (id) => document.getElementById(id);
 
@@ -200,6 +231,62 @@ export function stage({ second = null } = {}) {
   return parts;
 }
 
+// --- the console -----------------------------------------------------------
+
+function mountConsole({ log, form, input, hint }, { evaluate, examples = [] }) {
+  const history = [];
+  let position = 0;
+
+  const write = (text, kind) => {
+    const line = document.createElement("div");
+    line.className = kind;
+    line.textContent = text;
+    log.append(line);
+    log.scrollTop = log.scrollHeight;
+    return line;
+  };
+
+  const ask = (source) => {
+    write(source, "said");
+    const answer = evaluate(source);
+    if (answer === null) return write("Run the laws first.", "warned");
+    const [status, printed, value] = answer;
+    if (printed) write(printed.replace(/\n$/, ""), "printed");
+    write(value, status === "ok" ? "answered" : "failed");
+  };
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const source = input.value.trim();
+    if (!source) return;
+    history.push(source);
+    position = history.length;
+    input.value = "";
+    ask(source);
+  });
+
+  // Up and down walk the history, the way a shell does.
+  input.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+    if (!history.length) return;
+    event.preventDefault();
+    position += event.key === "ArrowUp" ? -1 : 1;
+    position = Math.max(0, Math.min(history.length, position));
+    input.value = history[position] ?? "";
+  });
+
+  examples.forEach((example) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "try";
+    button.textContent = example;
+    button.addEventListener("click", () => { input.value = example; input.focus(); });
+    hint.append(button);
+  });
+
+  return { clear: () => log.replaceChildren(), ask };
+}
+
 // --- the editor ------------------------------------------------------------
 
 function mountEditor(files, { tabs, pre, textarea }, announce = () => {}) {
@@ -289,7 +376,8 @@ async function loadVM(onStatus) {
  *   harness — Ruby that the page's controls call into
  *   onSolve — called with the vm whenever a control moves
  */
-export async function chapter({ page, files, harness = "", onSolve, showEngine = false }) {
+export async function chapter({ page, files, harness = "", onSolve, showEngine = false,
+                                examples = [] }) {
   const status = $("status");
   const run = $("run");
   const reset = $("reset");
@@ -319,6 +407,18 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   markTree(tabbed[0].key);
 
   let vm = null;
+
+  const repl = mountConsole(
+    { log: $("log"), form: $("ask"), input: $("line"), hint: $("hint") },
+    {
+      examples,
+      evaluate(source) {
+        if (!vm) return null;
+        return vm.eval(`Console.run(${asRubyString(source)})`).toString().split("\u0000");
+      },
+    },
+  );
+
   const view = {
     get vm() { return vm; },
     say,
@@ -336,6 +436,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   const evaluate = () => {
     editor.remember();
     loaded.forEach((file) => vm.eval(file.code));
+    vm.eval(CONSOLE);
     if (harness) vm.eval(harness);
   };
 
@@ -347,6 +448,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       vm = await loadVM(say);
       vm.eval(SHIM);
       evaluate();
+      repl.ask("RUBY_VERSION");
       run.textContent = "Re-run the laws";
       run.disabled = false;
       if (reset) reset.hidden = false;

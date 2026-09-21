@@ -26,6 +26,17 @@
         <pre id="highlight" aria-hidden="true"></pre>
         <textarea id="source" autocomplete="off"></textarea>
       </div>
+
+      <div class="console">
+        <div class="strip">
+          <span>console</span>
+          <div class="hint" id="hint"></div>
+        </div>
+        <div class="log" id="log"></div>
+        <form id="ask" autocomplete="off">
+          <input id="line" spellcheck="false" aria-label="Ruby to evaluate">
+        </form>
+      </div>
     </div>
 
     <aside class="pane side">
@@ -53,6 +64,11 @@
 
       <p class="head">notes</p>
       <p class="note">
+        The console under the code is a real irb against the same VM. <code>surface</code> is bound
+        to whatever the sliders say, locals persist between lines, and anything you redefine in the
+        editor is live there the moment you re-run.
+      </p>
+      <p class="note">
         A law is a module, not a class, because a law is not a kind of another law. What the
         chapters build up is <code>Surface</code> — a scenario, the boundary light arrives at — and
         each chapter states every law that holds there. Here that is exactly one.
@@ -75,6 +91,8 @@
 import { chapter, $, ray, label, stage, above, mirrored } from "../assets/phryzby.js";
 
 const HARNESS = String.raw`
+def surface = Surface.new(i: Console.inputs[:i].deg)
+
 def trace(i_deg)
   mirror = Surface.new(i: i_deg.deg)
   rl = mirror.angle_of_reflection
@@ -108,11 +126,21 @@ const page = await chapter({
     { key: "lib/light/reflection.rb", tab: 1 },
   ],
   harness: HARNESS,
+  examples: [
+    "surface.angle_of_reflection.in_degrees",
+    "Surface.new(rl: 55.deg).solve(:i).in_degrees",
+    "Reflection.equations[:law_of_reflection].to_s",
+    "Surface.variables.values.uniq",
+  ],
   onSolve(vm) {
     const i = +$("i").value;
     $("i-out").textContent = `${i.toFixed(1)}°`;
 
     if (!vm) { paint(i, null); return; }
+
+    // What the console's `surface` is built from, so the panel and the prompt
+    // are always looking at the same ray.
+    vm.eval(`Console.inputs = { i: ${i} }`);
 
     const [rl, holds] = vm.eval(`trace(${i})`).toString().split("|");
     const angle = rl === "" ? null : Number(rl);

@@ -26,6 +26,17 @@
         <pre id="highlight" aria-hidden="true"></pre>
         <textarea id="source" autocomplete="off"></textarea>
       </div>
+
+      <div class="console">
+        <div class="strip">
+          <span>console</span>
+          <div class="hint" id="hint"></div>
+        </div>
+        <div class="log" id="log"></div>
+        <form id="ask" autocomplete="off">
+          <input id="line" spellcheck="false" aria-label="Ruby to evaluate">
+        </form>
+      </div>
     </div>
 
     <aside class="pane side">
@@ -73,6 +84,10 @@
 
       <p class="head">notes</p>
       <p class="note">
+        The console under the code is a real irb against the same VM. Locals persist between lines, and anything you redefine in the
+        editor is live there the moment you re-run.
+      </p>
+      <p class="note">
         Solving knows nothing about which side of the equals sign anything was on. It finds the
         equation that mentions the unknown and nothing else unknown, then finds a root of
         <code>left − right</code> — Newton first, bisection when Newton wanders off the branch the
@@ -117,6 +132,13 @@ const page = await chapter({
   showEngine: true,
   files: [ { key: "lib/pythagoras.rb", tab: 99 } ],
   harness: HARNESS,
+  examples: [
+    "Pythagoras.equations[:pythagoras].to_s",
+    "Pythagoras.equations[:pythagoras].class",
+    "Pythagoras.new(a: 3, b: 4).solve(:c)",
+    "Pythagoras.new(b: 4, c: 5).solve(:a)",
+    "Physics::Solver.root(->(x) { Math.sin(x) }, within: 2.0..4.0)",
+  ],
   onSolve(vm) {
     const unknown = $("unknown").value;
     FIELDS.forEach((id) => {

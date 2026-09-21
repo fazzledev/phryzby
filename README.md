@@ -89,7 +89,15 @@ Two well-known numbers fall out of Fresnel rather than being stated anywhere:
 ## The demo
 
 **[Open it](https://fazzle.dev/phryzby/)** — one page per chapter: file tree on
-the left, the law in the middle, the demo on the right. Each
+the left, the law in the middle, the demo on the right, and an irb under the
+code running against the same VM. Edit a law, re-run, and ask it anything:
+
+```
+>> surface.critical_angle.in_degrees
+=> 41.81031489575402
+>> Surface.new(rl: 55.deg).solve(:i).in_degrees
+=> 55.0
+``` Each
 downloads CRuby compiled to WebAssembly (about 30 MB, cached across pages) and
 `fetch`es the `.rb` files out of this repository, so the page runs the same
 bytes the tests run. Edit a law in the page and run it again; delete a `within:`

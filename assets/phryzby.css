@@ -145,3 +145,32 @@ button.ghost{background:transparent;color:var(--ink-mid);border-color:var(--rule
 .toc .d{display:block;font-size:.81rem;color:var(--ink-soft);margin-top:.15rem;}
 .part{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
   color:var(--ink-soft);margin:1.8rem 0 .4rem;}
+
+/* --- the console --------------------------------------------------------- */
+.console{flex:0 0 auto;display:flex;flex-direction:column;border-top:1px solid var(--rule);
+  background:var(--wash);max-height:44%;}
+.console .strip{display:flex;align-items:baseline;gap:.5rem;padding:.45rem .9rem;
+  border-bottom:1px solid var(--rule);}
+.console .strip span{font-size:.66rem;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--ink-soft);font-weight:600;}
+.console .hint{display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;}
+.console .hint::-webkit-scrollbar{display:none;}
+.console .try{font-family:var(--mono);font-size:.68rem;padding:.12rem .45rem;border-radius:4px;
+  border:1px solid var(--rule);background:transparent;color:var(--ink-soft);white-space:nowrap;}
+.console .try:hover{color:var(--ink);border-color:var(--ink-soft);}
+.console .log{flex:1 1 auto;min-height:5.5rem;overflow:auto;padding:.5rem .9rem;
+  font-family:var(--mono);font-size:.76rem;line-height:1.6;}
+.console .log div{white-space:pre-wrap;word-break:break-word;}
+.console .said::before{content:">> ";color:var(--ink-soft);}
+.console .said{color:var(--ink);}
+.console .answered::before{content:"=> ";color:var(--ink-soft);}
+.console .answered{color:var(--ray);}
+.console .failed::before{content:"=> ";color:var(--ink-soft);}
+.console .failed{color:var(--red);}
+.console .printed{color:var(--ink-mid);}
+.console .warned{color:var(--ink-soft);font-style:italic;}
+.console form{display:flex;align-items:center;gap:.4rem;border-top:1px solid var(--rule);
+  padding:.35rem .9rem;}
+.console form::before{content:">>";font-family:var(--mono);font-size:.76rem;color:var(--ink-soft);}
+.console input{flex:1;border:0;background:transparent;outline:none;color:var(--ink);
+  font-family:var(--mono);font-size:.76rem;padding:.25rem 0;}

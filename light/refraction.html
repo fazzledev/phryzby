@@ -26,6 +26,17 @@
         <pre id="highlight" aria-hidden="true"></pre>
         <textarea id="source" autocomplete="off"></textarea>
       </div>
+
+      <div class="console">
+        <div class="strip">
+          <span>console</span>
+          <div class="hint" id="hint"></div>
+        </div>
+        <div class="log" id="log"></div>
+        <form id="ask" autocomplete="off">
+          <input id="line" spellcheck="false" aria-label="Ruby to evaluate">
+        </form>
+      </div>
     </div>
 
     <aside class="pane side">
@@ -65,6 +76,11 @@
 
       <p class="head">notes</p>
       <p class="note">
+        The console under the code is a real irb against the same VM. <code>surface</code> is bound
+        to whatever the sliders say, locals persist between lines, and anything you redefine in the
+        editor is live there the moment you re-run.
+      </p>
+      <p class="note">
         <code>within:</code> is doing real work here. <code>sin</code> is periodic, so Snell has
         infinitely many roots and only one of them is an angle light can take. Delete the domain
         from <code>angle_of_refraction</code>, run it again, and drag down to a few degrees:
@@ -93,6 +109,10 @@ def attempt
   yield
 rescue StandardError
   nil
+end
+
+def surface
+  Surface.between(Console.inputs[:mu1], Console.inputs[:mu2], i: Console.inputs[:i].deg)
 end
 
 def trace(i_deg, mu1, mu2)
@@ -140,6 +160,13 @@ const page = await chapter({
     { key: "lib/light/refraction.rb", tab: 1 },
   ],
   harness: HARNESS,
+  examples: [
+    "surface.angle_of_refraction.in_degrees",
+    "surface.critical_angle&.in_degrees",
+    "surface.traps?",
+    "Surface.new(i: 45.deg, rr: 28.9.deg, mu1: 1.0).second_medium",
+    "Surface.between(1.0, 1.33, i: 45.deg).angle_of_refraction.in_degrees",
+  ],
   onSolve(vm) {
     const i = +$("i").value, mu1 = +$("mu1").value, mu2 = +$("mu2").value;
     $("i-out").textContent = `${i.toFixed(2)}°`;
@@ -147,6 +174,10 @@ const page = await chapter({
     $("mu2-out").textContent = mu2.toFixed(2);
 
     if (!vm) { paint(i, null, null, false); return; }
+
+    // What the console's `surface` is built from, so the panel and the prompt
+    // are always looking at the same ray.
+    vm.eval(`Console.inputs = { i: ${i}, mu1: ${mu1}, mu2: ${mu2} }`);
 
     const [rr, rl, crit, tir] = vm.eval(`trace(${i}, ${mu1}, ${mu2})`).toString().split("|");
     const num = (s) => (s === "" ? null : Number(s));

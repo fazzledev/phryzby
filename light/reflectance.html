@@ -26,6 +26,17 @@
         <pre id="highlight" aria-hidden="true"></pre>
         <textarea id="source" autocomplete="off"></textarea>
       </div>
+
+      <div class="console">
+        <div class="strip">
+          <span>console</span>
+          <div class="hint" id="hint"></div>
+        </div>
+        <div class="log" id="log"></div>
+        <form id="ask" autocomplete="off">
+          <input id="line" spellcheck="false" aria-label="Ruby to evaluate">
+        </form>
+      </div>
     </div>
 
     <aside class="pane side">
@@ -67,6 +78,11 @@
 
       <p class="head">notes</p>
       <p class="note">
+        The console under the code is a real irb against the same VM. <code>surface</code> is bound
+        to whatever the sliders say, locals persist between lines, and anything you redefine in the
+        editor is live there the moment you re-run.
+      </p>
+      <p class="note">
         The two outgoing rays share the incident ray's width exactly, so four percent looks like
         four percent. Two well-known facts fall out of these equations rather than being stated:
         reflection reaches 1 at the critical angle, which is what the <em>total</em> in total
@@ -91,6 +107,10 @@ def attempt
   yield
 rescue StandardError
   nil
+end
+
+def surface
+  Surface.between(Console.inputs[:mu1], Console.inputs[:mu2], i: Console.inputs[:i].deg)
 end
 
 def trace(i_deg, mu1, mu2)
@@ -156,6 +176,12 @@ const page = await chapter({
     { key: "lib/light/reflectance.rb", tab: 1 },
   ],
   harness: HARNESS,
+  examples: [
+    "surface.reflected_share",
+    "surface.p_polarised_share",
+    "Surface.between(1.0, 1.5, i: Math.atan(1.5)).p_polarised_share",
+    "(1..89).map { |d| Surface.between(1.0, 1.5, i: d.deg).reflected_share.round(3) }",
+  ],
   onSolve(vm) {
     const i = +$("i").value, mu1 = +$("mu1").value, mu2 = +$("mu2").value;
     $("i-out").textContent = `${i.toFixed(2)}°`;
@@ -163,6 +189,10 @@ const page = await chapter({
     $("mu2-out").textContent = mu2.toFixed(2);
 
     if (!vm) { paint(i, null, false, null); return; }
+
+    // What the console's `surface` is built from, so the panel and the prompt
+    // are always looking at the same ray.
+    vm.eval(`Console.inputs = { i: ${i}, mu1: ${mu1}, mu2: ${mu2} }`);
 
     const [rr, tir, rs, rp, r] = vm.eval(`trace(${i}, ${mu1}, ${mu2})`).toString().split("|");
     const num = (s) => (s === "" ? null : Number(s));
