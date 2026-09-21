@@ -83,6 +83,12 @@ asking for the reflectance reaches back through five equations: the unpolarised
 mean needs both polarisations, each of those needs `rr`, and `rr` comes from
 Snell. Each step is a root found numerically, not a substitution.
 
+An equation prints back the notation it was written in, not the quantities
+underneath it — `snells_law.to_s` is `(mu2 / mu1) == (sin(i) / sin(rr))`. A
+`Var` carries both names: the quantity it is looked up by, and the variable it
+was typed as. Solving goes by the quantity, which is what lets two laws written
+in different letters agree about the same thing.
+
 ## `within:`
 
 `within:` is the branch a quantity physically lives on. Only the angles declare

@@ -116,6 +116,14 @@
         different unknown.
       </p>
       <p class="note">
+        <em>As it was written</em> means it. A <code>Var</code> carries two names: the quantity it
+        is looked up by, and the notation you typed — so <code>{ c ** 2 == a ** 2 + b ** 2 }</code>
+        prints back as itself rather than as
+        <code>hypotenuse ** 2 == leg_a ** 2 + leg_b ** 2</code>. Solving still goes by the
+        quantity, which is what lets two laws written in different letters agree about the same
+        thing.
+      </p>
+      <p class="note">
         Two vocabularies meet in this chapter, and the names say which is which.
         <code>expression.rb</code>, <code>equation.rb</code> and <code>solver.rb</code> are
         algebra: they hold <em>variables</em> and know no physics at all — grep them for the word

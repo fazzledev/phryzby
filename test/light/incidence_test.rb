@@ -25,7 +25,7 @@ class IncidenceTest < Minitest::Test
   def test_declaring_a_quantity_does_not_determine_it
     error = assert_raises(RuntimeError) { SURFACE.new.solve(:i) }
 
-    assert_match(/no equation determines angle_of_incidence/, error.message)
+    assert_match(/no equation determines the angle of incidence/, error.message)
   end
 
   def test_the_declared_branch_travels_with_the_quantity

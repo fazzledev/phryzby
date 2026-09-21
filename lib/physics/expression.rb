@@ -25,17 +25,22 @@ module Physics
     def to_s = @value.to_s
   end
 
+  # Two names: the one it is looked up by, and the one it was written as.
+  # Keeping both is what lets an equation print back the notation you chose.
   class Var < Expr
     attr_reader :name
 
-    def initialize(name) = @name = name
+    def initialize(name, written = name)
+      @name = name
+      @written = written
+    end
 
     def evaluate(env)
       env.fetch(@name) { raise KeyError, "no value for #{@name}" }
     end
 
     def variables = [ @name ]
-    def to_s = @name.to_s
+    def to_s = @written.to_s
   end
 
   class BinOp < Expr

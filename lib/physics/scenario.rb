@@ -44,7 +44,7 @@ module Physics
         @env.replace(restore)
       end
 
-      raise "no equation determines #{key} from what is known"
+      raise "no equation determines the #{key.to_s.tr("_", " ")} from what is known"
     end
 
     # A guarded equation states a special case, so it is tried before the

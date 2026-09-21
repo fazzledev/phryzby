@@ -9,8 +9,13 @@ class PythagorasTest < Minitest::Test
   end
 
   def test_the_equation_remembers_how_it_was_written
-    assert_equal "(hypotenuse ** 2) == ((leg_a ** 2) + (leg_b ** 2))",
+    assert_equal "(c ** 2) == ((a ** 2) + (b ** 2))",
                  Pythagoras.equations.fetch(:pythagoras).to_s
+  end
+
+  def test_it_remembers_the_notation_rather_than_the_quantity_it_stands_for
+    assert_equal %i[hypotenuse leg_a leg_b],
+                 Pythagoras.equations.fetch(:pythagoras).variables
   end
 
   def test_an_alias_and_its_full_name_are_the_same_variable

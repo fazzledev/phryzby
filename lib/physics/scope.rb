@@ -4,7 +4,7 @@ module Physics
 
     def method_missing(name, *args)
       return Fn.new(name, args.first) if FUNCTIONS.include?(name)
-      return Var.new(@names.fetch(name)) if @names.key?(name)
+      return Var.new(@names.fetch(name), name) if @names.key?(name)
 
       ::Kernel.raise ::NameError, "unknown name #{name} in a physics block"
     end
