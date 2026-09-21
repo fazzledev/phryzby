@@ -1,12 +1,9 @@
-require_relative "../physics"
+require_relative "refraction"
 
 module Reflectance
   extend Physics::Law
+  include Refraction
 
-  variable :angle_of_incidence,  alias: :i,  within: Physics::A_RIGHT_ANGLE
-  variable :angle_of_refraction, alias: :rr, within: Physics::A_RIGHT_ANGLE
-  variable :refractive_index_of_first_medium,  alias: :mu1
-  variable :refractive_index_of_second_medium, alias: :mu2
   variable :reflectance_s_polarised, alias: :rs
   variable :reflectance_p_polarised, alias: :rp
   variable :reflectance,             alias: :r

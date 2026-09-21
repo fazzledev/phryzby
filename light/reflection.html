@@ -138,7 +138,10 @@ function paint(i, rl) {
 
 const page = await chapter({
   page: "light/reflection.html",
-  files: [ { key: "lib/light/reflection.rb" } ],
+  files: [
+    { key: "lib/light/incidence.rb", tab: 2 },
+    { key: "lib/light/reflection.rb", tab: 1 },
+  ],
   harness: HARNESS,
   opening: [ "surface.solve(:rl).in_degrees" ],
   examples: [

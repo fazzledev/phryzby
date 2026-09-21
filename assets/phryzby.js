@@ -69,18 +69,23 @@ export const BOOK = [
   {
     group: "light",
     chapters: [
+      { page: "light/incidence.html", files: [ "lib/light/incidence.rb" ] },
       { page: "light/reflection.html", files: [ "lib/light/reflection.rb" ] },
       { page: "light/refraction.html", files: [ "lib/light/refraction.rb" ] },
       { page: "light/reflectance.html", files: [ "lib/light/reflectance.rb" ] },
+      { page: "light/total-internal-reflection.html",
+        files: [ "lib/light/total_internal_reflection.rb" ] },
     ],
   },
 ];
 
 const TITLES = {
   "engine.html": "0 · The engine",
-  "light/reflection.html": "1.1 · Reflection",
-  "light/refraction.html": "1.2 · Refraction",
-  "light/reflectance.html": "1.3 · Reflectance",
+  "light/incidence.html": "1.1 · Incidence",
+  "light/reflection.html": "1.2 · Reflection",
+  "light/refraction.html": "1.3 · Refraction",
+  "light/reflectance.html": "1.4 · Reflectance",
+  "light/total-internal-reflection.html": "1.5 · Total internal reflection",
 };
 
 // A file belonging to this page opens in the editor; one belonging to another
@@ -214,7 +219,7 @@ export const label = (x, y, text, fill = "var(--ink-soft)", anchor = "middle") =
 
 // The surface, the normal, and nothing else. `second` names the medium below
 // when there is one; a mirror has no below worth naming.
-export function stage({ second = null } = {}) {
+export function stage({ second = null, surface = "mirror" } = {}) {
   const faint = `stroke="var(--rule)" stroke-width="1"`;
   const parts = [
     second
@@ -228,7 +233,7 @@ export function stage({ second = null } = {}) {
     parts.push(label(294, 94, "μ₁", "var(--ink-soft)", "end"));
     parts.push(label(294, 114, "μ₂", "var(--ink-soft)", "end"));
   } else {
-    parts.push(label(294, 114, "mirror", "var(--ink-soft)", "end"));
+    parts.push(label(294, 114, surface, "var(--ink-soft)", "end"));
   }
   return parts;
 }
@@ -249,7 +254,7 @@ function autoRun(next) {
 }
 
 const LAYOUT = "phryzby.layout";
-const DEFAULTS = { tree: 240, side: 416, console: 208 };
+const DEFAULTS = { tree: 272, side: 416, console: 208 };
 
 const remembered = () => {
   try {

@@ -47,8 +47,24 @@ module Physics
       raise "no equation determines #{key} from what is known"
     end
 
+    # A guarded equation states a special case, so it is tried before the
+    # general one it stands in for. Without that the answer would depend on
+    # the order the laws happened to be included in.
     def candidates(key)
-      self.class.equations.values.select { |equation| equation.variables.include?(key) }
+      applicable = self.class.equations.select do |name, equation|
+        equation.variables.include?(key) && applies?(name)
+      end
+
+      special, general = applicable.partition { |name, _| self.class.guards.key?(name) }
+      (special + general).map(&:last)
+    end
+
+    def applies?(name)
+      guard = self.class.guards[name]
+
+      guard.nil? || satisfies?(guard)
+    rescue KeyError
+      false
     end
 
     def supply(equation, key, pending)

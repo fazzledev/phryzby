@@ -18,15 +18,15 @@ costs exactly what a true one does.
 ```ruby
 module Refraction
   extend Physics::Law
+  include Incidence
 
-  variable :angle_of_incidence,  alias: :i,  within: Physics::A_RIGHT_ANGLE
   variable :angle_of_refraction, alias: :rr, within: Physics::A_RIGHT_ANGLE
   variable :refractive_index_of_first_medium,  alias: :mu1
   variable :refractive_index_of_second_medium, alias: :mu2
 
   equation(:snells_law) { mu2 / mu1 == sin(i) / sin(rr) }
 
-  condition(:total_internal_reflection) { sin(i) * mu1 / mu2 > 1 }
+  condition(:no_refracted_ray) { sin(i) * mu1 / mu2 > 1 }
 end
 ```
 
@@ -51,11 +51,12 @@ angle anywhere in this repository — it is Snell asked with the refracted ray
 lying flat along the surface, which is the last angle that still has one.
 `Math.asin(1.0 / 1.5).in_degrees` agrees to ten decimal places.
 
-A law states what it is about where it is written: the full name of each
-quantity, the short name the equation uses, and the branch it lives on. Nothing
-is borrowed from elsewhere, so a law file can be read on its own. Two laws
-naming the same quantity mean the same variable — they unify on the name, which
-is why a scenario can hold both.
+A law states what it is about where it is written. What it shares with another
+law it gets by including it: `Incidence` says once what an arriving ray is, and
+`Reflection` and `Refraction` both begin `include Incidence`. That is the same
+`include` that composes a law into a scenario — `Physics::Law` absorbs
+declarations the moment it is included, whether the thing including it is
+another law or the scenario being solved.
 
 The equation block is evaluated against those declarations and can see nothing
 else, so a quantity the law never named is a `NameError` at declaration rather
@@ -102,16 +103,46 @@ A law is a module, not a class, because a law is not a kind of another law.
 
 | | | |
 |---|---|---|
-| 1.1 | `Reflection` | one equation; what it means for `==` to build rather than compare |
-| 1.2 | `Refraction` | Snell, declared domains, total internal reflection as a condition |
-| 1.3 | `Reflectance` | Fresnel: three equations, and the solver reaching back through Snell |
+| 1.1 | `Incidence` | one quantity and no law; declaring is not solving |
+| 1.2 | `Reflection` | the first equation; what it means for `==` to build rather than compare |
+| 1.3 | `Refraction` | Snell, declared domains, and the critical angle as a question not a formula |
+| 1.4 | `Reflectance` | Fresnel: three equations, and the solver reaching back through Snell |
+| 1.5 | `TotalInternalReflection` | a law that only sometimes holds |
 
-Two well-known numbers fall out of Fresnel rather than being stated anywhere:
+Brewster's angle falls out of Fresnel rather than being stated anywhere: the
+p-polarised share reaches 0 at `atan(mu2 / mu1)`, which is why polarised
+sunglasses cut glare off water.
 
-- reflection reaches 1 exactly at the critical angle, which is what the *total*
-  in total internal reflection means
-- the p-polarised share reaches 0 at Brewster's angle, which is why polarised
-  sunglasses cut glare off water
+## A law that only sometimes holds
+
+Past the critical angle every Fresnel equation is stuck, because each needs a
+refracted angle and Snell has none to give. What happens there is a different
+law, and chapter 1.5 states it as one:
+
+```ruby
+module TotalInternalReflection
+  extend Physics::Law
+  include Reflectance
+
+  equation(:everything_reflects, when: :no_refracted_ray) { r == 1 }
+end
+```
+
+`when:` names a condition declared by a law underneath — refraction's statement
+that Snell has no solution. The solver passes over any equation whose guard is
+unsatisfied, and prefers a guarded one when both apply, because a special case
+is the one that means something.
+
+```ruby
+surface = Physics::Scenario[Reflection, TotalInternalReflection]
+
+surface.new(i: 41.81.deg, mu1: 1.5, mu2: 1.0).solve(:r)  # => 0.979855, Fresnel
+surface.new(i: 41.82.deg, mu1: 1.5, mu2: 1.0).solve(:r)  # => 1.0, this law
+```
+
+Nothing outside the laws decides which. That matters because it used to: the
+reflectance page had `[1.0, 1.0, 1.0]` written into its JavaScript, and it was
+the one claim on the site not made by a law.
 
 ## The demo
 
@@ -134,14 +165,16 @@ the same bytes the tests run. Edit a law in the page and run it again; delete a
 ## Running it
 
 ```
-ruby test/physics_test.rb               #  8 runs,  17 assertions
-ruby test/physics/law_test.rb           #  3 runs,   4 assertions
-ruby test/physics/quantities_test.rb    #  7 runs,  10 assertions
-ruby test/physics/solver_test.rb        #  8 runs,   8 assertions
-ruby test/pythagoras_test.rb            #  8 runs,  10 assertions
-ruby test/light/reflection_test.rb      #  9 runs,  10 assertions
-ruby test/light/refraction_test.rb      # 15 runs, 107 assertions
-ruby test/light/reflectance_test.rb     # 11 runs, 195 assertions
+ruby test/physics_test.rb                        #  8 runs,  17 assertions
+ruby test/physics/law_test.rb                    #  7 runs,   8 assertions
+ruby test/physics/quantities_test.rb             #  7 runs,  10 assertions
+ruby test/physics/solver_test.rb                 #  8 runs,   8 assertions
+ruby test/pythagoras_test.rb                     #  8 runs,  10 assertions
+ruby test/light/incidence_test.rb                #  6 runs,  11 assertions
+ruby test/light/reflection_test.rb               #  9 runs,  10 assertions
+ruby test/light/refraction_test.rb               # 15 runs, 107 assertions
+ruby test/light/reflectance_test.rb              # 11 runs, 195 assertions
+ruby test/light/total_internal_reflection_test.rb #  6 runs, 105 assertions
 ```
 
 No gems, no build step, and no comments — the prose is on the pages. Ruby 3.4.
@@ -155,14 +188,15 @@ lib/physics/
   equation.rb          Equation and Comparison: what a declaration block returns
   scope.rb             the object a declaration block runs against
   quantities.rb        declaring a quantity, and borrowing one with `uses`
-  law.rb               Declarations, and Law — a module a scenario absorbs
+  law.rb               Declarations, Law, and `when:` — a guard on an equation
   solver.rb            Newton, bisection, and which one to believe
   scenario.rb          composing laws, choosing an equation, solving what it needs
   angles.rb            Numeric#deg, #in_degrees, and the branch an angle lives on
-lib/light/*.rb         one law per file, declaring its own quantities
+lib/light/incidence.rb what every optical law includes
+lib/light/*.rb         one law per file, each including the one before it
 test/                  mirrors lib/
 assets/phryzby.js      the tree, highlighting, the editor, booting CRuby — no build step
 assets/phryzby.css
 index.html             contents
-light/*.html           one page per chapter
+light/*.html           one page per chapter, five of them
 ```

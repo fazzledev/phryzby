@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Total internal reflection — phryzby</title>
+<link rel="stylesheet" href="../assets/phryzby.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <a class="brand" href="../">phryzby</a>
+    <span class="where">light <strong>/ total internal reflection</strong></span>
+    <span class="grow"></span>
+    <span class="status" id="status">Nothing is computed until Ruby boots.</span>
+    <label class="toggle"><input type="checkbox" id="auto"> auto-run</label>
+    <button id="reset" class="ghost" title="Put this repository's own code back, discarding your edits" hidden>Revert edits</button>
+    <button id="run">Run in Ruby</button>
+  </header>
+
+  <div class="panes">
+    <nav class="pane tree" id="tree" aria-label="Files"></nav>
+
+    <div class="pane code">
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="editor">
+        <div class="gutter" id="gutter" aria-hidden="true"></div>
+        <pre id="highlight" aria-hidden="true"></pre>
+        <textarea id="source" autocomplete="off"></textarea>
+      </div>
+
+      <div class="console">
+        <div class="strip">
+          <span>console</span>
+          <div class="hint" id="hint"></div>
+        </div>
+        <div class="log" id="log"></div>
+        <form id="ask" autocomplete="off">
+          <input id="line" spellcheck="false" aria-label="Ruby to evaluate">
+        </form>
+      </div>
+    </div>
+
+    <aside class="pane side">
+      <h1>Total internal reflection <small>— a law that only sometimes holds</small></h1>
+      <p class="lede">
+        Chapter 1.4 ran out of answers past the critical angle: every Fresnel equation needs a
+        refracted angle and there is not one. This chapter states what happens instead —
+        <code>r == 1</code> — and states it <em>conditionally</em>, so the solver reaches for it
+        only in the regime where it is true. One equation, one <code>when:</code>, and the word
+        <em>total</em> stops being a claim in prose.
+      </p>
+
+      <p class="head">the trap</p>
+      <svg id="diagram" viewBox="0 0 300 200" aria-label="A ray trapped at an interface"></svg>
+
+      <div class="field" style="margin-top:.9rem">
+        <label for="i">incidence</label>
+        <input type="range" id="i" min="0.5" max="89.5" step="0.01" value="30">
+        <output id="i-out">30.00°</output>
+      </div>
+      <div class="field">
+        <label for="mu1">μ₁ first</label>
+        <input type="range" id="mu1" min="1" max="2.5" step="0.01" value="1.50">
+        <output id="mu1-out">1.50</output>
+      </div>
+      <div class="field">
+        <label for="mu2">μ₂ second</label>
+        <input type="range" id="mu2" min="1" max="2.5" step="0.01" value="1.00">
+        <output id="mu2-out">1.00</output>
+      </div>
+
+      <div class="out">
+        <div><span>critical angle</span><span class="val" id="r-crit">—</span></div>
+        <div class="alarm"><span>no refracted ray</span><span class="val" id="r-tir">—</span></div>
+        <div><span>reflected</span><span class="val" id="r-r">—</span></div>
+        <div><span>solved from</span><span class="val" id="r-eq">—</span></div>
+      </div>
+
+      <p class="head">notes</p>
+      <p class="note">
+        Drag the dividers to resize the panes; double-click one to put it back. Tick
+        <em>auto-run</em> and the laws re-evaluate when you stop typing, and the page boots Ruby
+        by itself next time. Both settings are remembered between visits.
+      </p>
+      <p class="note">
+        Anything you change is marked the way an editor marks it: a bar in the gutter beside every
+        line you touched — green for new, blue for altered — a red wedge where lines were taken
+        out, a dot on the tab and an <strong>M</strong> in the tree. <em>Revert edits</em> puts
+        this repository's own text back.
+      </p>
+      <p class="note">
+        Open μ₁ above μ₂ and drag the angle past the critical value. Watch <em>solved from</em>
+        change: below it the answer comes from <code>:unpolarised</code>, the Fresnel mean; above
+        it from <code>:everything_reflects</code>. Nothing chooses between them by hand. The solver
+        skips any equation whose guard is not satisfied, and prefers a guarded one when both apply,
+        because a special case is the one that means something.
+      </p>
+      <p class="note">
+        The condition itself is not declared here. It belongs to refraction — it is the statement
+        that Snell has no solution — so this chapter names it rather than restating it. That is
+        what <code>include Reflectance</code> is for: the conditions, equations and quantities of
+        every law underneath arrive with it.
+      </p>
+      <p class="note">
+        Fresnel gets there on its own, very nearly. At the critical angle itself the reflected
+        share is 0.99999, and the ray is not trapped yet. A hundredth of a degree later there is no
+        refracted angle to compute with, and the answer is exactly 1 because a law says so. Try
+        <code>surface_at(41.8103).solve(:r)</code> against
+        <code>surface_at(41.82).solve(:r)</code>.
+      </p>
+      <p class="note">
+        This is what keeps light inside an optical fibre. The glass is denser than what surrounds
+        it, the ray meets the wall at a shallow angle, and there is nowhere for it to go.
+      </p>
+    </aside>
+  </div>
+</div>
+
+<script type="module">
+import { chapter, $, ray, label, stage, above, mirrored, below } from "../assets/phryzby.js";
+
+const HARNESS = String.raw`
+def attempt
+  yield
+rescue StandardError
+  nil
+end
+
+def trapping = Physics::Scenario[Reflection, TotalInternalReflection]
+
+def surface
+  trapping.new(i: Console.inputs[:i].deg, mu1: Console.inputs[:mu1], mu2: Console.inputs[:mu2])
+end
+
+def surface_at(degrees)
+  trapping.new(i: degrees.deg, mu1: Console.inputs[:mu1], mu2: Console.inputs[:mu2])
+end
+
+def critical_angle(mu1, mu2)
+  return nil unless mu2 < mu1
+
+  Physics::Scenario[Refraction].new(mu1: mu1, mu2: mu2, rr: 90.deg).solve(:i)
+end
+
+def trace(i_deg, mu1, mu2)
+  light = trapping.new(i: i_deg.deg, mu1: mu1, mu2: mu2)
+  trapped = attempt { light.satisfies?(:no_refracted_ray) }
+  reflected = attempt { light.solve(:r) }
+
+  [ attempt { critical_angle(mu1, mu2) }&.in_degrees,
+    trapped,
+    reflected,
+    (trapped ? ":everything_reflects" : ":unpolarised"),
+    (attempt { light.solve(:rr) }&.in_degrees unless trapped),
+    attempt { light.solve(:rl) }&.in_degrees ]
+    .map { |value| value.nil? ? "" : value.to_s }.join("|")
+end
+`;
+
+const FULL = 3;
+const percent = (share) => `${(share * 100).toFixed(0)}%`;
+
+function paint(i, rr, trapped, reflected) {
+  const refracted = reflected == null ? null : 1 - reflected;
+  const parts = stage({ second: true });
+  const [ix, iy] = above(i);
+  parts.push(ray(ix, iy, 150, 100, FULL, 0.95));
+  parts.push(label(ix, iy - 6, "incident", "var(--ray)"));
+
+  const [fx, fy] = mirrored(i);
+  const weight = reflected == null ? FULL / 2 : FULL * reflected;
+  parts.push(ray(150, 100, fx, fy, weight, reflected == null ? 0.6 : 0.32 + 0.68 * reflected));
+  parts.push(label(fx + 4, fy - 6,
+    reflected == null ? "reflected" : `reflected ${percent(reflected)}`, "var(--ray)"));
+
+  if (rr != null && refracted != null && refracted > 1e-9) {
+    const [rx, ry] = below(rr);
+    parts.push(ray(150, 100, rx, ry, FULL * refracted, 0.32 + 0.68 * refracted));
+    parts.push(label(rx + 4, ry + 12, `refracted ${percent(refracted)}`, "var(--ray)"));
+  }
+  if (trapped) {
+    parts.push(label(150, 162, "trapped — every ray turns back", "var(--red)"));
+  }
+  $("diagram").innerHTML = parts.join("");
+}
+
+const degrees = (v) => (v == null ? "—" : `${v.toFixed(2)}°`);
+
+const page = await chapter({
+  page: "light/total-internal-reflection.html",
+  files: [
+    { key: "lib/light/incidence.rb", tab: 5 },
+    { key: "lib/light/reflection.rb", tab: 4 },
+    { key: "lib/light/refraction.rb", tab: 3 },
+    { key: "lib/light/reflectance.rb", tab: 2 },
+    { key: "lib/light/total_internal_reflection.rb", tab: 1 },
+  ],
+  harness: HARNESS,
+  opening: [ "surface.solve(:r)" ],
+  examples: [
+    "surface.solve(:r)",
+    "surface.satisfies?(:no_refracted_ray)",
+    "surface_at(41.8103).solve(:r)",
+    "surface_at(41.82).solve(:r)",
+    "TotalInternalReflection.guards",
+  ],
+  onSolve(vm) {
+    const i = +$("i").value, mu1 = +$("mu1").value, mu2 = +$("mu2").value;
+    $("i-out").textContent = `${i.toFixed(2)}°`;
+    $("mu1-out").textContent = mu1.toFixed(2);
+    $("mu2-out").textContent = mu2.toFixed(2);
+
+    if (!vm) { paint(i, null, false, null); return; }
+
+    vm.eval(`Console.inputs = { i: ${i}, mu1: ${mu1}, mu2: ${mu2} }`);
+
+    const [crit, tir, r, chosen, rr] =
+      vm.eval(`trace(${i}, ${mu1}, ${mu2})`).toString().split("|");
+    const num = (s) => (s === "" ? null : Number(s));
+    const trapped = tir === "" ? null : tir === "true";
+
+    $("r-crit").textContent = crit === "" ? "none" : degrees(num(crit));
+    $("r-tir").textContent = trapped == null ? "—" : (trapped ? "yes" : "no");
+    $("r-r").textContent = num(r) == null ? "—" : `${(num(r) * 100).toFixed(4)}%`;
+    $("r-eq").textContent = num(r) == null ? "—" : chosen;
+    paint(i, num(rr), trapped, num(r));
+  },
+});
+
+[ "i", "mu1", "mu2" ].forEach((id) => $(id).addEventListener("input", () => page.refresh()));
+page.refresh();
+</script>
+</body>
+</html>

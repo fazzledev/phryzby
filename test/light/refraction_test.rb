@@ -102,6 +102,6 @@ class RefractionTest < Minitest::Test
   end
 
   def traps?(from:, into:, at:)
-    ray(from: from, into: into, i: at).satisfies?(:total_internal_reflection)
+    ray(from: from, into: into, i: at).satisfies?(:no_refracted_ray)
   end
 end

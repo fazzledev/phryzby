@@ -73,7 +73,7 @@
         <div><span>angle of refraction</span><span class="val" id="r-rr">—</span></div>
         <div><span>angle of reflection</span><span class="val" id="r-rl">—</span></div>
         <div><span>critical angle</span><span class="val" id="r-crit">—</span></div>
-        <div class="alarm"><span>total internal reflection</span><span class="val" id="r-tir">—</span></div>
+        <div class="alarm"><span>no refracted ray</span><span class="val" id="r-tir">—</span></div>
       </div>
 
       <p class="head">notes</p>
@@ -145,7 +145,7 @@ end
 
 def trace(i_deg, mu1, mu2)
   light = Physics::Scenario[Reflection, Refraction].new(i: i_deg.deg, mu1: mu1, mu2: mu2)
-  trapped = attempt { light.satisfies?(:total_internal_reflection) }
+  trapped = attempt { light.satisfies?(:no_refracted_ray) }
 
   [ (attempt { light.solve(:rr) } unless trapped),
     attempt { light.solve(:rl) },
@@ -183,6 +183,7 @@ const degrees = (v) => (v == null ? "—" : `${v.toFixed(2)}°`);
 const page = await chapter({
   page: "light/refraction.html",
   files: [
+    { key: "lib/light/incidence.rb", tab: 3 },
     { key: "lib/light/reflection.rb", tab: 2 },
     { key: "lib/light/refraction.rb", tab: 1 },
   ],
@@ -190,7 +191,7 @@ const page = await chapter({
   opening: [ "surface.solve(:rr).in_degrees" ],
   examples: [
     "surface.solve(:rr).in_degrees",
-    "surface.satisfies?(:total_internal_reflection)",
+    "surface.satisfies?(:no_refracted_ray)",
     "Physics::Scenario[Refraction].new(mu1: 1.5, mu2: 1.0, rr: 90.deg).solve(:i).in_degrees",
     "Physics::Scenario[Refraction].new(i: 45.deg, rr: 28.9.deg, mu1: 1.0).solve(:mu2)",
   ],

@@ -5,7 +5,7 @@
   --op:#4A4A4A; --str:#3C8A3C; --new:#1A7F37;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
-  --tree:15rem; --side:26rem;
+  --tree:17rem; --side:26rem;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
