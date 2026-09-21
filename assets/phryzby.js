@@ -502,16 +502,6 @@ function align(before, after) {
   return ops;
 }
 
-// equation(:snells_law) { ... } or equation(:s_polarised) do ... end — the
-// law is put back the way the file already writes it.
-function restate(source, name, expression) {
-  const inline = new RegExp(`((?:equation|condition)\\(:${name}\\)[^\\n{]*\\{)[^}]*(\\})`);
-  if (inline.test(source)) return source.replace(inline, `$1 ${expression} $2`);
-
-  const block = new RegExp(`((?:equation|condition)\\(:${name}\\)[^\\n]*do\\n)[\\s\\S]*?\\n(\\s*)end`);
-  return source.replace(block, (_, head, indent) => `${head}${indent}  ${expression}\n${indent}end`);
-}
-
 function mountEditor(files, { tabs, pre, textarea, gutter },
                      { announce = () => {}, changed = () => {} } = {}) {
   let active = 0;
@@ -580,15 +570,6 @@ function mountEditor(files, { tabs, pre, textarea, gutter },
   show(0);
   return {
     remember,
-    holds: (key) => files.some((file) => file.key === key),
-    put: (key, code) => {
-      const index = files.findIndex((file) => file.key === key);
-      if (index < 0) return;
-
-      files[index].code = code;
-      if (index === active) textarea.value = code;
-      repaint();
-    },
     showPath: (key) => show(Math.max(0, files.findIndex((file) => file.key === key))),
     // Not via show(), whose first act is to remember the textarea — which is
     // exactly the text being thrown away.
@@ -729,94 +710,6 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   // Every constant any run has defined, so a module renamed in the editor
   // takes its old name away with it.
   const defined = new Set(loaded.flatMap((file) => declared(file.original)));
-
-  // Clicking a drawn part of a law changes that part of the law. Nothing is
-  // typed in Ruby: the tree is rebuilt, printed, and put back in its file.
-  const OPERATORS = [ [ "+", "+" ], [ "\u2212", "-" ], [ "\u00d7", "*" ],
-                      [ "\u00f7", "/" ], [ "^", "**" ] ];
-
-  const offer = (kind) => {
-    if (kind === "operator") return OPERATORS;
-
-    const [ quantities, functions ] = vm.eval(`Physics.offered(${presents})`).toString().split("\u0000");
-    if (kind === "function") return functions.split("\u0002").map((name) => [ name, name ]);
-
-    return quantities.split("\u0002").map((pair) => pair.split("\u0001"));
-  };
-
-  const apply = (figure, spot, value) => {
-    const answer = vm.eval(
-      `Physics.restate(${presents}, :${figure.dataset.name}, ` +
-      `${asRubyString(spot.dataset.at)}, ${asRubyString(spot.dataset.kind)}, ${asRubyString(value)})`,
-    ).toString();
-
-    const [ module, expression ] = answer.split("\u0001");
-    const file = loaded.find((one) => declared(one.code).includes(module));
-    if (!file || !editor.holds(file.key)) return say(`${module} is not open here`, true);
-
-    editor.put(file.key, restate(file.code, figure.dataset.name, expression));
-    rerun();
-  };
-
-  const chooser = (spot, choices, current, onPick) => {
-    const box = document.createElement("div");
-    box.className = "chooser";
-
-    if (choices) {
-      const list = document.createElement("select");
-      choices.forEach(([ label, value ]) => list.add(new Option(label, value, false, value === current)));
-      list.addEventListener("change", () => onPick(list.value));
-      box.append(list);
-    } else {
-      const field = document.createElement("input");
-      field.value = current;
-      field.inputMode = "decimal";
-      field.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") onPick(field.value.trim());
-      });
-      box.append(field);
-    }
-
-    const near = spot.getBoundingClientRect();
-    box.style.left = `${Math.max(8, near.left - 4)}px`;
-    box.style.top = `${near.bottom + 6}px`;
-    document.body.append(box);
-    box.firstChild.focus();
-    return box;
-  };
-
-  let open = null;
-  const shut = () => { open?.remove(); open = null; };
-
-  if (presents) {
-    document.addEventListener("pointerdown", (event) => {
-      if (open && !open.contains(event.target)) shut();
-    }, true);
-
-    // Only the innermost part lights up, or a symbol would light its fraction
-    // and its equation with it.
-    $("statement").addEventListener("pointermove", (event) => {
-      const spot = event.target.closest("[data-at]");
-      $("statement").querySelectorAll(".hot").forEach((node) => node.classList.remove("hot"));
-      if (spot) spot.classList.add("hot");
-    });
-
-    $("statement").addEventListener("click", (event) => {
-      const spot = event.target.closest("[data-at]");
-      const figure = event.target.closest("figure.law");
-      if (!spot || !figure || !vm) return;
-
-      shut();
-      const kind = spot.dataset.kind;
-      const current = kind === "quantity" || kind === "function" || kind === "number"
-        ? spot.textContent.trim() : null;
-
-      open = chooser(spot, kind === "number" ? null : offer(kind), current, (value) => {
-        shut();
-        apply(figure, spot, value);
-      });
-    });
-  }
 
   const evaluate = () => {
     editor.remember();

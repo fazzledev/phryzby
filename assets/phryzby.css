@@ -249,17 +249,3 @@ figure.condition{border-style:dashed;}
 figure.law figcaption{font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;
   text-transform:uppercase;color:var(--ink-soft);margin-top:.5rem;}
 figure.law .when{margin-left:.55rem;color:var(--ray);text-transform:none;letter-spacing:0;}
-
-/* --- changing a law by touching it ---------------------------------------- */
-figure.law [data-at]{cursor:pointer;}
-figure.law .hot{background:color-mix(in srgb, var(--ray) 22%, transparent);border-radius:3px;}
-figure.law{position:relative;}
-figure.law figcaption::after{content:"click any part to change it";float:right;opacity:0;
-  text-transform:none;letter-spacing:0;transition:opacity .12s;}
-figure.law:hover figcaption::after{opacity:.55;}
-
-.chooser{position:fixed;z-index:50;background:var(--paper);border:1px solid var(--rule);
-  border-radius:6px;padding:.3rem;box-shadow:0 8px 28px rgba(0,0,0,.3);}
-.chooser select,.chooser input{font-family:var(--mono);font-size:.78rem;color:var(--ink);
-  background:var(--paper);border:1px solid var(--rule);border-radius:4px;
-  padding:.25rem .4rem;outline:none;min-width:8rem;}

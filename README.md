@@ -104,16 +104,6 @@ Refraction.to_html
 #    which law it came from, and every equation and condition as MathML
 ```
 
-Every drawn part carries where it lives in the tree, so it can be clicked and
-changed — a number, a quantity, a function, an operator. The tree is rebuilt at
-that spot, printed back into the file that declared it, and re-run. Nobody has
-to write Ruby to change a law of physics; clicking the `2` in `c² = a² + b²`
-and typing `3` rewrites `pythagoras.rb` and the answer moves from 5 to 8.544.
-
-Which file changes is worked out rather than assumed: absorbing copies a law
-downward, so the module that wrote it is the furthest ancestor that still has
-it. Edit Snell from the reflectance page and `refraction.rb` is what changes.
-
 No renderer is loaded to draw it; browsers do MathML natively, which keeps
 "no gems, no build step" literally true. What the module cannot produce is the
 prose and the diagrams — prose has nowhere to live in a file with no comments,
