@@ -49,6 +49,39 @@ class LawTest < Minitest::Test
     Physics::Scenario[law].new(**values)
   end
 
+  # A law being edited in a running VM is declared over and over. Each time
+  # has to replace what was there, or a name you have thought better of goes
+  # on being part of the law.
+  def test_declaring_a_law_again_replaces_what_it_said
+    law = self.class.law do
+      quantity :first
+      equation(:only) { first == 1 }
+    end
+
+    law.instance_eval do
+      extend Physics::Law
+      quantity :second
+      equation(:other) { second == 2 }
+    end
+
+    assert_equal %i[second], law.quantities.values.uniq
+    assert_equal %i[other], law.equations.keys
+  end
+
+  def test_a_law_it_includes_is_taken_up_again_too
+    nouns = Module.new { extend Physics::Quantities; quantity :borrowed }
+    law = self.class.law { }
+
+    law.instance_eval do
+      extend Physics::Law
+      include nouns
+      quantity :own
+    end
+
+    assert_equal %i[borrowed own], law.quantities.values.uniq
+  end
+
+
   def self.trivial
     law { quantity :thing; equation(:trivial) { thing == 1 } }
   end
