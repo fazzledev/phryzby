@@ -1,4 +1,4 @@
-require_relative "quantities"
+require_relative "optics"
 
 module Refraction
   extend Physics::Law

@@ -24,8 +24,10 @@ class Interface < Physics::Model
 end
 ```
 
-A quantity is declared once, in `lib/light/quantities.rb`, with its symbol and
-the branch it lives on. A law then says which quantities it mentions — and it
+A quantity is declared once, in `lib/light/optics.rb`, with its symbol and the
+branch it lives on. That file is a catalogue, not a law: it extends
+`Physics::Quantities`, so it has no equations and cannot be included into a
+model to smuggle its whole contents in. A law then says which quantities it mentions — and it
 has to name them all, because the equation block is evaluated against the law's
 own variables and can see nothing else.
 
@@ -82,7 +84,8 @@ domain and watch the solver wander off the physical branch.
 
 ```
 ruby test/physics_test.rb               #  8 runs,  17 assertions
-ruby test/physics/law_test.rb           #  8 runs,  11 assertions
+ruby test/physics/law_test.rb           #  3 runs,   4 assertions
+ruby test/physics/quantities_test.rb    #  7 runs,  10 assertions
 ruby test/physics/solver_test.rb        #  7 runs,   7 assertions
 ruby test/pythagoras_test.rb            #  8 runs,  10 assertions
 ruby test/light/reflection_test.rb      #  7 runs,   7 assertions
@@ -100,11 +103,12 @@ lib/physics/
   expression.rb        Expr, Const, Var, BinOp, Fn — every operator returns a node
   equation.rb          Equation and Comparison: what a declaration block returns
   scope.rb             the object a declaration block runs against
+  quantities.rb        declaring a quantity, and borrowing one with `uses`
   law.rb               Declarations, and Law — a module a model absorbs
   solver.rb            Newton, bisection, and which one to believe
   model.rb             holding values, choosing an equation, solving
   degrees.rb           Numeric#deg and #in_degrees
-lib/light/quantities.rb  every optical quantity, declared once
+lib/light/optics.rb    every optical quantity, declared once
 lib/light/*.rb         one law per file, plus the Interface that includes it
 test/                  mirrors lib/
 assets/phryzby.js      the tree, highlighting, the editor, booting CRuby — no build step

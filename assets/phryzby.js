@@ -20,7 +20,9 @@ export const $ = (id) => document.getElementById(id);
 const ROOT = new URL("../", import.meta.url);
 const at = (path) => new URL(path, ROOT).href;
 
-const PARTS = [ "expression", "equation", "scope", "law", "solver", "model", "degrees" ];
+const PARTS = [
+  "expression", "equation", "scope", "quantities", "law", "solver", "model", "degrees",
+];
 
 // Order is the order the requires in lib/physics.rb imply.
 export const ENGINE = PARTS.map((part) => `lib/physics/${part}.rb`);
@@ -36,7 +38,7 @@ export const BOOK = [
   {
     group: "light",
     dir: "lib/light/",
-    files: [ "lib/light/quantities.rb" ],
+    files: [ "lib/light/optics.rb" ],
     chapters: [
       { page: "light/reflection.html", files: [ "lib/light/reflection.rb" ] },
       { page: "light/refraction.html", files: [ "lib/light/refraction.rb" ] },

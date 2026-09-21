@@ -1,7 +1,7 @@
 require_relative "../physics"
 
 module Optics
-  extend Physics::Law
+  extend Physics::Quantities
 
   RIGHT_ANGLE = 0.0..(Math::PI / 2)
   INDEX = 1.0..4.0

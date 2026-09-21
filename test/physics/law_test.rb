@@ -3,7 +3,7 @@ require_relative "../../lib/physics"
 
 class LawTest < Minitest::Test
   CATALOGUE = Module.new do
-    extend Physics::Law
+    extend Physics::Quantities
 
     variable :angle, alias: :a, within: 0.0..1.5
     variable :width, alias: :w, within: 0.0..9.0
@@ -18,32 +18,6 @@ class LawTest < Minitest::Test
     model = Class.new(Physics::Model) { include LawTest.trivial }
 
     assert model.equations.key?(:trivial)
-  end
-
-  def test_uses_brings_the_alias_with_it
-    borrower = law { uses CATALOGUE, :a }
-
-    assert_equal :angle, borrower.variables.fetch(:a)
-    assert_equal :angle, borrower.variables.fetch(:angle)
-  end
-
-  def test_uses_brings_the_domain_with_it
-    assert_equal 0.0..1.5, law { uses CATALOGUE, :a }.domains.fetch(:angle)
-  end
-
-  def test_a_quantity_with_no_domain_declares_none
-    refute law { uses CATALOGUE, :d }.domains.key?(:depth)
-  end
-
-  def test_uses_takes_only_what_it_names
-    borrower = law { uses CATALOGUE, :a }
-
-    refute borrower.variables.key?(:w)
-    refute borrower.variables.key?(:width)
-  end
-
-  def test_a_quantity_that_is_not_in_the_catalogue_is_an_error
-    assert_raises(KeyError) { law { uses CATALOGUE, :nonesuch } }
   end
 
   def test_two_laws_can_name_the_same_quantity
