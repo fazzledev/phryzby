@@ -11,6 +11,37 @@ const BINARY = "https://cdn.jsdelivr.net/npm/@ruby/3.4-wasm-wasi@2.10.1/dist/rub
 // the page is meant to be showing you.
 const SHIM = "def require_relative(_path) = true\n";
 
+// Re-running has to start from the same place every time. Ruby will happily
+// reopen a module that is no longer in the file, so what a run defines is
+// taken away before the next one begins — but only what these files defined,
+// never anything that was there before them.
+const RELOAD = String.raw`
+module Reload
+  def self.remember = @present = Object.constants
+
+  def self.check(source)
+    RubyVM::InstructionSequence.compile(source)
+    ""
+  rescue SyntaxError => e
+    e.message.lines.first.to_s.strip
+  end
+
+  def self.forget(names)
+    names.each do |name|
+      key = name.to_sym
+      next if @present.include?(key)
+
+      Object.send(:remove_const, key) if Object.const_defined?(key, false)
+    end
+  end
+end
+`;
+
+// module Refraction / class Numeric — what a file puts at the top level.
+const DECLARES = /^\s*(?:module|class)\s+([A-Z]\w*)/gm;
+
+const declared = (source) => [ ...source.matchAll(DECLARES) ].map((found) => found[1]);
+
 // The console runs against the top-level binding, so locals persist between
 // lines and every constant the laws defined is in scope. Printed output comes
 // back alongside the value, the way irb shows both.
@@ -676,9 +707,25 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     if (into && presents) into.innerHTML = vm.eval(`${presents}.to_html`).toString();
   };
 
+  // Every constant any run has defined, so a module renamed in the editor
+  // takes its old name away with it.
+  const defined = new Set(loaded.flatMap((file) => declared(file.original)));
+
   const evaluate = () => {
     editor.remember();
-    loaded.forEach((file) => vm.eval(file.code));
+    const sources = loaded.map((file) => file.code);
+
+    // Nothing is taken away until everything parses, so a half-typed law
+    // leaves the working one standing.
+    sources.forEach((source) => {
+      const bad = vm.eval(`Reload.check(${asRubyString(source)})`).toString();
+      if (bad) throw new Error(bad);
+
+      declared(source).forEach((name) => defined.add(name));
+    });
+
+    vm.eval(`Reload.forget(${JSON.stringify([ ...defined ])})`);
+    sources.forEach((source) => vm.eval(source));
     vm.eval(CONSOLE);
     if (harness) vm.eval(harness);
     present();
@@ -703,6 +750,8 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       say("Fetching CRuby…");
       vm = await loadVM(say);
       vm.eval(SHIM);
+      vm.eval(RELOAD);
+      vm.eval("Reload.remember");
       evaluate();
       run.textContent = "Re-run the laws";
       if (reset) reset.hidden = false;

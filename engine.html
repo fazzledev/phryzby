@@ -126,6 +126,12 @@
         thing.
       </p>
       <p class="note">
+        Re-running starts from where the first run started. Ruby will reopen a module that is no
+        longer in the file, so everything these files defined is taken away before the next run
+        defines it again — and nothing is taken away until every file parses, which is why a
+        half-typed law leaves the working one standing rather than half-replacing it.
+      </p>
+      <p class="note">
         The panel above was not written; it was generated. <code>notation.rb</code> walks the same
         tree the solver walks and emits MathML instead of a root, so a law states itself — its
         quantities, what each is written as, the branch it lives on, and every equation typeset.
