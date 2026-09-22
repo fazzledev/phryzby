@@ -7,7 +7,6 @@ play_with Reflection do
 
   input :i, default: 30.deg
 
-  output :i
   output :rl
 
   draw Light::Picture do
