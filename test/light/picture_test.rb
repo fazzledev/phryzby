@@ -147,4 +147,14 @@ class PictureTest < Minitest::Test
     assert_in_delta upper, lower, 1e-9
   end
 
+  def bands(svg) = svg.scan(%r{>(\u03bc[^<]*)</text>}).flatten
+
+  def test_a_band_is_named_when_its_index_is_one_anybody_knows
+    assert_equal [ "\u03bc\u2081 water", "\u03bc\u2082 diamond" ], bands(drawn(mu1: 1.33, mu2: 2.42))
+  end
+
+  def test_and_is_only_its_symbol_between_them
+    assert_equal [ "\u03bc\u2081 air", "\u03bc\u2082" ], bands(drawn(mu1: 1.0, mu2: 2.0))
+  end
+
 end

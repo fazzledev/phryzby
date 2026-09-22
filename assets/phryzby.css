@@ -145,7 +145,20 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
 .field{display:grid;grid-template-columns:7.4rem 1fr 4.4rem;gap:.5rem;align-items:center;
   margin-bottom:.5rem;}
 .field label{font-size:.8rem;color:var(--ink-mid);}
-.field input[type=range]{width:100%;accent-color:var(--ray);}
+.field input[type=range]{width:100%;accent-color:var(--ray);display:block;}
+.field .track{position:relative;}
+.marks{position:relative;height:1.2rem;margin-bottom:.1rem;}
+.mark{position:absolute;bottom:0;transform:translateX(-50%);width:1rem;padding:0;border:0;
+  background:transparent;cursor:pointer;}
+.mark::before{content:"";display:block;width:2px;height:.4rem;margin:0 auto;
+  background:var(--ink-soft);opacity:.55;border-radius:1px;transition:all .1s;}
+.mark:hover::before,.mark:focus-visible::before,.mark.on::before{
+  background:var(--ray);opacity:1;height:.62rem;width:3px;}
+.mark span{position:absolute;left:50%;bottom:.5rem;transform:translateX(-50%);
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.02em;color:var(--ink-soft);
+  white-space:nowrap;opacity:0;transition:opacity .1s;pointer-events:none;}
+.mark:hover span,.mark:focus-visible span{opacity:1;color:var(--ink);}
+.mark.on span{opacity:1;color:var(--ray);}
 .field select{font:inherit;font-size:.8rem;padding:.3rem;grid-column:2/4;
   background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:5px;}
 .field output{font-family:var(--mono);font-size:.8rem;text-align:right;line-height:1.25;}

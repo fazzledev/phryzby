@@ -71,16 +71,26 @@ class ShowingTest < Minitest::Test
     assert_equal :mu1, showing.written_for(:refractive_index_of_first_medium)
     assert_equal :i, showing.written_for(:angle_of_incidence)
   end
-  def test_a_marked_input_offers_the_marks_to_aim_at
+  def test_a_marked_input_draws_a_notch_at_each_mark
     controls = showing.controls
 
-    assert_includes controls, 'list="mu1-marks"'
-    assert_includes controls, '<option value="1.5" label="glass">'
-    assert_includes controls, '<option value="2.42" label="diamond">'
+    assert_equal 12, controls.scan(/class="mark"/).size
+    assert_includes controls, 'data-set="1.5" data-for="mu1"'
   end
 
-  def test_an_unmarked_input_offers_none
-    refute_includes showing.controls, 'list="i-marks"'
+  # Laid along the run the handle actually travels, not the whole width.
+  def test_a_notch_sits_where_its_value_falls_along_the_track
+    controls = showing.controls
+
+    assert_includes controls, "* 0.0)"
+    assert_includes controls, "* 0.4733)"
+    assert_includes controls, "* 0.9667)"
+  end
+
+  def test_an_unmarked_input_draws_none
+    incidence = showing.controls[/<label for="i".*?<\/div><output/m]
+
+    refute_includes incidence, "mark"
   end
 
   def test_a_reading_says_what_it_is_sitting_on

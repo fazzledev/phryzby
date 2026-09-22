@@ -1,5 +1,8 @@
 module Physics
   class Showing
+    HANDLE = "0.85rem".freeze
+    HALF_HANDLE = "0.425rem".freeze
+
     UNITS = {
       degrees: ->(value) { format("%.2f°", value.in_degrees) },
       percent: ->(value) { format("%.1f%%", value * 100) },
@@ -115,27 +118,39 @@ module Physics
     def controls
       @inputs.map do |name, set|
         "<div class=\"field\"><label for=\"#{name}\">#{set[:as] || named(name)}</label>" \
-          "<input type=\"range\" id=\"#{name}\" data-input=\"#{name}\" min=\"#{set[:range].begin}\" " \
-          "max=\"#{set[:range].end}\" step=\"#{set[:step]}\" value=\"#{set[:at]}\"" \
-          "#{ticks(name, set)}>" \
-          "<output id=\"#{name}-out\">#{reading(set, set[:at])}</output></div>#{marked(name, set)}"
+          "<div class=\"track\">#{marked(name, set)}" \
+          "<input type=\"range\" id=\"#{name}\" data-input=\"#{name}\" " \
+          "min=\"#{set[:range].begin}\" max=\"#{set[:range].end}\" step=\"#{set[:step]}\" " \
+          "value=\"#{set[:at]}\"></div>" \
+          "<output id=\"#{name}-out\">#{reading(set, set[:at])}</output></div>"
       end.join
     end
 
-    # Notches the slider can be aimed at, and the name of whatever it is
-    # sitting on.
-    def ticks(name, set)
-      return "" if set[:marks].empty?
-
-      " list=\"#{name}-marks\""
-    end
-
+    # Notches along the track, at the values somebody would recognise. Each is
+    # worth aiming at, so each is worth pressing.
     def marked(name, set)
       return "" if set[:marks].empty?
 
-      options = set[:marks].map { |called, value| "<option value=\"#{value}\" label=\"#{called}\">" }
+      span = set[:range].end - set[:range].begin
+      notches = set[:marks].map do |called, value|
+        # A slider's handle travels inset by its own width, not edge to edge,
+        # so a notch has to be laid along the same shorter run.
+        along = ((value - set[:range].begin) / span).round(4)
 
-      "<datalist id=\"#{name}-marks\">#{options.join}</datalist>"
+        "<button type=\"button\" class=\"mark\" data-set=\"#{value}\" data-for=\"#{name}\" " \
+          "style=\"left:calc(#{HALF_HANDLE} + (100% - #{HANDLE}) * #{along})\" " \
+          "title=\"#{called}\"><span>#{called}</span></button>"
+      end
+
+      "<div class=\"marks\">#{notches.join}</div>"
+    end
+
+    # What a value is standing on, if it is standing on anything.
+    def standing_on(name, value)
+      set = @inputs[name]
+      return nil unless set && value
+
+      set[:marks].find { |_, at| (at - value).abs < set[:step] / 2 + 1e-9 }&.first
     end
 
     def reading(set, value)

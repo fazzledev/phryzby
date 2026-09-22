@@ -18,8 +18,8 @@ module Light
 
     def media(first, second)
       @shapes.unshift(ground(shade(value(first)), 0), ground(shade(value(second))), rule, upright)
-      want(symbol(first), [ [ 294, 94, "end" ] ], fixed: true)
-      want(symbol(second), [ [ 294, 114, "end" ] ], fixed: true)
+      want(named_band(first), [ [ 294, 94, "end" ] ], fixed: true)
+      want(named_band(second), [ [ 294, 114, "end" ] ], fixed: true)
       name_the_upright
     end
 
@@ -161,6 +161,14 @@ module Light
               "5" => "₅", "6" => "₆", "7" => "₇", "8" => "₈", "9" => "₉" }.freeze
 
     # mu1 is a mu with a one under it, the same reading the typeset law uses.
+    # The symbol, and what the medium is if it is one anybody has a name for.
+    def named_band(name)
+      held = value(name)
+      called = held && @scenario.class.showing_of.standing_on(name, held)
+
+      called ? "#{symbol(name)} #{called}" : symbol(name)
+    end
+
     def symbol(name)
       written = @scenario.class.showing_of.written_for(name).to_s
       stem = Physics::GREEK.find { |greek| written.start_with?(greek) }

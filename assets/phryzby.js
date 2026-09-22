@@ -791,6 +791,13 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       // Ruby wrote this, and it may carry a caption under the number.
       const shown = document.getElementById(`${name}-out`);
       if (shown) shown.innerHTML = text;
+
+      // And the notch it is standing on lights up.
+      const control = document.getElementById(name);
+      document.querySelectorAll(`.mark[data-for="${name}"]`).forEach((notch) => {
+        notch.classList.toggle("on",
+          Math.abs(Number(notch.dataset.set) - Number(control.value)) < Number(control.step) / 2);
+      });
     });
   };
 
@@ -818,9 +825,21 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     move();
   };
 
-  if (shows) $("demo").addEventListener("input", (event) => {
-    if (event.target.dataset.input) move();
-  });
+  if (shows) {
+    $("demo").addEventListener("input", (event) => {
+      if (event.target.dataset.input) move();
+    });
+
+    // A notch is worth pressing, not only aiming at.
+    $("demo").addEventListener("click", (event) => {
+      const notch = event.target.closest(".mark");
+      if (!notch) return;
+
+      const control = document.getElementById(notch.dataset.for);
+      control.value = notch.dataset.set;
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
 
   const evaluate = () => {
     editors.forEach((one) => one.remember());
