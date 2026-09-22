@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bending light — phryzby</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="../assets/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../assets/phryzby.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <a class="brand" href="../">phryzby</a>
+    <span class="where">light <strong>/ bending light</strong></span>
+    <span class="grow"></span>
+    <span class="status" id="status">Nothing is computed until Ruby boots.</span>
+    <label class="toggle"><input type="checkbox" id="auto"> auto-run</label>
+    <button id="reset" class="ghost" title="Put this repository's own code back, discarding your edits" hidden>Revert edits</button>
+    <button id="run">Run in Ruby</button>
+  </header>
+
+  <div class="panes">
+    <nav class="pane tree" id="tree" aria-label="Files"></nav>
+
+    <div class="pane code">
+      <div class="split">
+        <section class="half">
+          <div class="tabs" id="tabs" role="tablist"></div>
+          <div class="editor">
+            <div class="gutter" id="gutter" aria-hidden="true"></div>
+            <pre id="highlight" aria-hidden="true"></pre>
+            <textarea id="source" autocomplete="off"></textarea>
+          </div>
+          <section class="stated" id="law"></section>
+        </section>
+        <section class="half">
+          <div class="tabs" id="playground-tabs" role="tablist"></div>
+          <div class="editor">
+            <div class="gutter" id="playground-gutter" aria-hidden="true"></div>
+            <pre id="playground-highlight" aria-hidden="true"></pre>
+            <textarea id="playground-source" autocomplete="off"></textarea>
+          </div>
+        </section>
+      </div>
+
+      <div class="console">
+        <div class="strip">
+          <span>console</span>
+          <div class="hint" id="hint"></div>
+        </div>
+        <div class="log" id="log"></div>
+        <form id="ask" autocomplete="off">
+          <input id="line" spellcheck="false" aria-label="Ruby to evaluate">
+        </form>
+      </div>
+    </div>
+
+    <aside class="pane side">
+      <section id="heading"></section>
+      <section id="demo"></section>
+    </aside>
+  </div>
+</div>
+
+<script type="module">
+import { chapter } from "../assets/phryzby.js";
+
+await chapter({
+  page: "light/bending-light.html",
+  files: [
+    { key: "lib/light/incidence.rb", tab: 2 },
+    { key: "lib/light/refraction.rb", tab: 1 },
+  ],
+  playground: "lib/playground/light/bending_light.rb",
+  opening: [ "surface.solve(:rr).in_degrees" ],
+  examples: [
+    "surface.solve(:rr).in_degrees",
+    "surface.solve(:i).in_degrees",
+    "surface.as_posed",
+    "Physics::Scenario.including(Refraction).new(i: 30.deg, mu21: 1.33).solve(:rr).in_degrees",
+  ],
+});
+</script>
+</body>
+</html>

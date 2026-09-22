@@ -105,7 +105,9 @@ export const BOOK = [
     chapters: [
       { page: "light/incidence.html", files: [ "lib/light/incidence.rb" ] },
       { page: "light/reflection.html", files: [ "lib/light/reflection.rb" ] },
-      { page: "light/refraction.html", files: [ "lib/light/refraction.rb" ] },
+      { page: "light/bending-light.html", files: [ "lib/light/refraction.rb" ] },
+      { page: "light/water-to-air.html", files: [] },
+      { page: "light/refraction.html", files: [] },
       { page: "light/internal-reflection.html", files: [] },
       { page: "light/critical-angle.html", files: [] },
       { page: "light/refractive-index.html", files: [ "lib/light/refractive_index.rb" ] },
@@ -120,12 +122,14 @@ const TITLES = {
   "engine.html": "0 · The engine",
   "light/incidence.html": "1.1 · Incidence",
   "light/reflection.html": "1.2 · Reflection",
-  "light/refraction.html": "1.3 · Refraction",
-  "light/internal-reflection.html": "1.4 · Internal reflection",
-  "light/critical-angle.html": "1.5 · Critical angle",
-  "light/refractive-index.html": "1.6 · Refractive index",
-  "light/reflectance.html": "1.7 · Reflectance",
-  "light/total-internal-reflection.html": "1.8 · Total internal reflection",
+  "light/bending-light.html": "1.3 · Bending light",
+  "light/water-to-air.html": "1.4 · Water to air",
+  "light/refraction.html": "1.5 · Refraction",
+  "light/internal-reflection.html": "1.6 · Internal reflection",
+  "light/critical-angle.html": "1.7 · Critical angle",
+  "light/refractive-index.html": "1.8 · Refractive index",
+  "light/reflectance.html": "1.9 · Reflectance",
+  "light/total-internal-reflection.html": "1.10 · Total internal reflection",
 };
 
 // A file belonging to this page opens in the editor; one belonging to another

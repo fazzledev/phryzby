@@ -1,5 +1,6 @@
 require_relative "../physics"
 require_relative "placing"
+require_relative "refractive_media"
 
 module Light
   class Picture
@@ -197,6 +198,7 @@ module Light
 
     def value(name)
       return name if name.is_a?(Numeric)
+      return REFRACTIVE_MEDIA.fetch(name) if name.is_a?(String)
       return @chosen[name] if @chosen.key?(name)
       return @scenario.instance_exec(&name) if name.is_a?(Proc)
 
@@ -216,7 +218,11 @@ module Light
     end
 
     # The symbol, and what the medium is if it is one anybody has a name for.
+    # A chapter that holds its two media says which they are, and that is the
+    # whole of the name.
     def named_band(name)
+      return name if name.is_a?(String)
+
       held = value(name)
       ground = @scenario.class.playground
       called = held && ground.standing_on(name, held)

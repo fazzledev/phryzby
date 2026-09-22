@@ -255,7 +255,7 @@ module Physics
     # A chosen name stands for what it is worth, and a `given` turns what was
     # chosen into something a law has a quantity for.
     def posed(values)
-      return values if @chosen.empty?
+      return values if @given.empty?
 
       here = Data.define(*@chosen.keys).new(**worths(values))
 
