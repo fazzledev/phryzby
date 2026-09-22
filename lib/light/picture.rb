@@ -257,8 +257,9 @@ module Light
     end
 
     # Denser reads denser. Refraction turns on the ratio of the two indices,
-    # so what matters is that the halves can be told apart at a glance.
-    THINNEST = 0.04
+    # so what matters is that the halves can be told apart at a glance. Air is
+    # μ = 1 and gets nothing: with nothing in the way, nothing is on the page.
+    THINNEST = 0.0
     PER_INDEX = 0.34
     THICKEST = 0.62
 
