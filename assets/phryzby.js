@@ -109,6 +109,7 @@ export const BOOK = [
       { page: "light/water-to-air.html", files: [] },
       { page: "light/internal-reflection.html", files: [] },
       { page: "light/critical-angle.html", files: [] },
+      { page: "light/relative-refractive-index.html", files: [] },
       { page: "light/refractive-index.html", files: [ "lib/light/refractive_index.rb" ] },
       { page: "light/any-two-media.html", files: [] },
       { page: "light/reflectance.html", files: [ "lib/light/reflectance.rb" ] },
@@ -126,10 +127,11 @@ const TITLES = {
   "light/water-to-air.html": "1.4 · Refraction: Water to Air",
   "light/internal-reflection.html": "1.5 · Internal Reflection",
   "light/critical-angle.html": "1.6 · Critical Angle",
-  "light/refractive-index.html": "1.7 · Refractive Index",
-  "light/any-two-media.html": "1.8 · Any Two Media",
-  "light/reflectance.html": "1.9 · Reflectance",
-  "light/total-internal-reflection.html": "1.10 · Total Internal Reflection",
+  "light/relative-refractive-index.html": "1.7 · Relative Refractive Index",
+  "light/refractive-index.html": "1.8 · Refractive Index",
+  "light/any-two-media.html": "1.9 · Any Two Media",
+  "light/reflectance.html": "1.10 · Reflectance",
+  "light/total-internal-reflection.html": "1.11 · Total Internal Reflection",
 };
 
 // A file belonging to this page opens in the editor; one belonging to another
