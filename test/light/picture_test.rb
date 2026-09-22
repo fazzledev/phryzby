@@ -144,6 +144,21 @@ class PictureTest < Minitest::Test
     assert_operator thick, :>, thin
   end
 
+  def test_no_two_media_anybody_has_a_name_for_are_shaded_alike
+    seen = MEDIA.values.map { |index| shades(drawn(mu1: index, mu2: 1.0)).first }
+
+    assert_equal seen, seen.uniq
+  end
+
+  # A straight line had to stop somewhere, and everything past there was the
+  # same shade as everything else past there.
+  def test_and_the_shade_keeps_rising_past_where_a_straight_line_would_stop
+    seen = [ 3.2, 3.9, 6.0, 10.0 ].map { |index| shades(drawn(mu1: index, mu2: 1.0)).first }
+
+    assert_equal seen.sort, seen
+    assert_equal seen, seen.uniq
+  end
+
   def test_two_media_alike_are_shaded_alike
     upper, lower = shades(drawn(mu1: 1.4, mu2: 1.4))
 

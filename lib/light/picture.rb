@@ -259,14 +259,17 @@ module Light
     # Denser reads denser. Refraction turns on the ratio of the two indices,
     # so what matters is that the halves can be told apart at a glance. Air is
     # μ = 1 and gets nothing: with nothing in the way, nothing is on the page.
-    THINNEST = 0.0
-    PER_INDEX = 0.34
+    #
+    # There is no densest medium, so the scale approaches its limit instead of
+    # stopping at one. A straight line had to stop, and everything past where
+    # it stopped was the same shade as everything else past it.
     THICKEST = 0.62
+    SPREAD = 1.6
 
     def shade(index)
       return 0.3 unless index
 
-      [ THINNEST + (index - 1) * PER_INDEX, THICKEST ].min.round(3)
+      (THICKEST * (1 - Math.exp(-(index - 1) / SPREAD))).round(3)
     end
 
     def rule = %(<line x1="0" y1="100" x2="300" y2="100" stroke="var(--rule)" stroke-width="1"/>)
