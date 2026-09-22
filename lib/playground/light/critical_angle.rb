@@ -5,24 +5,21 @@ require_relative "../../light/picture"
 
 play_with Reflection, Refraction do
   title "Critical angle"
-  description "Leaving a denser medium there is an angle past which nothing gets out, and nothing here says what it is."
+  description "The angle found by sliding in the last chapter has a name and a value, and no new law is needed to say what it is: Snell asked backwards, with the refracted ray lying flat along the surface."
 
   input :i, default: 30.deg
-  input :from, REFRACTIVE_MEDIA, default: "glass"
-  input :into, REFRACTIVE_MEDIA, default: "air"
-
-  input(:mu21) { into / from }
+  input(:mu21) { REFRACTIVE_MEDIA.fetch("air") / REFRACTIVE_MEDIA.fetch("water") }
 
   output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
   output :rr
   output :no_refracted_ray, alarm: true
 
   draw Light::Picture do
-    media :from, :into
+    media "water", "air"
     ray "incident",  arriving_at: :i, angle: true
     ray "reflected", leaving_at:  :rl
     ray "refracted", crossing_at: :rr, angle: true, unless: :no_refracted_ray
     mark "critical", arriving_at: -> { asking(:i, rr: 90.deg) }
-    note "no refracted ray", when: :no_refracted_ray
+    note "all of it turns back", when: :no_refracted_ray
   end
 end
