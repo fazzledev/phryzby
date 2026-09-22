@@ -117,9 +117,14 @@ module Physics
   end
 
   # A demonstration answers to the law it is about, which is a name that
-  # already means something. Nothing has to be invented to hold it.
-  def self.shown(law) = (@shown ||= {}).fetch(law)
-  def self.shows(law, scenario) = (@shown ||= {})[law] = scenario
+  # already means something. Asked for nothing in particular, it is the one
+  # last declared — a page loads one demonstration, and which law that one is
+  # about is the file's business rather than the page's.
+  def self.shown(law = nil) = law ? (@shown ||= {}).fetch(law) : @latest
+  def self.shows(law, scenario)
+    (@shown ||= {})[law] = scenario
+    @latest = scenario
+  end
 
   class Scenario
     def self.showing(&block)

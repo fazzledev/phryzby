@@ -682,7 +682,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   // point.
   const shown = shows
     ? [ { key: "lib/light/picture.rb", hidden: true },
-        { key: shows.file, label: "shown.rb", tab: 1.5 } ]
+        { key: shows, label: "shown.rb", tab: 1.5 } ]
     : [];
   const loaded = await fetchRuby([ ...engine, ...files, ...shown ]);
   const tabbed = loaded.filter((file) => !file.hidden)
@@ -711,9 +711,9 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
 
   let markTree = () => {};
   const halves = [
-    [ tabbed.filter((file) => file.key !== shows?.file),
+    [ tabbed.filter((file) => file.key !== shows),
       { tabs: $("tabs"), pre: $("highlight"), textarea: $("source"), gutter: $("gutter") } ],
-    [ tabbed.filter((file) => file.key === shows?.file),
+    [ tabbed.filter((file) => file.key === shows),
       { tabs: $("shown-tabs"), pre: $("shown-highlight"),
         textarea: $("shown-source"), gutter: $("shown-gutter") } ],
   ];
@@ -771,13 +771,13 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     const pairs = [ ...document.querySelectorAll("#demo [data-vary]") ]
       .map((control) => `${control.dataset.vary}: ${control.value}`);
 
-    return pairs.length ? `{ ${pairs.join(", ")} }` : `Physics.shown(${shows.law}).showing_of.opening`;
+    return pairs.length ? `{ ${pairs.join(", ")} }` : `Physics.shown.showing_of.opening`;
   };
 
   const move = () => {
     vm.eval(`Console.inputs = ${reading()}`);
     const [ picture, readouts, labels ] =
-      vm.eval(`Physics.shown(${shows.law}).showing_of.moved(${reading()})`).toString().split("\u0000");
+      vm.eval(`Physics.shown.showing_of.moved(${reading()})`).toString().split("\u0000");
 
     $("picture").innerHTML = picture;
     $("readouts").innerHTML = readouts;
@@ -798,8 +798,8 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     const held = [ ...document.querySelectorAll("#demo [data-vary]") ]
       .map((control) => [ control.dataset.vary, control.value ]);
 
-    $("law").innerHTML = vm.eval(`Physics.shown(${shows.law}).showing_of.law.to_html`).toString();
-    $("demo").innerHTML = vm.eval(`Physics.shown(${shows.law}).showing_of.to_html(${reading()})`).toString();
+    $("law").innerHTML = vm.eval(`Physics.shown.showing_of.law.to_html`).toString();
+    $("demo").innerHTML = vm.eval(`Physics.shown.showing_of.to_html(${reading()})`).toString();
 
     // Re-rendering draws the controls back at their declared start, so where
     // they had been dragged to is put back.
@@ -808,7 +808,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       if (control) control.value = value;
     });
 
-    vm.eval(`def surface = Physics.shown(${shows.law}).new(**Console.inputs)`);
+    vm.eval(`def surface = Physics.shown.new(**Console.inputs)`);
     move();
   };
 
