@@ -77,9 +77,9 @@ await chapter({
   opening: [ "surface.solve(:rr).in_degrees" ],
   examples: [
     "surface.solve(:rr).in_degrees",
-    "surface.solve(:mu21)",
-    "surface.satisfies?(:no_refracted_ray)",
-    "Physics::Scenario.including(Refraction).new(i: 45.deg, mu21: 1.5).solve(:rr).in_degrees",
+    "surface.solve(:i).in_degrees",
+    "surface.as_posed",
+    "Physics::Scenario.including(Refraction).new(i: 30.deg, mu21: 1.33).solve(:rr).in_degrees",
   ],
 });
 </script>

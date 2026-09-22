@@ -4,26 +4,16 @@ require_relative "../../light/picture"
 
 play_with Refraction do
   title "Refraction"
-  description "A ray crossing into another medium bends, and the two media together decide which way."
+  description "Crossing from air into water a ray bends toward the normal. The two angles are neither equal nor proportional; what they hold to is a ratio of their sines."
 
-  input :from, REFRACTIVE_MEDIA
-  input :into, REFRACTIVE_MEDIA, default: "glass"
+  input :i, default: 30.deg
+  input(:mu21) { REFRACTIVE_MEDIA.fetch("water") / REFRACTIVE_MEDIA.fetch("air") }
 
-  input(:i)    { 45.deg }
-  input(:mu21) { into / from }
-
-  output("bends") do
-    turned = solve(:rr) - solve(:i)
-    next "not at all" if turned.abs < 1e-6
-
-    turned.negative? ? "toward the normal" : "away from the normal"
-  end
-  output :no_refracted_ray, alarm: true
+  output :rr
 
   draw Light::Picture do
-    media :from, :into
-    ray "incident",  arriving_at: :i, extended: true
-    ray "refracted", crossing_at: :rr, unless: :no_refracted_ray
-    note "no refracted ray", when: :no_refracted_ray
+    media "air", "water"
+    ray "incident",  arriving_at: :i,  angle: true
+    ray "refracted", crossing_at: :rr, angle: true
   end
 end

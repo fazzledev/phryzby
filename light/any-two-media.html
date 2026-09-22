@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bending light — phryzby</title>
+<title>Any two media — phryzby</title>
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="../assets/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
@@ -13,7 +13,7 @@
 <div class="app">
   <header class="bar">
     <a class="brand" href="../">phryzby</a>
-    <span class="where">light <strong>/ bending light</strong></span>
+    <span class="where">light <strong>/ any two media</strong></span>
     <span class="grow"></span>
     <span class="status" id="status">Nothing is computed until Ruby boots.</span>
     <label class="toggle"><input type="checkbox" id="auto"> auto-run</label>
@@ -68,18 +68,18 @@
 import { chapter } from "../assets/phryzby.js";
 
 await chapter({
-  page: "light/bending-light.html",
+  page: "light/any-two-media.html",
   files: [
     { key: "lib/light/incidence.rb", tab: 2 },
     { key: "lib/light/refraction.rb", tab: 1 },
   ],
-  playground: "lib/playground/light/bending_light.rb",
+  playground: "lib/playground/light/any_two_media.rb",
   opening: [ "surface.solve(:rr).in_degrees" ],
   examples: [
     "surface.solve(:rr).in_degrees",
-    "surface.solve(:i).in_degrees",
-    "surface.as_posed",
-    "Physics::Scenario.including(Refraction).new(i: 30.deg, mu21: 1.33).solve(:rr).in_degrees",
+    "surface.solve(:mu21)",
+    "surface.satisfies?(:no_refracted_ray)",
+    "Physics::Scenario.including(Refraction).new(i: 45.deg, mu21: 1.5).solve(:rr).in_degrees",
   ],
 });
 </script>
