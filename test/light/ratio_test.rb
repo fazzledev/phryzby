@@ -24,6 +24,14 @@ class RatioTest < Minitest::Test
     assert_includes playing.controls, %(data-input="mu21")
   end
 
+  # The chapters before this one hold the pair and vary the angle. This one
+  # holds the angle, because the pair is what it is about.
+  def test_the_ratio_is_the_only_thing_to_move
+    assert_equal [ :mu21 ], opening.keys
+    assert_equal 1, playing.controls.scan(/data-input=/).size
+    assert_in_delta 30.0, playing.posing(**opening).solve(:i).in_degrees, 1e-9
+  end
+
   # Above one it bends toward the normal and there is no angle it cannot
   # cross at; below one it bends away and eventually cannot cross at all.
   def test_the_ratio_alone_decides_which_way_and_whether

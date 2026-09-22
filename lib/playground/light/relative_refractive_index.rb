@@ -8,8 +8,9 @@ play_with Reflection, Refraction do
   title "Relative Refractive Index"
   description "The crossing held for four chapters was one number all along, and here it is on a slider. Nothing in the law says which two media make it, only what the two of them come to together."
 
-  input :i, default: 30.deg
-  input :mu21, RATIO, default: 0.75, marks: { "alike" => 1.0 }
+  input :mu21, RATIO, default: 0.75, marks: { "critical" => 0.5, "alike" => 1.0 }
+
+  input(:i) { 30.deg }
 
   output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
   output :rr
