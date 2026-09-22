@@ -87,8 +87,14 @@ module Physics
     # chapter: a tenth of a degree, a hundredth of an index.
     FINELY = { degrees: 0.1.deg, number: 0.01 }.freeze
 
-    def input(name, range, default:, in: nil, as: nil, marks: {})
+    # An angle is already held within a domain, and a slider can run it. Not
+    # quite to the ends: square on and edge on are both degenerate pictures.
+    SHY = 0.5.deg
+
+    def input(name, range = nil, default:, in: nil, as: nil, marks: {})
       units = binding.local_variable_get(:in) || read_as(name)
+      held = @scenario.domains[@scenario.quantities[name]]
+      range ||= (held.begin + SHY)..(held.end - SHY)
 
       @inputs[name] = { range: range, step: FINELY.fetch(units, 0.01), default: default,
                         as: as, marks: marks, units: units }

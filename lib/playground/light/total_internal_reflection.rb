@@ -3,14 +3,13 @@ require_relative "../../light/total_internal_reflection"
 require_relative "../../light/refractive_media"
 require_relative "../../light/picture"
 
-ANGLE = (0.5.deg)..(89.5.deg)
 INDEX = 1.0..4.0
 
 play_with Reflection, TotalInternalReflection do
   title "Total internal reflection"
   description "Past a certain angle, light leaving a denser medium cannot cross at all. All of it turns back."
 
-  input :i,   ANGLE, default: 30.deg, as: "incidence"
+  input :i, default: 30.deg, as: "incidence"
   input :mu1, INDEX, default: 1.5, as: "μ₁ first", marks: REFRACTIVE_MEDIA
   input :mu2, INDEX, default: 1.0, as: "μ₂ second", marks: REFRACTIVE_MEDIA
 

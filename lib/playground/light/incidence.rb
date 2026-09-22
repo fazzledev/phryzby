@@ -1,13 +1,11 @@
 require_relative "../../light/incidence"
 require_relative "../../light/picture"
 
-ANGLE = (0.5.deg)..(89.5.deg)
-
 play_with Incidence do
   title "Incidence"
   description "A ray arrives at a surface. The angle it makes with the normal is where every other law starts."
 
-  input :i, ANGLE, default: 30.deg, as: "incidence"
+  input :i, default: 30.deg, as: "incidence"
 
   output :i, as: "held"
   output("asked to solve it", alarm: true) do
