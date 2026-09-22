@@ -3,6 +3,9 @@
 require_relative "../lib/playground/light/refraction"
 CHOOSING = Physics.playground
 
+require_relative "../lib/playground/light/internal_reflection"
+INTERNAL = Physics.playground
+
 require_relative "../lib/playground/light/critical_angle"
 CRITICAL = Physics.playground
 
