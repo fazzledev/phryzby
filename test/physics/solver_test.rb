@@ -42,4 +42,18 @@ class SolverTest < Minitest::Test
   def test_a_domain_error_is_not_a_root
     assert_nil Solver.newton(->(x) { Math.asin(x) - 2 }, 0.5)
   end
+  # A residual is signed. Comparing it to a tolerance without taking its size
+  # first calls any large negative number converged.
+  def test_a_long_way_below_zero_is_not_converged
+    assert_in_delta 8.0, Physics::Solver.newton(->(x) { x - 8 }, 5.0), 1e-9
+  end
+
+  def test_a_falling_residual_does_not_look_like_a_flat_one
+    assert_in_delta 8.0, Physics::Solver.newton(->(x) { 8 - x }, 5.0), 1e-9
+  end
+
+  def test_running_out_of_steps_a_long_way_out_is_not_an_answer
+    assert_nil Physics::Solver.newton(->(x) { -(x * x) - 1 }, 1.0)
+  end
+
 end

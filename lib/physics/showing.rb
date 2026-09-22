@@ -35,12 +35,14 @@ module Physics
       @picture = block
     end
 
-    def picture(values)
+    # Where the labels settled last time, so they stay put rather than hunt.
+    # A caller wanting a picture that depends on nothing before it says so.
+    def picture(values, settled: (@settled ||= {}))
       return "" unless @picture
 
       drawing = @canvas.new(@scenario.new(**values))
       drawing.instance_eval(&@picture)
-      drawn = drawing.to_svg(@settled ||= {})
+      drawn = drawing.to_svg(settled)
       @settled = drawing.settled
 
       drawn

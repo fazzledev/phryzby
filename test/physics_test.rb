@@ -54,6 +54,15 @@ class PhysicsTest < Minitest::Test
     refute second.quantities.key?(:a)
   end
 
+  # A residual is signed, so a law a long way from holding is not almost
+  # holding.
+  def test_an_equation_a_long_way_out_does_not_hold
+    klass = model { equation(:same) { a == b } }
+
+    refute klass.new(a: 1, b: 900).holds?(:same)
+    refute klass.new(a: 900, b: 1).holds?(:same)
+  end
+
   private
 
   def var(name) = Physics::Var.new(name)

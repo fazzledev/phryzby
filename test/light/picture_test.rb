@@ -2,9 +2,11 @@ require "minitest/autorun"
 require_relative "../../lib/shown/light/refraction"
 
 class PictureTest < Minitest::Test
+  # Fresh each time: the placer remembers where labels settled, and a test
+  # should not depend on what the test before it drew.
   def drawn(**changes)
     showing = Physics.shown.showing_of
-    showing.picture(showing.opening.merge(**changes))
+    showing.picture(showing.opening.merge(**changes), settled: {})
   end
 
   def rays(svg) = svg.scan(/<path/).size
@@ -93,4 +95,29 @@ class PictureTest < Minitest::Test
 
     assert_equal 0, leaps
   end
+  NORMAL = 150
+
+  def anchored(svg)
+    svg.scan(%r{<text x="([-\d.]+)"[^>]*text-anchor="(\w+)"[^>]*>([^<]+)</text>})
+       .to_h { |x, anchor, text| [ text, [ x.to_f, anchor ] ] }
+  end
+
+  # Two nearly vertical rays point almost the same way, so their labels are
+  # thrown aside rather than left to follow them. The geometry is a mirror
+  # image, so the throw has to be too.
+  def test_two_shallow_rays_are_thrown_aside_equally
+    showing = Physics.shown.showing_of
+    placed = anchored(showing.picture(showing.opening.merge(i: 5.deg), settled: {}))
+
+    assert_in_delta NORMAL - placed.fetch("incident").first,
+                    placed.fetch("reflected").first - NORMAL, 0.5
+  end
+
+  def test_and_far_enough_aside_to_be_read
+    showing = Physics.shown.showing_of
+    placed = anchored(showing.picture(showing.opening.merge(i: 5.deg), settled: {}))
+
+    assert_operator placed.fetch("reflected").first - placed.fetch("incident").first, :>, 24
+  end
+
 end

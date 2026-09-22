@@ -59,4 +59,43 @@ class NotationTest < Minitest::Test
     assert_includes html, "<td>angle of incidence</td>"
     refute_includes html, "<figure"
   end
+  def test_a_sum_inside_a_product_is_bracketed
+    sum = Physics::BinOp.new(:*, Physics::Var.new(:a),
+                             Physics::BinOp.new(:+, Physics::Var.new(:b), Physics::Var.new(:c)))
+
+    assert_includes sum.to_mathml, Physics::BinOp::FENCE % "("
+  end
+
+  def test_a_product_inside_a_sum_is_not
+    product = Physics::BinOp.new(:+, Physics::Var.new(:a),
+                                 Physics::BinOp.new(:*, Physics::Var.new(:b), Physics::Var.new(:c)))
+
+    refute_includes product.to_mathml, Physics::BinOp::FENCE % "("
+  end
+
+  def test_nothing_is_bracketed_at_the_top
+    alone = Physics::BinOp.new(:+, Physics::Var.new(:a), Physics::Var.new(:b))
+
+    refute_includes alone.to_mathml, Physics::BinOp::FENCE % "("
+  end
+
+  def test_a_product_inside_a_product_needs_no_brackets
+    nested = Physics::BinOp.new(:*, Physics::Var.new(:a),
+                                Physics::BinOp.new(:*, Physics::Var.new(:b), Physics::Var.new(:c)))
+
+    refute_includes nested.to_mathml, Physics::BinOp::FENCE % "("
+  end
+
+  def test_a_quantity_is_written_as_the_first_short_name_given_for_it
+    assert_equal :i, Refraction.written(:angle_of_incidence)
+    assert_equal :mu21, Refraction.written(:relative_refractive_index)
+  end
+
+  def test_a_quantity_appears_once_however_many_names_reach_it
+    rows = Refraction.to_html.scan(%r{<td>([a-z ]+)</td>}).flatten
+
+    assert_equal rows, rows.uniq
+    assert_equal Refraction.quantities.values.uniq.size, rows.size
+  end
+
 end

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>phryzby — play with the laws of physics</title>
+<title>phryzby — play with physics, learn with ruby</title>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="assets/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -13,28 +13,28 @@
 <div class="app">
   <header class="bar">
     <a class="brand" href="./">phryzby</a>
-    <span class="where">play with the laws of physics</span>
+    <span class="where">play with physics, learn with ruby</span>
     <span class="grow"></span>
     <a href="https://github.com/fazzledev/phryzby" class="where">github.com/fazzledev/phryzby</a>
   </header>
 
   <div class="pane cover-pane" style="overflow:auto">
     <div class="cover">
-      <h1>phryzby <small>— play with the laws of physics</small></h1>
+      <h1>phryzby <small>— play with physics, learn with ruby</small></h1>
+      <p class="ask">Why do kids love to play sports, but not to study?</p>
+
       <p class="lede">
-        You write a law down once, the way it appears on a blackboard, and never rearrange it.
-        Which means you can change it. Say a mirror should turn light by half the angle it arrives
-        at rather than all of it — edit that line in the browser, and every answer on the page
-        follows the law you just invented. There is no derivation to redo, because there was never
-        a formula: only an expression tree and a root to find.
+        Nobody learns football by reading about football. You get the ball, you try something, and
+        the ball answers straight away. Nothing is at stake, so you try the daft thing too, and the
+        daft thing is where most of the learning happens.
       </p>
       <p class="lede">
-        Inside an <code>equation</code> block the names are not numbers — they are nodes in that
-        tree, so <code>==</code> builds an equation instead of answering true or false. Asking is a
-        separate act: name the unknown, and a solver finds a root of
-        <code>left&nbsp;−&nbsp;right</code>. The solver never learns what the law says, which is
-        why one declaration answers in every direction — and why an invented law costs exactly
-        what a true one does.
+        Studying physics goes the other way round. The law arrives finished, in a textbook, and the
+        only move left to you is to agree with it. There is nothing to try, and nothing that
+        answers back.
+      </p>
+      <p class="lede">
+        So here the law is the ball.
       </p>
 
       <div class="sample">
@@ -75,15 +75,25 @@ end</pre>
         </div>
       </div>
       <p class="lede">
-        Nothing above was rearranged, and no second formula exists for the critical angle — it is
-        Snell asked with the refracted ray lying flat. Laws are modules, so a scenario names the
-        ones that hold where the question is being asked. Ask a Fresnel page for the reflectance
-        alone and the solver works backwards to what it needs first.
+        Snell's law is written down once, the way it goes on a blackboard, and never rearranged.
+        Ask it for the refracted ray, for the material, or for the critical angle: it is the same
+        line every time. There is no second formula, because there is no formula at all. A law is
+        an expression tree, and asking is finding a root of it.
+      </p>
+      <p class="lede">
+        That is also what lets you break it. Say a mirror should turn light by half the angle it
+        arrives at rather than all of it. Edit that line in the browser, and the reading changes,
+        the typeset formula restates itself, and the ray in the diagram swings to the new angle.
+        Nothing was derived from the old law, so there is nothing to re-derive, and an invented law
+        costs exactly what a true one does.
+      </p>
+      <p class="lede">
+        That is the whole game. Change a law, and watch the light obey the one you wrote.
       </p>
       <p class="lede">
         Every chapter below runs CRuby compiled to WebAssembly and evaluates this repository's own
-        <code>.rb</code> files — the same bytes the tests run. Edit a law in the page, and the
-        diagram beside it changes.
+        <code>.rb</code> files, the same bytes the tests run, with an irb underneath it against the
+        same VM.
       </p>
 
       <p class="part">The machinery</p>
@@ -164,7 +174,7 @@ end</pre>
       </ul>
 
       <p class="note" style="margin-top:2rem">
-        No gems, no build step, no framework. 85 tests, Ruby 3.4.
+        No gems, no build step, no framework. 139 tests, Ruby 3.4.
       </p>
     </div>
   </div>

@@ -1,6 +1,6 @@
 # phryzby
 
-Play with the laws of physics.
+Play with physics, learn with Ruby.
 
 You write a law down once, the way it appears on a blackboard, and never
 rearrange it — which means you can change it. Say a mirror should turn light by
