@@ -5,12 +5,10 @@ require_relative "../chapters"
 class CriticalAngleTest < Minitest::Test
   def playing = CRITICAL
   def opening = playing.opening
+  READING = %r{<span>([^<]*)</span>.*?class="val">([^<]*)</span>}
+
   # Each reading by the name beside it.
-  def says(**changes)
-    playing.readouts(opening.merge(**changes))
-           .scan(%r{<span>(.+?)</span><span class="val">([^<]*)</span>})
-           .to_h { |label, value| [ label.sub(%r{ <small>.*</small>}, ""), value ] }
-  end
+  def says(**changes) = playing.readouts(opening.merge(**changes)).scan(READING).to_h
 
   AIR = 0
   GLASS = 2

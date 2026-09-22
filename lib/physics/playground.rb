@@ -149,9 +149,10 @@ module Physics
         rescue StandardError
           "—"
         end
-        label = entry[:as] || (entry[:from] ? entry[:name].to_s : named(entry[:name]))
+        label = entry[:as] || (entry[:from] ? entry[:name].to_s : called(entry[:name]))
 
         "<div#{entry[:alarm] ? ' class="alarm"' : ""}><span>#{label}</span>" \
+          "<span class=\"var\">#{written(entry[:name])}</span>" \
           "<span class=\"val\">#{found}</span></div>"
       end
 
@@ -261,14 +262,6 @@ module Physics
       return nil unless @scenario.quantities.key?(name)
 
       Physics.symbol(written_for(name))
-    end
-
-    # A readout has one line to say both in, so it says them one after the
-    # other.
-    def named(name)
-      symbol = written(name)
-
-      symbol ? "#{called(name)} <small>(#{symbol})</small>" : called(name)
     end
   end
 

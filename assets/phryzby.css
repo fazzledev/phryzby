@@ -185,10 +185,15 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
 /* The symbol the equation writes this quantity as, beside the name it reads
    it by. Set the way the law is set, so the eye can carry one to the other. */
 .field > .var{font-family:var(--mono);font-size:.9rem;color:var(--ink-mid);}
-.out span small{font-family:var(--mono);font-size:.88em;color:var(--ink-soft);opacity:.75;}
+.out .var{color:var(--ink-mid);opacity:1;}
 .out{font-family:var(--mono);font-size:.78rem;border-top:1px solid var(--rule);
   margin-top:.8rem;padding-top:.7rem;}
-.out div{display:flex;justify-content:space-between;gap:1rem;padding:.14rem 0;}
+/* Three columns, ending where the controls end: the name, the letter, and
+   the reading. Nothing competes with the name for room here, so it takes
+   what it needs and the letter stands against its own value.  */
+.out div{display:grid;grid-template-columns:1fr 2.4rem 4.4rem;gap:.5rem;
+  align-items:baseline;padding:.14rem 0;}
+.out .val{text-align:right;}
 .out span:first-child{color:var(--ink-soft);}
 .out .alarm .val{color:var(--red);font-weight:600;}
 .out hr{border:0;border-top:1px solid var(--rule);margin:.45rem 0;}
