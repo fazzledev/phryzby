@@ -83,8 +83,8 @@ module Physics
       [ picture(values), readouts(values), labels.join("\u0002") ].join("\u0000")
     end
 
-    def input(name, range, step:, at:, in: :number, as: nil, marks: {})
-      @inputs[name] = { range: range, step: step, at: at, as: as, marks: marks,
+    def input(name, range, step:, default:, in: :number, as: nil, marks: {})
+      @inputs[name] = { range: range, step: step, default: default, as: as, marks: marks,
                         units: binding.local_variable_get(:in) }
     end
 
@@ -93,7 +93,7 @@ module Physics
     # underneath it.
     def choose(name, table, default: table.keys.first, as: nil)
       @chosen[name] = table
-      @inputs[name] = { range: 0..(table.size - 1), step: 1, at: table.keys.index(default),
+      @inputs[name] = { range: 0..(table.size - 1), step: 1, default: table.keys.index(default),
                         as: as, units: nil, table: table,
                         marks: table.keys.each_with_index.to_h }
     end
@@ -145,15 +145,15 @@ module Physics
         "<div class=\"track\">#{marked(name, set)}" \
         "<input type=\"range\" id=\"#{name}\" data-input=\"#{name}\" " \
         "min=\"#{set[:range].begin}\" max=\"#{set[:range].end}\" step=\"#{set[:step]}\" " \
-        "value=\"#{set[:at]}\"></div>" \
-        "<output id=\"#{name}-out\">#{reading(set, set[:at])}</output></div>"
+        "value=\"#{set[:default]}\"></div>" \
+        "<output id=\"#{name}-out\">#{reading(set, set[:default])}</output></div>"
     end
 
     # One of a few named things, with nothing in between them to slide through.
     def picked(name, set)
       buttons = set[:table].keys.each_with_index.map do |called, at|
         "<label class=\"pick\"><input type=\"radio\" name=\"#{name}\" " \
-          "data-input=\"#{name}\" value=\"#{at}\"#{at == set[:at] ? " checked" : ""}>" \
+          "data-input=\"#{name}\" value=\"#{at}\"#{at == set[:default] ? " checked" : ""}>" \
           "<span>#{called}</span></label>"
       end
 
@@ -198,7 +198,7 @@ module Physics
       near ? "#{shown}<small>#{near.first}</small>" : shown
     end
 
-    def opening = @inputs.transform_values { |set| set[:at] }
+    def opening = @inputs.transform_values { |set| set[:default] }
 
     # The scenario itself, posed with these values — what the console holds on
     # to so somebody can ask it their own questions.
