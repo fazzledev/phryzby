@@ -1,6 +1,6 @@
 require_relative "../../light/reflection"
 require_relative "../../light/refraction"
-require_relative "../../light/media"
+require_relative "../../light/refractive_media"
 require_relative "../../light/picture"
 
 ANGLE = (0.5.deg)..(89.5.deg)
@@ -11,8 +11,8 @@ play_with Reflection, Refraction do
   description "Leaving a denser medium there is an angle past which nothing gets out, and nothing here says what it is."
 
   input  :i,    ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
-  choose :from, MEDIA, at: "glass", as: "from"
-  choose :into, MEDIA, at: "air",   as: "into"
+  choose :from, REFRACTIVE_MEDIA, at: "glass", as: "from"
+  choose :into, REFRACTIVE_MEDIA, at: "air",   as: "into"
 
   given(:mu21) { into / from }
 

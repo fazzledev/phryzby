@@ -151,7 +151,7 @@ class PictureTest < Minitest::Test
   end
 
   def test_no_two_media_anybody_has_a_name_for_are_shaded_alike
-    seen = MEDIA.values.map { |index| shades(drawn(mu1: index, mu2: 1.0)).first }
+    seen = REFRACTIVE_MEDIA.values.map { |index| shades(drawn(mu1: index, mu2: 1.0)).first }
 
     assert_equal seen, seen.uniq
   end

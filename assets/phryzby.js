@@ -708,7 +708,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   // the declaration itself sits beside the law, because changing it is the
   // point.
   const played = playground
-    ? [ { key: "lib/light/media.rb", hidden: true },
+    ? [ { key: "lib/light/refractive_media.rb", hidden: true },
         { key: "lib/light/placing.rb", hidden: true },
         { key: "lib/light/picture.rb", hidden: true },
         { key: playground, label: "playground.rb", tab: 1.5 } ]

@@ -32,7 +32,7 @@ class ChoosingTest < Minitest::Test
     offered = playing.controls
                      .scan(%r{<input type="radio" name="from"[^>]*><span>([^<]+)</span>}).flatten
 
-    assert_equal MEDIA.keys, offered
+    assert_equal REFRACTIVE_MEDIA.keys, offered
   end
 
   def test_and_takes_exactly_one_of_them_per_choice
