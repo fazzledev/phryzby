@@ -17,7 +17,7 @@ play_with Incidence do
   end
 
   draw Light::Picture do
-    surface called: "surface"
+    surface
     ray "incident", arriving_at: :i, angle: true
   end
 end
