@@ -20,8 +20,8 @@ class ShowingTest < Minitest::Test
   def test_a_control_is_drawn_for_every_quantity_varied
     controls = showing.controls
 
-    assert_equal 3, controls.scan(/data-vary=/).size
-    assert_includes controls, 'data-vary="i"'
+    assert_equal 3, controls.scan(/data-input=/).size
+    assert_includes controls, 'data-input="i"'
   end
 
   def test_a_reading_is_shown_in_the_unit_it_was_asked_for

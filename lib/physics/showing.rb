@@ -9,25 +9,22 @@ module Physics
 
     def initialize(scenario)
       @scenario = scenario
-      @varied = {}
-      @shown = []
+      @inputs = {}
+      @outputs = []
       @picture = nil
     end
 
-    attr_reader :varied, :shown, :picture
+    attr_reader :inputs, :outputs, :picture
 
-    def called(name) = @called = name
-    def about(phrase) = @about = phrase
-    def describes(prose) = @describes = prose
-
-    def heading = @about ? "#{@called} <small>\u2014 #{@about}</small>" : @called
+    def title(text) = @title = text
+    def description(text) = @description = text
 
     # What is stated is the scenario, not one law inside it. A page that draws
     # a reflected ray and reports its angle should not be hiding the law that
     # gives it.
     def stated
-      [ "<h1>#{heading}</h1>",
-        @describes ? "<p class=\"lede\">#{@describes}</p>" : "",
+      [ "<h1>#{@title}</h1>",
+        @description ? "<p class=\"lede\">#{@description}</p>" : "",
         @scenario.to_html ].join
     end
 
@@ -64,18 +61,18 @@ module Physics
     # What changes when a control moves: the picture, the numbers, and the
     # reading beside each control.
     def moved(values)
-      labels = @varied.map { |name, set| "#{name}\u0001#{UNITS.fetch(set[:units]).call(values[name])}" }
+      labels = @inputs.map { |name, set| "#{name}\u0001#{UNITS.fetch(set[:units]).call(values[name])}" }
 
       [ picture(values), readouts(values), labels.join("\u0002") ].join("\u0000")
     end
 
-    def vary(name, range, step:, at:, in: :number, as: nil)
-      @varied[name] = { range: range, step: step, at: at, as: as,
+    def input(name, range, step:, at:, in: :number, as: nil)
+      @inputs[name] = { range: range, step: step, at: at, as: as,
                         units: binding.local_variable_get(:in) }
     end
 
-    def show(name, in: :number, as: nil, alarm: false, &worked_out)
-      @shown << { name: name, units: binding.local_variable_get(:in),
+    def output(name, in: :number, as: nil, alarm: false, &worked_out)
+      @outputs << { name: name, units: binding.local_variable_get(:in),
                   as: as, alarm: alarm, from: worked_out }
     end
 
@@ -90,7 +87,7 @@ module Physics
     def readouts(values)
       scenario = @scenario.new(**values)
 
-      rows = @shown.map do |entry|
+      rows = @outputs.map do |entry|
         found = begin
           if entry[:from]
             answer = scenario.instance_exec(&entry[:from])
@@ -111,15 +108,15 @@ module Physics
     end
 
     def controls
-      @varied.map do |name, set|
+      @inputs.map do |name, set|
         "<div class=\"field\"><label for=\"#{name}\">#{set[:as] || named(name)}</label>" \
-          "<input type=\"range\" id=\"#{name}\" data-vary=\"#{name}\" min=\"#{set[:range].begin}\" " \
+          "<input type=\"range\" id=\"#{name}\" data-input=\"#{name}\" min=\"#{set[:range].begin}\" " \
           "max=\"#{set[:range].end}\" step=\"#{set[:step]}\" value=\"#{set[:at]}\">" \
           "<output id=\"#{name}-out\">#{UNITS.fetch(set[:units]).call(set[:at])}</output></div>"
       end.join
     end
 
-    def opening = @varied.transform_values { |set| set[:at] }
+    def opening = @inputs.transform_values { |set| set[:at] }
 
     private
 
@@ -129,8 +126,8 @@ module Physics
   end
 
   # A page loads one shown file and shows what it declared.
-  def self.shown = @shown
-  def self.shows(scenario) = @shown = scenario
+  def self.shown = @outputs
+  def self.shows(scenario) = @outputs = scenario
 
   class Scenario
     def self.showing(&block)

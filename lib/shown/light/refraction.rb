@@ -7,23 +7,22 @@ FINELY = 0.01.deg
 INDEX = 1.0..2.5
 
 Physics::Scenario.including(Reflection, Refraction).showing do
-  called "Refraction"
-  about "and the branch problem"
-  describes "A ray meeting glass does both things at once, so the question names both laws. Neither law inherits the other — refraction is not a kind of reflection — and neither file mentions the other. A law includes only what it presupposes: Snell’s law is about a ray that has already arrived, so it begins <code>include Incidence</code>. Two laws that merely both happen to hold are composed where the question is asked instead."
+  title "Refraction"
+  description "Two laws composed where the question is asked, neither a kind of the other."
 
-  vary :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
-  vary :mu1, INDEX, step: 0.01, at: 1.0, as: "μ₁ first"
-  vary :mu2, INDEX, step: 0.01, at: 1.5, as: "μ₂ second"
+  input :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
+  input :mu1, INDEX, step: 0.01, at: 1.0, as: "μ₁ first"
+  input :mu2, INDEX, step: 0.01, at: 1.5, as: "μ₂ second"
 
-  show :rr, in: :degrees
-  show :rl, in: :degrees
-  show("critical angle") do
+  output :rr, in: :degrees
+  output :rl, in: :degrees
+  output("critical angle") do
     next "none" unless self[:mu2] < self[:mu1]
 
     format("%.2f°", Physics::Scenario.including(Refraction)
       .new(mu1: self[:mu1], mu2: self[:mu2], rr: 90.deg).solve(:i).in_degrees)
   end
-  show :no_refracted_ray, in: :plain, alarm: true
+  output :no_refracted_ray, in: :plain, alarm: true
 
   draws Light::Picture do
     media :mu1, :mu2

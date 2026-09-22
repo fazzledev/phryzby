@@ -768,8 +768,8 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   // A page that is shown rather than drawn: the law states itself into one
   // half, the demonstration into the other, and nothing here knows optics.
   const reading = () => {
-    const pairs = [ ...document.querySelectorAll("#demo [data-vary]") ]
-      .map((control) => `${control.dataset.vary}: ${control.value}`);
+    const pairs = [ ...document.querySelectorAll("#demo [data-input]") ]
+      .map((control) => `${control.dataset.input}: ${control.value}`);
 
     return pairs.length ? `{ ${pairs.join(", ")} }` : `Physics.shown.showing_of.opening`;
   };
@@ -795,8 +795,8 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     if (statement && presents) statement.innerHTML = vm.eval(`${presents}.to_html`).toString();
     if (!shows) return;
 
-    const held = [ ...document.querySelectorAll("#demo [data-vary]") ]
-      .map((control) => [ control.dataset.vary, control.value ]);
+    const held = [ ...document.querySelectorAll("#demo [data-input]") ]
+      .map((control) => [ control.dataset.input, control.value ]);
 
     $("law").innerHTML = vm.eval(`Physics.shown.showing_of.stated`).toString();
     $("demo").innerHTML = vm.eval(`Physics.shown.showing_of.to_html(${reading()})`).toString();
@@ -804,7 +804,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     // Re-rendering draws the controls back at their declared start, so where
     // they had been dragged to is put back.
     held.forEach(([ name, value ]) => {
-      const control = document.querySelector(`#demo [data-vary="${name}"]`);
+      const control = document.querySelector(`#demo [data-input="${name}"]`);
       if (control) control.value = value;
     });
 
@@ -813,7 +813,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   };
 
   if (shows) $("demo").addEventListener("input", (event) => {
-    if (event.target.dataset.vary) move();
+    if (event.target.dataset.input) move();
   });
 
   const evaluate = () => {

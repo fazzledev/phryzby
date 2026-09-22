@@ -182,13 +182,14 @@ calls: the law states itself, and the demonstration states the playground.
 
 ```ruby
 Physics::Scenario.including(Reflection, Refraction).showing do
-  called "Refraction"
+  title "Refraction"
+  description "Two laws composed where the question is asked."
 
-  vary :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
-  vary :mu2, INDEX, step: 0.01, at: 1.5, as: "μ₂ second"
+  input :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
+  input :mu2, INDEX, step: 0.01, at: 1.5, as: "μ₂ second"
 
-  show :rr, in: :degrees
-  show :no_refracted_ray, in: :plain, alarm: true
+  output :rr, in: :degrees
+  output :no_refracted_ray, in: :plain, alarm: true
 
   draws Light::Picture do
     media :mu1, :mu2
@@ -216,7 +217,7 @@ A demonstration is never in a law file. A slider range is not physics, and a
 law that carried one would stop being only a law. But it is on the page, as
 `shown.rb` beside the law, because a declaration you cannot reach is only
 hardcoding that has moved. Delete the reflected ray from the `draws` block and
-it leaves the picture; rename it and the label changes; widen a `vary` range
+it leaves the picture; rename it and the label changes; widen an `input` range
 and the slider widens. Nothing about presentation lives in a law file, not even its own title: a law
 states what it is made of, and how a reader is introduced to it belongs with
 the rest of the showing.
