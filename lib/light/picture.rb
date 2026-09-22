@@ -17,7 +17,7 @@ module Light
     end
 
     def media(first, second)
-      @shapes.unshift(ground(0.3), rule, upright)
+      @shapes.unshift(ground(shade(value(first)), 0), ground(shade(value(second))), rule, upright)
       want(symbol(first), [ [ 294, 94, "end" ] ], fixed: true)
       want(symbol(second), [ [ 294, 114, "end" ] ], fixed: true)
       name_the_upright
@@ -194,8 +194,21 @@ module Light
         %(L #{bx + uy * half} #{by - ux * half} z" fill="var(--ray)" fill-opacity="#{opacity}"/>)
     end
 
-    def ground(opacity)
-      %(<rect x="0" y="100" width="300" height="100" fill="var(--rule)" opacity="#{opacity}"/>)
+    def ground(opacity, top = 100)
+      %(<rect x="0" y="#{top}" width="#{WIDTH}" height="#{HEIGHT / 2}" ) +
+        %(fill="var(--rule)" opacity="#{opacity}"/>)
+    end
+
+    # Denser reads denser. Refraction turns on the ratio of the two indices,
+    # so what matters is that the halves can be told apart at a glance.
+    THINNEST = 0.06
+    PER_INDEX = 0.22
+    THICKEST = 0.5
+
+    def shade(index)
+      return 0.3 unless index
+
+      [ THINNEST + (index - 1) * PER_INDEX, THICKEST ].min.round(3)
     end
 
     def rule = %(<line x1="0" y1="100" x2="300" y2="100" stroke="var(--rule)" stroke-width="1"/>)

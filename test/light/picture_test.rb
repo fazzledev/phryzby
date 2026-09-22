@@ -120,4 +120,31 @@ class PictureTest < Minitest::Test
     assert_operator placed.fetch("reflected").first - placed.fetch("incident").first, :>, 24
   end
 
+  def shades(svg) = svg.scan(/<rect[^>]*opacity="([\d.]+)"/).flatten.map(&:to_f)
+
+  def test_the_denser_medium_is_the_more_shaded
+    upper, lower = shades(drawn(mu1: 1.0, mu2: 1.5))
+
+    assert_operator lower, :>, upper
+  end
+
+  def test_and_it_follows_the_media_round
+    upper, lower = shades(drawn(mu1: 1.5, mu2: 1.0))
+
+    assert_operator upper, :>, lower
+  end
+
+  def test_the_shade_rises_with_the_index
+    thin, = shades(drawn(mu1: 1.0, mu2: 1.5))
+    thick, = shades(drawn(mu1: 2.4, mu2: 1.5))
+
+    assert_operator thick, :>, thin
+  end
+
+  def test_two_media_alike_are_shaded_alike
+    upper, lower = shades(drawn(mu1: 1.4, mu2: 1.4))
+
+    assert_in_delta upper, lower, 1e-9
+  end
+
 end
