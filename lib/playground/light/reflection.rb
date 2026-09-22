@@ -5,7 +5,7 @@ play_with Reflection do
   title "Reflection"
   description "A ray striking a mirror leaves at the same angle it arrived at, on the other side of the normal."
 
-  input :i, default: 30.deg, as: "incidence"
+  input :i, default: 30.deg
 
   output :i
   output :rl

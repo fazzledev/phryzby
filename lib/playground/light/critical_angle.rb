@@ -7,7 +7,7 @@ play_with Reflection, Refraction do
   title "Critical angle"
   description "Leaving a denser medium there is an angle past which nothing gets out, and nothing here says what it is."
 
-  input  :i, default: 30.deg, as: "incidence"
+  input  :i, default: 30.deg
   choose :from, REFRACTIVE_MEDIA, default: "glass"
   choose :into, REFRACTIVE_MEDIA, default: "air"
 

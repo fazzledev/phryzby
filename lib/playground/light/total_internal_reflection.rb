@@ -9,9 +9,9 @@ play_with Reflection, TotalInternalReflection do
   title "Total internal reflection"
   description "Past a certain angle, light leaving a denser medium cannot cross at all. All of it turns back."
 
-  input :i, default: 30.deg, as: "incidence"
-  input :mu1, INDEX, default: 1.5, as: "μ₁ first", marks: REFRACTIVE_MEDIA
-  input :mu2, INDEX, default: 1.0, as: "μ₂ second", marks: REFRACTIVE_MEDIA
+  input :i, default: 30.deg
+  input :mu1, INDEX, default: 1.5, marks: REFRACTIVE_MEDIA
+  input :mu2, INDEX, default: 1.0, marks: REFRACTIVE_MEDIA
 
   output :no_refracted_ray, alarm: true
   output :r, in: :percent

@@ -9,9 +9,9 @@ play_with Reflection, RefractiveIndex, Reflectance do
   title "Reflectance"
   description "At any boundary some light turns back and the rest crosses. How much of each depends on the angle, and on polarisation."
 
-  input :i, default: 30.deg, as: "incidence"
-  input :mu1, INDEX, default: 1.0, as: "μ₁ first", marks: REFRACTIVE_MEDIA
-  input :mu2, INDEX, default: 1.5, as: "μ₂ second", marks: REFRACTIVE_MEDIA
+  input :i, default: 30.deg
+  input :mu1, INDEX, default: 1.0, marks: REFRACTIVE_MEDIA
+  input :mu2, INDEX, default: 1.5, marks: REFRACTIVE_MEDIA
 
   output :rr
   output :no_refracted_ray, alarm: true
