@@ -825,9 +825,45 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     move();
   };
 
+  // Values worth landing on exactly: the notches Ruby put under this control,
+  // and whatever a control over the same span is set to — two media alike is
+  // the case where nothing bends, and it is worth being able to hit.
+  const NEAR = 0.013;
+
+  const magnets = (control) => {
+    const notched = [ ...document.querySelectorAll(`.mark[data-for="${control.dataset.input}"]`) ]
+      .map((notch) => Number(notch.dataset.set));
+    const alike = [ ...document.querySelectorAll("#demo [data-input]") ]
+      .filter((one) => one !== control && one.min === control.min && one.max === control.max)
+      .map((one) => Number(one.value));
+
+    return [ ...notched, ...alike ];
+  };
+
+  const snap = (control) => {
+    const value = Number(control.value);
+    const reach = (Number(control.max) - Number(control.min)) * NEAR;
+    const [ near ] = magnets(control)
+      .filter((at) => Math.abs(at - value) <= reach)
+      .sort((one, other) => Math.abs(one - value) - Math.abs(other - value));
+
+    if (near !== undefined) control.value = near;
+  };
+
   if (shows) {
+    // Only a drag is caught by a magnet. Stepping with the arrow keys has to
+    // be able to walk past one, or a value beside a notch is unreachable.
+    let dragging = false;
+    $("demo").addEventListener("pointerdown", (event) => {
+      dragging = Boolean(event.target.dataset.input);
+    });
+    document.addEventListener("pointerup", () => { dragging = false; });
+
     $("demo").addEventListener("input", (event) => {
-      if (event.target.dataset.input) move();
+      if (!event.target.dataset.input) return;
+
+      if (dragging) snap(event.target);
+      move();
     });
 
     // A notch is worth pressing, not only aiming at.
