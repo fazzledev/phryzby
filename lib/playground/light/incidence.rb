@@ -2,8 +2,6 @@ require_relative "../../light/incidence"
 require_relative "../../light/picture"
 
 ANGLE = (0.5.deg)..(89.5.deg)
-FINELY = 0.01.deg
-INDEX = 1.0..2.5
 
 play_with Incidence do
   title "Incidence"

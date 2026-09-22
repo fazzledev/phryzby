@@ -1,11 +1,10 @@
 require_relative "../../light/reflection"
 require_relative "../../light/refraction"
+require_relative "../../light/media"
 require_relative "../../light/picture"
 
 ANGLE = (0.5.deg)..(89.5.deg)
 FINELY = 0.01.deg
-MEDIA = { "air" => 1.0, "water" => 1.33, "glass" => 1.5, "diamond" => 2.42,
-          "cinnabar" => 3.2, "silicon" => 3.9 }.freeze
 
 play_with Reflection, Refraction do
   title "Critical angle"
