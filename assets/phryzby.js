@@ -119,17 +119,17 @@ export const BOOK = [
 ];
 
 const TITLES = {
-  "engine.html": "0 · The engine",
+  "engine.html": "0 · The Engine",
   "light/incidence.html": "1.1 · Incidence",
   "light/reflection.html": "1.2 · Reflection",
-  "light/refraction.html": "1.3 · Refraction: Air to water",
-  "light/water-to-air.html": "1.4 · Refraction: Water to air",
-  "light/internal-reflection.html": "1.5 · Internal reflection",
-  "light/critical-angle.html": "1.6 · Critical angle",
-  "light/any-two-media.html": "1.7 · Any two media",
-  "light/refractive-index.html": "1.8 · Refractive index",
+  "light/refraction.html": "1.3 · Refraction: Air to Water",
+  "light/water-to-air.html": "1.4 · Refraction: Water to Air",
+  "light/internal-reflection.html": "1.5 · Internal Reflection",
+  "light/critical-angle.html": "1.6 · Critical Angle",
+  "light/any-two-media.html": "1.7 · Any Two Media",
+  "light/refractive-index.html": "1.8 · Refractive Index",
   "light/reflectance.html": "1.9 · Reflectance",
-  "light/total-internal-reflection.html": "1.10 · Total internal reflection",
+  "light/total-internal-reflection.html": "1.10 · Total Internal Reflection",
 };
 
 // A file belonging to this page opens in the editor; one belonging to another

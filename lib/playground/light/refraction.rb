@@ -3,7 +3,7 @@ require_relative "../../light/refractive_media"
 require_relative "../../light/picture"
 
 play_with Refraction do
-  title "Refraction: Air to water"
+  title "Refraction: Air to Water"
   description "Crossing from air into water a ray bends toward the normal. The two angles are neither equal nor proportional; what they hold to is a ratio of their sines."
 
   input :i, default: 30.deg

@@ -6,7 +6,7 @@ require_relative "../../light/picture"
 INDEX = 1.0..4.0
 
 play_with Reflection, RefractiveIndex do
-  title "Refractive index"
+  title "Refractive Index"
   description "What each medium does to light is one number, and only the ratio of the two ever shows."
 
   input :i, default: 30.deg

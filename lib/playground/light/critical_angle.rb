@@ -4,7 +4,7 @@ require_relative "../../light/refractive_media"
 require_relative "../../light/picture"
 
 play_with Reflection, Refraction do
-  title "Critical angle"
+  title "Critical Angle"
   description "The angle found by sliding in the last chapter has a name and a value, and no new law is needed to say what it is: Snell asked backwards, with the refracted ray lying flat along the surface."
 
   input :i, default: 30.deg

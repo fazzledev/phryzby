@@ -4,7 +4,7 @@ require_relative "../../light/refractive_media"
 require_relative "../../light/picture"
 
 play_with Reflection, Refraction do
-  title "Internal reflection"
+  title "Internal Reflection"
   description "The same crossing, with the ray that does not cross. Some of the light turns back into the water at every angle, and past the angle where the other one goes it is all that is left."
 
   input :i, default: 30.deg

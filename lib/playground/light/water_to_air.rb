@@ -3,7 +3,7 @@ require_relative "../../light/refractive_media"
 require_relative "../../light/picture"
 
 play_with Refraction do
-  title "Refraction: Water to air"
+  title "Refraction: Water to Air"
   description "The same crossing taken the other way. It bends away from the normal now, and far enough round there is no way across at all."
 
   input :i, default: 30.deg

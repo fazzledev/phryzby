@@ -6,7 +6,7 @@ require_relative "../../light/picture"
 INDEX = 1.0..4.0
 
 play_with Reflection, TotalInternalReflection do
-  title "Total internal reflection"
+  title "Total Internal Reflection"
   description "Past a certain angle, light leaving a denser medium cannot cross at all. All of it turns back."
 
   input :i, default: 30.deg
