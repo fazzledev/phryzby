@@ -694,6 +694,10 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   // on the tab, an M on the file in the tree.
   const markChanged = (keys) => {
     const dirty = new Set(keys);
+
+    // Nothing to put back, nothing to press.
+    if (reset) reset.disabled = dirty.size === 0;
+
     $("tree").querySelectorAll("a[data-path]").forEach((row) => {
       row.classList.toggle("changed", dirty.has(row.dataset.path));
     });
