@@ -3,7 +3,7 @@ require_relative "../../lib/shown/light/refraction"
 
 class PictureTest < Minitest::Test
   def drawn(**changes)
-    showing = Crossing.showing_of
+    showing = Physics.shown(Refraction).showing_of
     showing.picture(showing.opening.merge(**changes))
   end
 

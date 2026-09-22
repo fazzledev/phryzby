@@ -6,7 +6,7 @@ ANGLE = (0.5.deg)..(89.5.deg)
 FINELY = 0.01.deg
 INDEX = 1.0..2.5
 
-Crossing = Physics::Scenario[Reflection, Refraction].showing do
+Physics::Scenario[Reflection, Refraction].showing do
   titled Refraction
 
   vary :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"

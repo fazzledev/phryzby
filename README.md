@@ -179,7 +179,7 @@ A chapter page holds no description of itself. Its right-hand panel is two
 calls: the law states itself, and the demonstration states the playground.
 
 ```ruby
-Crossing = Physics::Scenario[Reflection, Refraction].showing do
+Physics::Scenario[Reflection, Refraction].showing do
   titled Refraction
 
   vary :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
@@ -196,6 +196,10 @@ Crossing = Physics::Scenario[Reflection, Refraction].showing do
   end
 end
 ```
+
+Nothing is assigned. A demonstration answers to the law it is about —
+`Physics.shown(Refraction)` — because that is a name the book already has, and
+an invented one would mean nothing to anybody.
 
 The sliders, the readings, the rays and their labels all come out of that.
 Edit the law and the panel follows: change `{ i == rl }` to `{ i == rl * 2 }`

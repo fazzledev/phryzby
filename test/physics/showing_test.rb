@@ -4,11 +4,12 @@ require_relative "../../lib/shown/light/refraction"
 class ShowingTest < Minitest::Test
   APART = 0.chr
 
-  def showing = Crossing.showing_of
+  def shown = Physics.shown(Refraction)
+  def showing = shown.showing_of
   def opening = showing.opening
 
   def test_a_scenario_is_still_a_scenario
-    assert_in_delta 19.4712, Crossing.new(**opening).solve(:rr).in_degrees, 1e-3
+    assert_in_delta 19.4712, shown.new(**opening).solve(:rr).in_degrees, 1e-3
   end
 
   def test_it_starts_where_it_was_told_to

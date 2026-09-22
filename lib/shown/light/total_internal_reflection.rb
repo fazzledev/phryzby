@@ -6,7 +6,7 @@ ANGLE = (0.5.deg)..(89.5.deg)
 FINELY = 0.01.deg
 INDEX = 1.0..2.5
 
-Trap = Physics::Scenario[Reflection, TotalInternalReflection].showing do
+Physics::Scenario[Reflection, TotalInternalReflection].showing do
   titled TotalInternalReflection
 
   vary :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"

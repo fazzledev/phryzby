@@ -116,9 +116,15 @@ module Physics
     end
   end
 
+  # A demonstration answers to the law it is about, which is a name that
+  # already means something. Nothing has to be invented to hold it.
+  def self.shown(law) = (@shown ||= {}).fetch(law)
+  def self.shows(law, scenario) = (@shown ||= {})[law] = scenario
+
   class Scenario
     def self.showing(&block)
       showing_of.instance_eval(&block)
+      Physics.shows(showing_of.law, self)
       self
     end
 
