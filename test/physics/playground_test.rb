@@ -60,7 +60,7 @@ class PlaygroundTest < Minitest::Test
   end
 
   def test_the_chapter_names_itself_apart_from_all_three
-    assert_includes playing.heading, "<h1>Refractive index"
+    assert_includes playing.heading, "<h1>Refractive Index"
     assert_includes playing.heading, "class=\"lede\""
   end
 
