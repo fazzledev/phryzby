@@ -204,10 +204,6 @@ module Light
       value(condition) ? true : false
     end
 
-    UNDER = { "0" => "₀", "1" => "₁", "2" => "₂", "3" => "₃", "4" => "₄",
-              "5" => "₅", "6" => "₆", "7" => "₇", "8" => "₈", "9" => "₉" }.freeze
-
-    # mu1 is a mu with a one under it, the same reading the typeset law uses.
     # The symbol, and what the medium is if it is one anybody has a name for.
     def named_band(name)
       held = value(name)
@@ -218,14 +214,7 @@ module Light
       called ? "#{symbol(name)} #{called}" : symbol(name)
     end
 
-    def symbol(name)
-      written = @scenario.class.playground.written_for(name).to_s
-      stem = Physics::GREEK.find { |greek| written.start_with?(greek) }
-      letter = stem ? Physics::LETTER.fetch(stem) : written[0]
-      trail = written[(stem ? stem.length : 1)..].to_s
-
-      letter + trail.chars.map { |mark| UNDER.fetch(mark, mark) }.join
-    end
+    def symbol(name) = Physics.symbol(@scenario.class.playground.written_for(name))
 
     def ends(turned, arriving, leaving)
       point = if arriving

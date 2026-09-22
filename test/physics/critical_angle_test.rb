@@ -8,7 +8,8 @@ class CriticalAngleTest < Minitest::Test
   # Each reading by the name beside it.
   def says(**changes)
     playing.readouts(opening.merge(**changes))
-           .scan(%r{<span>([^<]+)</span><span class="val">([^<]*)</span>}).to_h
+           .scan(%r{<span>(.+?)</span><span class="val">([^<]*)</span>})
+           .to_h { |label, value| [ label.sub(%r{ <small>.*</small>}, ""), value ] }
   end
 
   AIR = 0

@@ -15,6 +15,19 @@ module Physics
     trail.empty? ? "<mi>#{base}</mi>" : "<msub><mi>#{base}</mi><mi>#{trail}</mi></msub>"
   end
 
+  UNDER = { "0" => "₀", "1" => "₁", "2" => "₂", "3" => "₃", "4" => "₄",
+            "5" => "₅", "6" => "₆", "7" => "₇", "8" => "₈", "9" => "₉" }.freeze
+
+  # The same split set in plain text rather than MathML, for the places a page
+  # has no room for a formula.
+  def self.symbol(written)
+    text = written.to_s
+    stem = GREEK.find { |greek| text.start_with?(greek) } || text[0]
+
+    LETTER.fetch(stem, stem) +
+      text[stem.length..].chars.map { |mark| UNDER.fetch(mark, mark) }.join
+  end
+
   PRECEDENCE = { :+ => 1, :- => 1, :* => 2, :/ => 3, :** => 4 }.freeze
 
   class Expr

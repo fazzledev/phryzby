@@ -245,8 +245,13 @@ module Physics
 
     private
 
+    # What the law calls it, and what it writes it as. The long name says what
+    # the number is; the symbol beside it is the one in the equation above.
     def named(name)
-      (@scenario.quantities[name] || name).to_s.tr("_", " ")
+      called = (@scenario.quantities[name] || name).to_s.tr("_", " ")
+      return called unless @scenario.quantities.key?(name)
+
+      "#{called} <small>(#{Physics.symbol(written_for(name))})</small>"
     end
   end
 

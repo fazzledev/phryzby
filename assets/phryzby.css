@@ -182,6 +182,10 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
   background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:5px;}
 .field output{font-family:var(--mono);font-size:.8rem;text-align:right;line-height:1.25;}
 .field output small{display:block;font-size:.68rem;color:var(--ink-soft);}
+/* The symbol the equation writes this quantity as, beside the name it reads
+   it by. Set the way the law is set, so the eye can carry one to the other. */
+.field label small,.out span small{font-family:var(--mono);font-size:.88em;
+  color:var(--ink-soft);opacity:.75;}
 .out{font-family:var(--mono);font-size:.78rem;border-top:1px solid var(--rule);
   margin-top:.8rem;padding-top:.7rem;}
 .out div{display:flex;justify-content:space-between;gap:1rem;padding:.14rem 0;}
