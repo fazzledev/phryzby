@@ -54,9 +54,15 @@ class ShowingTest < Minitest::Test
     assert_includes showing.readouts(opening.merge(mu1: 1.5, mu2: 1.0, i: 60.deg)), "—"
   end
 
-  def test_the_law_states_itself_and_the_showing_does_not
-    assert_includes showing.stated, "<h1>Refraction"
+  def test_the_law_states_itself_and_nothing_else_does
+    assert_includes showing.stated, "<math"
+    refute_includes showing.stated, "<h1>"
     refute_includes showing.to_html(opening), "<h1>"
+  end
+
+  def test_the_chapter_names_itself_apart_from_all_three
+    assert_includes showing.heading, "<h1>Refraction"
+    assert_includes showing.heading, "class=\"lede\""
   end
 
   def test_moving_a_control_gives_back_the_picture_the_numbers_and_the_labels

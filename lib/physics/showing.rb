@@ -22,14 +22,17 @@ module Physics
     def title(text) = @title = text
     def description(text) = @description = text
 
+    # What the chapter is called and what it is about. It names the whole page,
+    # so it belongs to none of the three things the page is made of.
+    def heading
+      [ "<h1>#{@title}</h1>",
+        @description ? "<p class=\"lede\">#{@description}</p>" : "" ].join
+    end
+
     # What is stated is the scenario, not one law inside it. A page that draws
     # a reflected ray and reports its angle should not be hiding the law that
-    # gives it.
-    def stated
-      [ "<h1>#{@title}</h1>",
-        @description ? "<p class=\"lede\">#{@description}</p>" : "",
-        @scenario.to_html ].join
-    end
+    # gives it. It goes under the files it was read from.
+    def stated = @scenario.to_html
 
     # The engine draws nothing itself; a subject brings its own way of
     # picturing, and this only holds on to it.

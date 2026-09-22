@@ -289,7 +289,7 @@ function autoRun(next) {
 }
 
 const LAYOUT = "phryzby.layout";
-const DEFAULTS = { tree: 272, side: 416, console: 208 };
+const DEFAULTS = { tree: 272, side: 416, console: 208, stated: 330 };
 
 const remembered = () => {
   try {
@@ -312,6 +312,7 @@ function mountPanes() {
     root.setProperty("--tree", `${sizes.tree}px`);
     root.setProperty("--side", `${sizes.side}px`);
     root.setProperty("--console", `${sizes.console}px`);
+    root.setProperty("--stated", `${sizes.stated}px`);
     try {
       localStorage.setItem(LAYOUT, JSON.stringify(sizes));
     } catch {
@@ -367,6 +368,17 @@ function mountPanes() {
     code.insertBefore(between, box);
     drags(between, { axis: "y", key: "console", sign: -1, min: 64,
                      max: () => code.clientHeight - 120 });
+  }
+
+  // The law reads under the files it came from, and how much of the column
+  // each of them wants is the reader's business.
+  const stated = document.querySelector(".split .half .stated");
+  if (stated) {
+    const half = stated.closest(".half");
+    const between = grip("y");
+    half.insertBefore(between, stated);
+    drags(between, { axis: "y", key: "stated", sign: -1, min: 72,
+                     max: () => half.clientHeight - 120 });
   }
 
   apply();
@@ -811,6 +823,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     const held = [ ...document.querySelectorAll("#demo [data-input]") ]
       .map((control) => [ control.dataset.input, control.value ]);
 
+    $("heading").innerHTML = vm.eval(`Physics.shown.showing_of.heading`).toString();
     $("law").innerHTML = vm.eval(`Physics.shown.showing_of.stated`).toString();
     $("demo").innerHTML = vm.eval(`Physics.shown.showing_of.to_html(${reading()})`).toString();
 
