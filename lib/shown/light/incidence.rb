@@ -7,7 +7,7 @@ INDEX = 1.0..2.5
 
 Physics::Scenario.including(Incidence).showing do
   title "Incidence"
-  description "One quantity and no law. Declaring is not solving."
+  description "A ray arrives at a surface. The angle it makes with the normal is where every other law starts."
 
   input :i, ANGLE, step: 0.1.deg, at: 30.deg, in: :degrees, as: "incidence"
 

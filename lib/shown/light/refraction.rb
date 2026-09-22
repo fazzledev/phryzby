@@ -8,7 +8,7 @@ INDEX = 1.0..2.5
 
 Physics::Scenario.including(Reflection, Refraction).showing do
   title "Refraction"
-  description "Two laws composed where the question is asked, neither a kind of the other."
+  description "A ray crossing into another medium bends, by as much as the two media differ."
 
   input :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
   input :mu1, INDEX, step: 0.01, at: 1.0, as: "μ₁ first"

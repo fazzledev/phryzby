@@ -8,7 +8,7 @@ INDEX = 1.0..2.5
 
 Physics::Scenario.including(Reflection, TotalInternalReflection).showing do
   title "Total internal reflection"
-  description "A law that holds only past the critical angle, and says so with <code>when:</code>."
+  description "Past a certain angle, light leaving a denser medium cannot cross at all. All of it turns back."
 
   input :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
   input :mu1, INDEX, step: 0.01, at: 1.5, as: "μ₁ first"

@@ -183,7 +183,7 @@ calls: the law states itself, and the demonstration states the playground.
 ```ruby
 Physics::Scenario.including(Reflection, Refraction).showing do
   title "Refraction"
-  description "Two laws composed where the question is asked."
+  description "A ray crossing into another medium bends, by as much as the two media differ."
 
   input :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
   input :mu2, INDEX, step: 0.01, at: 1.5, as: "μ₂ second"

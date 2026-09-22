@@ -7,7 +7,7 @@ INDEX = 1.0..2.5
 
 Physics::Scenario.including(Reflection).showing do
   title "Reflection"
-  description "One equation, and <code>==</code> builds it rather than answering it."
+  description "A ray striking a mirror leaves at the same angle it arrived at, on the other side of the normal."
 
   input :i, ANGLE, step: 0.1.deg, at: 30.deg, in: :degrees, as: "incidence"
 
