@@ -4,13 +4,12 @@ require_relative "../../light/refractive_media"
 require_relative "../../light/picture"
 
 ANGLE = (0.5.deg)..(89.5.deg)
-FINELY = 0.01.deg
 
 play_with Reflection, Refraction do
   title "Refraction"
   description "A ray crossing into another medium bends, and the two media together decide which way."
 
-  input  :i,    ANGLE, step: FINELY, default: 30.deg, as: "incidence"
+  input  :i,    ANGLE, default: 30.deg, as: "incidence"
   choose :from, REFRACTIVE_MEDIA
   choose :into, REFRACTIVE_MEDIA, default: "glass"
 

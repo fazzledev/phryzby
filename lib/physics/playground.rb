@@ -83,9 +83,15 @@ module Physics
       [ picture(values), readouts(values), labels.join("\u0002") ].join("\u0000")
     end
 
-    def input(name, range, step:, default:, in: nil, as: nil, marks: {})
-      @inputs[name] = { range: range, step: step, default: default, as: as, marks: marks,
-                        units: binding.local_variable_get(:in) || read_as(name) }
+    # How finely a control moves is a property of what it carries, not of the
+    # chapter: a tenth of a degree, a hundredth of an index.
+    FINELY = { degrees: 0.1.deg, number: 0.01 }.freeze
+
+    def input(name, range, default:, in: nil, as: nil, marks: {})
+      units = binding.local_variable_get(:in) || read_as(name)
+
+      @inputs[name] = { range: range, step: FINELY.fetch(units, 0.01), default: default,
+                        as: as, marks: marks, units: units }
     end
 
     # A property you have rather than a number you set: the slider steps from

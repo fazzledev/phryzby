@@ -4,13 +4,12 @@ require_relative "../../light/refractive_media"
 require_relative "../../light/picture"
 
 ANGLE = (0.5.deg)..(89.5.deg)
-FINELY = 0.01.deg
 
 play_with Reflection, Refraction do
   title "Critical angle"
   description "Leaving a denser medium there is an angle past which nothing gets out, and nothing here says what it is."
 
-  input  :i,    ANGLE, step: FINELY, default: 30.deg, as: "incidence"
+  input  :i,    ANGLE, default: 30.deg, as: "incidence"
   choose :from, REFRACTIVE_MEDIA, default: "glass"
   choose :into, REFRACTIVE_MEDIA, default: "air"
 

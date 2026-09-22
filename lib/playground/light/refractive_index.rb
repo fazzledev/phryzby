@@ -4,16 +4,15 @@ require_relative "../../light/refractive_media"
 require_relative "../../light/picture"
 
 ANGLE = (0.5.deg)..(89.5.deg)
-FINELY = 0.01.deg
 INDEX = 1.0..4.0
 
 play_with Reflection, RefractiveIndex do
   title "Refractive index"
   description "What each medium does to light is one number, and only the ratio of the two ever shows."
 
-  input :i,   ANGLE, step: FINELY, default: 30.deg, as: "incidence"
-  input :mu1, INDEX, step: 0.01, default: 1.0, as: "μ₁ first", marks: REFRACTIVE_MEDIA
-  input :mu2, INDEX, step: 0.01, default: 1.5, as: "μ₂ second", marks: REFRACTIVE_MEDIA
+  input :i,   ANGLE, default: 30.deg, as: "incidence"
+  input :mu1, INDEX, default: 1.0, as: "μ₁ first", marks: REFRACTIVE_MEDIA
+  input :mu2, INDEX, default: 1.5, as: "μ₂ second", marks: REFRACTIVE_MEDIA
 
   output :mu21
   output("sin i ÷ sin rr") { Math.sin(solve(:i)) / Math.sin(solve(:rr)) }
