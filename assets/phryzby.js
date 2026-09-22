@@ -289,7 +289,7 @@ function autoRun(next) {
 }
 
 const LAYOUT = "phryzby.layout";
-const DEFAULTS = { tree: 272, side: 416, console: 208, stated: 330 };
+const DEFAULTS = { tree: 272, side: 416, console: 208, stated: 330, science: 430 };
 
 const remembered = () => {
   try {
@@ -313,6 +313,7 @@ function mountPanes() {
     root.setProperty("--side", `${sizes.side}px`);
     root.setProperty("--console", `${sizes.console}px`);
     root.setProperty("--stated", `${sizes.stated}px`);
+    root.setProperty("--science", `${sizes.science}px`);
     try {
       localStorage.setItem(LAYOUT, JSON.stringify(sizes));
     } catch {
@@ -368,6 +369,16 @@ function mountPanes() {
     code.insertBefore(between, box);
     drags(between, { axis: "y", key: "console", sign: -1, min: 64,
                      max: () => code.clientHeight - 120 });
+  }
+
+  // The science and what is shown of it share the middle, and where the line
+  // between them falls is the reader's business too.
+  const split = document.querySelector(".split");
+  if (split && split.children.length === 2) {
+    const between = grip("x");
+    split.insertBefore(between, split.children[1]);
+    drags(between, { axis: "x", key: "science", sign: 1, min: 200,
+                     max: () => split.clientWidth - 220 });
   }
 
   // The law reads under the files it came from, and how much of the column
