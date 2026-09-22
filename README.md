@@ -217,9 +217,9 @@ law that carried one would stop being only a law. But it is on the page, as
 `shown.rb` beside the law, because a declaration you cannot reach is only
 hardcoding that has moved. Delete the reflected ray from the `draws` block and
 it leaves the picture; rename it and the label changes; widen a `vary` range
-and the slider widens. What does live in a law file is its own name and
-description — `called`, `about`, `describes` — because a law naming itself is a
-fact about the law.
+and the slider widens. Nothing about presentation lives in a law file, not even its own title: a law
+states what it is made of, and how a reader is introduced to it belongs with
+the rest of the showing.
 
 ## The demo
 

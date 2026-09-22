@@ -3,9 +3,6 @@ require_relative "refraction"
 module Reflectance
   extend Physics::Law
 
-  called "Reflectance"
-  about "how much, rather than which way"
-  describes "Fresnel gives the shares, and they depend on polarisation — two equations and an average for ordinary light. Ask for <code>r</code> alone and the solver works backwards to what it needs: Snell for the refracted angle, then each polarisation, then the mean. Five equations, one question, no order given."
   include Refraction
 
   quantity :reflectance_s_polarised, variable: :rs

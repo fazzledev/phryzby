@@ -19,6 +19,20 @@ module Physics
     def titled(law) = @law = law
     def law = @law
 
+    def called(name) = @called = name
+    def about(phrase) = @about = phrase
+    def describes(prose) = @describes = prose
+
+    def heading = @about ? "#{@called || @law.title} <small>\u2014 #{@about}</small>" : (@called || @law.title)
+
+    # The law states what it is made of; this says what it is called and why
+    # a reader is being shown it.
+    def stated
+      [ "<h1>#{heading}</h1>",
+        @describes ? "<p class=\"lede\">#{@describes}</p>" : "",
+        @law.to_html ].join
+    end
+
     # The engine draws nothing itself; a subject brings its own way of
     # picturing, and this only holds on to it.
     def draws(canvas, &block)

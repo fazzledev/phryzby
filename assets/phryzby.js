@@ -798,7 +798,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     const held = [ ...document.querySelectorAll("#demo [data-vary]") ]
       .map((control) => [ control.dataset.vary, control.value ]);
 
-    $("law").innerHTML = vm.eval(`Physics.shown.showing_of.law.to_html`).toString();
+    $("law").innerHTML = vm.eval(`Physics.shown.showing_of.stated`).toString();
     $("demo").innerHTML = vm.eval(`Physics.shown.showing_of.to_html(${reading()})`).toString();
 
     // Re-rendering draws the controls back at their declared start, so where

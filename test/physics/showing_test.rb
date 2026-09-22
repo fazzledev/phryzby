@@ -37,7 +37,7 @@ class ShowingTest < Minitest::Test
   end
 
   def test_the_law_states_itself_and_the_showing_does_not
-    assert_includes showing.law.to_html, "<h1>Refraction"
+    assert_includes showing.stated, "<h1>Refraction"
     refute_includes showing.to_html(opening), "<h1>"
   end
 

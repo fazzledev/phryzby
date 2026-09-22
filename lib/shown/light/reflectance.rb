@@ -8,6 +8,9 @@ INDEX = 1.0..2.5
 
 Physics::Scenario.including(Reflection, Refraction, Reflectance).showing do
   titled Reflectance
+  called "Reflectance"
+  about "how much, rather than which way"
+  describes "Fresnel gives the shares, and they depend on polarisation — two equations and an average for ordinary light. Ask for <code>r</code> alone and the solver works backwards to what it needs: Snell for the refracted angle, then each polarisation, then the mean. Five equations, one question, no order given."
 
   vary :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
   vary :mu1, INDEX, step: 0.01, at: 1.0, as: "μ₁ first"
