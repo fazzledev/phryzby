@@ -6,7 +6,7 @@ play_with Refraction do
   title "Refraction: Water to Air"
   description "The same crossing taken the other way. It bends away from the normal now, and far enough round there is no way across at all."
 
-  input :i, default: 30.deg
+  input :i, default: 45.deg
   input(:mu21) { REFRACTIVE_MEDIA.fetch("air") / REFRACTIVE_MEDIA.fetch("water") }
 
   output :rr

@@ -8,12 +8,12 @@ class PlaygroundTest < Minitest::Test
   def opening = playing.opening
 
   def test_a_scenario_is_still_a_scenario
-    assert_in_delta 19.4712, playing.posing(**opening).solve(:rr).in_degrees, 1e-3
+    assert_in_delta 15.9497, playing.posing(**opening).solve(:rr).in_degrees, 1e-3
   end
 
   def test_it_starts_where_it_was_told_to
     assert_in_delta 30.0, opening.fetch(:i).in_degrees, 1e-9
-    assert_in_delta 1.5, opening.fetch(:mu2), 1e-9
+    assert_in_delta 2.42, opening.fetch(:mu2), 1e-9
   end
 
   def test_a_control_is_drawn_for_every_quantity_varied
@@ -24,7 +24,7 @@ class PlaygroundTest < Minitest::Test
   end
 
   def test_a_reading_is_shown_in_the_unit_it_was_asked_for
-    assert_includes playing.readouts(opening), "19.47°"
+    assert_includes playing.readouts(opening), "15.95°"
   end
 
   def test_a_sideways_question_poses_the_situation_afresh

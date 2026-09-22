@@ -9,7 +9,7 @@ play_with Refraction do
   input :from, REFRACTIVE_MEDIA
   input :into, REFRACTIVE_MEDIA, default: "glass"
 
-  input(:i)    { 45.deg }
+  input(:i)    { 20.deg }
   input(:mu21) { into / from }
 
   output("bends") do

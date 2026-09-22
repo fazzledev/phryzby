@@ -11,6 +11,7 @@ class ChoosingTest < Minitest::Test
   WATER = 1
   GLASS = 2
   DIAMOND = 3
+  SILICON = 5
 
   def test_a_choice_opens_on_the_one_it_was_given
     assert_equal({ from: AIR, into: GLASS }, opening)
@@ -18,13 +19,13 @@ class ChoosingTest < Minitest::Test
 
   # The chapter holds the angle itself, so there is no control to open on.
   def test_the_angle_is_fixed_and_not_offered
-    assert_in_delta 45.0, playing.posing(**opening).solve(:i).in_degrees, 1e-9
+    assert_in_delta 20.0, playing.posing(**opening).solve(:i).in_degrees, 1e-9
     refute_includes playing.controls, %(data-input="i")
   end
 
   def test_what_was_chosen_reaches_the_law_as_a_number
     assert_in_delta 1.5, playing.posing(**opening).solve(:mu21), 1e-9
-    assert_in_delta 28.1255, playing.posing(**opening).solve(:rr).in_degrees, 1e-3
+    assert_in_delta 13.1801, playing.posing(**opening).solve(:rr).in_degrees, 1e-3
   end
 
   def test_the_law_is_told_the_ratio_and_never_the_two_media
@@ -61,10 +62,11 @@ class ChoosingTest < Minitest::Test
     assert_includes reads(from: WATER, into: AIR), "away from the normal"
   end
 
-  # Far enough out of a dense one and nothing crosses at all, which the next
-  # chapter is about.
-  def test_and_far_enough_out_of_one_it_does_not_leave
-    assert_includes reads(from: DIAMOND, into: AIR), "no refracted ray    yes"
+  # Steep enough a drop in index and nothing crosses at all, which the
+  # chapters before this one are about.
+  def test_and_out_of_a_steep_enough_drop_it_does_not_leave
+    assert_includes reads(from: SILICON, into: AIR), "no refracted ray    yes"
+    assert_includes reads(from: DIAMOND, into: AIR), "away from the normal"
   end
 
   def test_and_between_two_alike_it_does_not_bend
@@ -81,13 +83,13 @@ class ChoosingTest < Minitest::Test
   end
 
   # The incident ray is carried on past the boundary, dashed, so which side of
-  # it the refracted one came out on reads straight off the picture. At 45° it
-  # runs from the meeting point out as far as it came in.
+  # it the refracted one came out on reads straight off the picture. It runs
+  # from the meeting point out as far as it came in.
   def test_the_incident_ray_is_extended_past_the_boundary
     drawn = playing.picture(opening, settled: {})
 
     assert_includes drawn, %(<g stroke-dasharray="3 5">)
-    assert_includes drawn, %(<line x1="150" y1="100" x2="203.74" y2="153.74" stroke="var(--ray)")
+    assert_includes drawn, %(<line x1="150" y1="100" x2="175.99" y2="171.42" stroke="var(--ray)")
   end
 
   def test_the_denser_of_the_two_is_still_the_more_shaded

@@ -10,8 +10,8 @@ play_with Reflection, RefractiveIndex do
   description "What each medium does to light is one number, and only the ratio of the two ever shows."
 
   input :i, default: 30.deg
-  input :mu1, INDEX, default: 1.0, marks: REFRACTIVE_MEDIA
-  input :mu2, INDEX, default: 1.5, marks: REFRACTIVE_MEDIA
+  input :mu1, INDEX, default: 1.33, marks: REFRACTIVE_MEDIA
+  input :mu2, INDEX, default: 2.42, marks: REFRACTIVE_MEDIA
 
   output :mu21
   output("sin i ÷ sin rr") { Math.sin(solve(:i)) / Math.sin(solve(:rr)) }

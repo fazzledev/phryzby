@@ -12,12 +12,12 @@ class CrossingTest < Minitest::Test
   end
 
   def test_into_water_the_refracted_angle_is_the_smaller_one
-    assert_includes reads(BENDING), "22.08°"
-    assert_includes reads(BENDING, i: 60.deg), "40.63°"
+    assert_includes reads(BENDING), "40.63°"
+    assert_includes reads(BENDING, i: 30.deg), "22.08°"
   end
 
   def test_out_of_water_it_is_the_larger_one
-    assert_includes reads(OUT_OF_WATER), "41.68°"
+    assert_includes reads(OUT_OF_WATER), "70.13°"
     assert_includes reads(OUT_OF_WATER, i: 10.deg), "13.35°"
   end
 

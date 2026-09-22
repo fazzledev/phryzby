@@ -9,7 +9,7 @@ play_with Reflection, TotalInternalReflection do
   title "Total Internal Reflection"
   description "Past a certain angle, light leaving a denser medium cannot cross at all. All of it turns back."
 
-  input :i, default: 30.deg
+  input :i, default: 50.deg
   input :mu1, INDEX, default: 1.5, marks: REFRACTIVE_MEDIA
   input :mu2, INDEX, default: 1.0, marks: REFRACTIVE_MEDIA
 
