@@ -11,8 +11,8 @@ play_with Reflection, Refraction do
   description "Leaving a denser medium there is an angle past which nothing gets out, and nothing here says what it is."
 
   input  :i,    ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
-  choose :from, REFRACTIVE_MEDIA, at: "glass", as: "from"
-  choose :into, REFRACTIVE_MEDIA, at: "air",   as: "into"
+  choose :from, REFRACTIVE_MEDIA, at: "glass"
+  choose :into, REFRACTIVE_MEDIA, at: "air"
 
   given(:mu21) { into / from }
 
