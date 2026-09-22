@@ -39,9 +39,7 @@ module Light
 
       from, to = ends(turned, arriving_at, leaving_at)
       @parts << arrow(*from, *to, drawn, share ? 0.32 + 0.68 * share : 0.95)
-      @parts << label(to[0] + (arriving_at ? 0 : 4), to[1] + (crossing_at ? 12 : -6),
-                      share ? "#{called} #{(share * 100).round}%" : called.to_s,
-                      colour: "var(--ray)", anchor: arriving_at ? "middle" : "middle")
+      @parts << named(from, to, share ? "#{called} #{(share * 100).round}%" : called.to_s)
     end
 
     def note(text, when: nil)
@@ -56,6 +54,28 @@ module Light
     end
 
     private
+
+    PAST = 10
+
+    # A label belongs at the loose end of its ray and outside it. Which end,
+    # which side, and whether it sits above or below all follow from one
+    # direction: the way out from where the rays meet. The incident ray is
+    # drawn inward, so its loose end is its tail; for the rest it is the head,
+    # and nothing has to say so.
+    def named(from, to, text)
+      outer = [ from, to ].max_by { |point| away(point) }
+      span = away(outer)
+      return if span.zero?
+
+      out = [ (outer[0] - CENTRE[0]) / span, (outer[1] - CENTRE[1]) / span ]
+
+      label(outer[0] + out[0] * PAST, outer[1] + out[1] * PAST + (out[1].negative? ? -2 : 9),
+            text, colour: "var(--ray)", anchor: sideways(out[0]))
+    end
+
+    def sideways(across) = across.abs < 0.25 ? "middle" : (across.negative? ? "end" : "start")
+
+    def away(point) = Math.hypot(point[0] - CENTRE[0], point[1] - CENTRE[1])
 
     def value(name)
       return name if name.is_a?(Numeric)
