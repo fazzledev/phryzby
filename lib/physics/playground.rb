@@ -260,7 +260,7 @@ module Physics
     def written(name)
       return nil unless @scenario.quantities.key?(name)
 
-      "(#{Physics.symbol(written_for(name))})"
+      Physics.symbol(written_for(name))
     end
 
     # A readout has one line to say both in, so it says them one after the
@@ -268,7 +268,7 @@ module Physics
     def named(name)
       symbol = written(name)
 
-      symbol ? "#{called(name)} <small>#{symbol}</small>" : called(name)
+      symbol ? "#{called(name)} <small>(#{symbol})</small>" : called(name)
     end
   end
 
