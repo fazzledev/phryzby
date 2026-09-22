@@ -8,16 +8,23 @@ class ChoosingTest < Minitest::Test
   def reads(**changes) = playing.readouts(opening.merge(**changes)).gsub(%r{</?[^>]+>}, " ")
 
   AIR = 0
+  WATER = 1
   GLASS = 2
   DIAMOND = 3
 
   def test_a_choice_opens_on_the_one_it_was_given
-    assert_equal({ i: 30.deg, from: AIR, into: GLASS }, opening)
+    assert_equal({ from: AIR, into: GLASS }, opening)
+  end
+
+  # The chapter holds the angle itself, so there is no control to open on.
+  def test_the_angle_is_fixed_and_not_offered
+    assert_in_delta 45.0, playing.posing(**opening).solve(:i).in_degrees, 1e-9
+    refute_includes playing.controls, %(data-input="i")
   end
 
   def test_what_was_chosen_reaches_the_law_as_a_number
     assert_in_delta 1.5, playing.posing(**opening).solve(:mu21), 1e-9
-    assert_in_delta 19.4712, playing.posing(**opening).solve(:rr).in_degrees, 1e-3
+    assert_in_delta 28.1255, playing.posing(**opening).solve(:rr).in_degrees, 1e-3
   end
 
   def test_the_law_is_told_the_ratio_and_never_the_two_media
@@ -51,7 +58,13 @@ class ChoosingTest < Minitest::Test
   end
 
   def test_out_of_one_it_bends_away
-    assert_includes reads(from: DIAMOND, into: AIR, i: 10.deg), "away from the normal"
+    assert_includes reads(from: WATER, into: AIR), "away from the normal"
+  end
+
+  # Far enough out of a dense one and nothing crosses at all, which the next
+  # chapter is about.
+  def test_and_far_enough_out_of_one_it_does_not_leave
+    assert_includes reads(from: DIAMOND, into: AIR), "no refracted ray    yes"
   end
 
   def test_and_between_two_alike_it_does_not_bend

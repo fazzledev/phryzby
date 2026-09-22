@@ -94,28 +94,36 @@ module Physics
     # quite to the ends: square on and edge on are both degenerate pictures.
     SHY = 0.5.deg
 
-    def input(name, range = nil, default:, in: nil, as: nil, marks: {})
+    # One verb for everything a chapter hands the laws. A range to slide
+    # through, a few named things to pick between, or, given a block, a value
+    # worked out from what was picked and never shown at all.
+    def input(name, offered = nil, default: nil, in: nil, as: nil, marks: {}, &worked_out)
+      return @given[name] = worked_out if worked_out
+      return @inputs[name] = picking(name, offered, default, as) if offered.is_a?(Hash)
+
       units = binding.local_variable_get(:in) || read_as(name)
-      held = @scenario.domains[@scenario.quantities[name]]
-      range ||= (held.begin + SHY)..(held.end - SHY)
 
-      @inputs[name] = { range: range, step: FINELY.fetch(units, 0.01), default: default,
-                        as: as, marks: marks, units: units }
+      @inputs[name] = { range: offered || as_far_as(name), units: units,
+                        step: FINELY.fetch(units, 0.01), default: default,
+                        as: as, marks: marks }
     end
 
-    # A property you have rather than a number you set: the slider steps from
-    # one named thing to the next and reads out the name, never the value
+    def as_far_as(name)
+      held = @scenario.domains.fetch(@scenario.quantities[name])
+
+      (held.begin + SHY)..(held.end - SHY)
+    end
+
+    # A property you have rather than a number you set: it steps from one
+    # named thing to the next and reads out the name, never the value
     # underneath it.
-    def choose(name, table, default: table.keys.first, as: nil)
+    def picking(name, table, default, as)
       @chosen[name] = table
-      @inputs[name] = { range: 0..(table.size - 1), step: 1, default: table.keys.index(default),
-                        as: as, units: nil, table: table,
-                        marks: table.keys.each_with_index.to_h }
-    end
 
-    # What the laws are actually given, worked out from what was chosen. The
-    # chosen names are in scope, standing for what they are worth.
-    def given(name, &how) = @given[name] = how
+      { range: 0..(table.size - 1), step: 1, as: as, units: nil, table: table,
+        default: table.keys.index(default || table.keys.first),
+        marks: table.keys.each_with_index.to_h }
+    end
 
     def output(name, in: nil, as: nil, alarm: false, &worked_out)
       @outputs << { name: name, units: binding.local_variable_get(:in) || read_as(name),

@@ -196,7 +196,9 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
 .field output small{display:block;font-size:.68rem;color:var(--ink-soft);}
 .out{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.7rem;}
 .out div{padding:.3rem 0;}
-.out .val{grid-column:4;}
+/* A reading takes the control's column as well as its own: a number sits at
+   the same right edge either way, and a reading in words has room to be one. */
+.out .val{grid-column:3/5;}
 .out .alarm .val{color:var(--red);font-weight:600;}
 .out hr{border:0;border-top:1px solid var(--rule);margin:.45rem 0;}
 

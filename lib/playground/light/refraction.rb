@@ -7,13 +7,12 @@ play_with Reflection, Refraction do
   title "Refraction"
   description "A ray crossing into another medium bends, and the two media together decide which way."
 
-  input  :i, default: 30.deg
-  choose :from, REFRACTIVE_MEDIA
-  choose :into, REFRACTIVE_MEDIA, default: "glass"
+  input :from, REFRACTIVE_MEDIA
+  input :into, REFRACTIVE_MEDIA, default: "glass"
 
-  given(:mu21) { into / from }
+  input(:i)    { 45.deg }
+  input(:mu21) { into / from }
 
-  output :rr
   output("bends") do
     turned = solve(:rr) - solve(:i)
     next "not at all" if turned.abs < 1e-6
@@ -24,9 +23,9 @@ play_with Reflection, Refraction do
 
   draw Light::Picture do
     media :from, :into
-    ray "incident",  arriving_at: :i, angle: true
+    ray "incident",  arriving_at: :i
     ray "reflected", leaving_at:  :rl
-    ray "refracted", crossing_at: :rr, angle: true, unless: :no_refracted_ray
+    ray "refracted", crossing_at: :rr, unless: :no_refracted_ray
     note "no refracted ray", when: :no_refracted_ray
   end
 end

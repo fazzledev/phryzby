@@ -7,11 +7,11 @@ play_with Reflection, Refraction do
   title "Critical angle"
   description "Leaving a denser medium there is an angle past which nothing gets out, and nothing here says what it is."
 
-  input  :i, default: 30.deg
-  choose :from, REFRACTIVE_MEDIA, default: "glass"
-  choose :into, REFRACTIVE_MEDIA, default: "air"
+  input :i, default: 30.deg
+  input :from, REFRACTIVE_MEDIA, default: "glass"
+  input :into, REFRACTIVE_MEDIA, default: "air"
 
-  given(:mu21) { into / from }
+  input(:mu21) { into / from }
 
   output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
   output :rr
