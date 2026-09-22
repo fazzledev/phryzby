@@ -25,6 +25,17 @@ class PictureTest < Minitest::Test
     assert_includes trapped, "no refracted ray"
   end
 
+  # Set the first medium denser and there is an angle past which nothing gets
+  # out; set it the other way and there is no such angle to mark.
+  def test_the_critical_angle_is_marked_wherever_there_is_one
+    assert_includes drawn(mu1: 1.5, mu2: 1.0), "critical 41.81°"
+    refute_includes drawn(mu1: 1.0, mu2: 1.5), "critical"
+  end
+
+  def test_and_it_moves_with_the_media
+    assert_includes drawn(mu1: 2.42, mu2: 1.0), "critical 24.41°"
+  end
+
   def test_the_note_stays_away_while_its_condition_is_false
     refute_includes drawn, "no refracted ray"
   end
