@@ -61,16 +61,15 @@ module Light
       swept(turned, arriving_at, crossing_at) if angle
     end
 
-    # A reference line at an angle, drawn the way the normal is: faint, dashed,
-    # out from where the rays meet. Nothing is drawn if there is no such angle.
+    # A reference line at an angle, drawn the way the normal is: dashed, out
+    # from where the rays meet. Nothing is drawn if there is no such angle.
     def mark(text, arriving_at:)
       turned = value(arriving_at)
       return if turned.nil?
 
-      tip = [ CENTRE[0] - Math.sin(turned) * REACH * 1.2, CENTRE[1] - Math.cos(turned) * REACH * 1.2 ]
-      @shapes << %(<line x1="#{CENTRE[0]}" y1="#{CENTRE[1]}" x2="#{tip[0].round(2)}" ) +
-                 %(y2="#{tip[1].round(2)}" stroke="var(--red)" stroke-width="1" ) +
-                 %(stroke-opacity="0.55" stroke-dasharray="4 3"/>)
+      tip = [ (CENTRE[0] - Math.sin(turned) * REACH * 1.2).round(2),
+              (CENTRE[1] - Math.cos(turned) * REACH * 1.2).round(2) ]
+      @shapes << carried(CENTRE, tip, "var(--red)", "4 3")
 
       want("#{text} #{format("%.2f°", turned.in_degrees)}", beyond(tip, CENTRE), colour: "var(--red)")
     end
@@ -279,13 +278,18 @@ module Light
       end.join
     end
 
-    # It runs down through shading that can be nearly its own colour, so it
-    # carries a little of the paper with it, the way the labels do.
-    def upright
-      %(<g stroke-dasharray="3 4">) +
-        %(<line x1="150" y1="10" x2="150" y2="190" stroke="var(--paper)" stroke-width="3"/>) +
-        %(<line x1="150" y1="10" x2="150" y2="190" stroke="var(--ink-soft)" stroke-width="1"/>) +
-        %(</g>)
+    def upright = carried([ 150, 10 ], [ 150, 190 ], "var(--ink-soft)", "3 4")
+
+    # A construction line runs through shading that can be nearly its own
+    # colour, so it carries a little of the paper with it, the way the labels
+    # do.
+    def carried(from, to, colour, dashes)
+      line = ->(stroke, width) do
+        %(<line x1="#{from[0]}" y1="#{from[1]}" x2="#{to[0]}" y2="#{to[1]}" ) +
+          %(stroke="#{stroke}" stroke-width="#{width}"/>)
+      end
+
+      %(<g stroke-dasharray="#{dashes}">) + line.("var(--paper)", 3) + line.(colour, 1) + %(</g>)
     end
   end
 end

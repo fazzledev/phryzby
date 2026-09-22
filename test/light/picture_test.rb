@@ -191,14 +191,24 @@ class PictureTest < Minitest::Test
     assert_empty bare { surface }.scan(HATCHING)
   end
 
-  # It runs down through shading that can be nearly its own colour, so it is
-  # drawn twice: paper under, line over.
-  def test_the_normal_carries_paper_with_it
-    upright = %r{<line x1="150" y1="10"[^>]*stroke="var\((--[\w-]+)\)" stroke-width="([\d.]+)"}
-    carried, line = bare { surface }.scan(upright)
+  ONE_LINE = %r{<line [^>]*stroke="var\((--[\w-]+)\)" stroke-width="([\d.]+)"/>}
+  CONSTRUCTION = %r{<g stroke-dasharray="[^"]+">#{ONE_LINE.source}#{ONE_LINE.source}</g>}
 
-    assert_equal "--paper", carried.first
-    assert_operator carried.last.to_f, :>, line.last.to_f
+  # The normal and the critical mark both run through shading that can be
+  # nearly their own colour, so each is drawn twice: paper under, line over.
+  def test_every_construction_line_carries_paper_with_it
+    drawn = bare do
+      surface
+      mark "critical", arriving_at: 0.73
+    end
+    lines = drawn.scan(CONSTRUCTION)
+
+    assert_equal 2, lines.size
+    lines.each do |under, wide, over, thin|
+      assert_equal "--paper", under
+      refute_equal "--paper", over
+      assert_operator wide.to_f, :>, thin.to_f
+    end
   end
 
   def bands(svg) = svg.scan(%r{>(\u03bc[^<]*)</text>}).flatten
