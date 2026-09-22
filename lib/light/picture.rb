@@ -18,14 +18,14 @@ module Light
 
     def media(first, second)
       @shapes.unshift(ground(0.3), rule, upright)
-      want(symbol(first), [ [ 294, 94, "end" ] ])
-      want(symbol(second), [ [ 294, 114, "end" ] ])
+      want(symbol(first), [ [ 294, 94, "end" ] ], fixed: true)
+      want(symbol(second), [ [ 294, 114, "end" ] ], fixed: true)
       name_the_upright
     end
 
     def surface(called: "surface")
       @shapes.unshift(ground(0.55), rule, upright)
-      want(called, [ [ 294, 114, "end" ] ])
+      want(called, [ [ 294, 114, "end" ] ], fixed: true)
       name_the_upright
     end
 
@@ -68,8 +68,12 @@ module Light
                    [ CENTRE[0], 176, "middle" ] ], colour: "var(--red)")
     end
 
-    def to_svg
-      drawn = Placing.new(WIDTH, HEIGHT).resolve(@wanted)
+    attr_reader :settled
+
+    def to_svg(settled = {})
+      placing = Placing.new(WIDTH, HEIGHT, settled)
+      drawn = placing.resolve(@wanted)
+      @settled = placing.settled
 
       %(<svg id="diagram" viewBox="0 0 #{WIDTH} #{HEIGHT}" aria-label="the picture">) +
         @shapes.join + drawn.join + "</svg>"
@@ -80,15 +84,21 @@ module Light
     PAST = 14
     ASIDE = 0.55
 
-    def want(text, spots, colour: "var(--ink-soft)", last: false)
-      @wanted << { text: text, spots: spots, colour: colour, last: last }
+    # Fixed things name themselves once and are never pushed aside; only what
+    # moves carries its label about.
+    def want(text, spots, colour: "var(--ink-soft)", fixed: false)
+      @wanted << { text: text, spots: spots, colour: colour, fixed: fixed }
     end
 
-    # The dashed line has a whole height to be named anywhere along, so it asks
-    # last and takes what is left.
+    # It can be read anywhere along the line it names, so it asks for the far
+    # end first — rays leave the surface on the other side — and works back up
+    # only if something is already there.
     def name_the_upright
-      want("normal", (15..185).step(11).flat_map { |y| [ [ 156, y, "start" ], [ 144, y, "end" ] ] },
-           last: true)
+      up = (HEIGHT - 10).step(20, -20).flat_map do |y|
+        [ [ CENTRE[0] - 6, y, "end" ], [ CENTRE[0] + 6, y, "start" ] ]
+      end
+
+      want("normal", up, fixed: true)
     end
 
     # Out past the tip, then further out, then swung off to either side — a ray

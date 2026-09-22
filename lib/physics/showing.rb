@@ -40,7 +40,10 @@ module Physics
 
       drawing = @canvas.new(@scenario.new(**values))
       drawing.instance_eval(&@picture)
-      drawing.to_svg
+      drawn = drawing.to_svg(@settled ||= {})
+      @settled = drawing.settled
+
+      drawn
     end
 
     # The variable a quantity is written as, not the quantity's own name.

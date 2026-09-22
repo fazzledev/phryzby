@@ -32,6 +32,12 @@ class LawTest < Minitest::Test
     assert_in_delta 1.0, regime(y: 1.0).solve(:x), 1e-9
   end
 
+  # Whether an equation applies is asked while solving, so a guard that judged
+  # by solving would send the two round each other for ever.
+  def test_a_guard_naming_the_quantity_being_solved_for_does_not_loop
+    assert_in_delta 3.0, regime(y: 3.0).solve(:x), 1e-9
+  end
+
   def test_an_unguarded_equation_states_no_guard
     refute regime.class.guards.key?(:ordinary)
   end

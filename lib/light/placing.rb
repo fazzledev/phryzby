@@ -9,23 +9,47 @@ module Light
     BELOW = 3
     EDGE = 2
 
-    def initialize(width, height)
+    def initialize(width, height, settled = {})
       @width = width
       @height = height
+      @settled = settled
       @taken = []
     end
 
+    # Where each label ended up, so the next picture can put it back.
+    attr_reader :settled
+
     def resolve(wanted)
-      # Whatever can go anywhere goes after whatever cannot.
-      wanted.sort_by { |want| want[:last] ? 1 : 0 }.map do |want|
-        spot = want[:spots].find { |place| free?(box(place, want[:text])) } || want[:spots].first
+      kept = {}
+
+      # What does not move claims its place first, so it is never the thing
+      # shoved aside by something sliding past.
+      drawn = wanted.sort_by { |want| want[:fixed] ? 0 : 1 }.map do |want|
+        spot = choose(want)
+        kept[want[:text]] = spot
         @taken << box(spot, want[:text])
 
         drawn(spot, want)
       end
+
+      @settled = kept
+      drawn
     end
 
     private
+
+    # Home if it is free, otherwise wherever it was last time if that still is,
+    # and only then somewhere new. A label that has been pushed aside stays put
+    # rather than hunting, and comes back the moment it can.
+    def choose(want)
+      home, *rest = want[:spots]
+      return home if free?(box(home, want[:text]))
+
+      held = @settled[want[:text]]
+      return held if held && rest.include?(held) && free?(box(held, want[:text]))
+
+      rest.find { |place| free?(box(place, want[:text])) } || home
+    end
 
     def box((x, y, anchor), text)
       wide = text.length * LETTER

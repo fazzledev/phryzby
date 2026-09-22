@@ -61,7 +61,7 @@ module Physics
     private
 
     def determine(key, range, pending, except: nil)
-      candidates(key, except).each do |equation|
+      candidates(key, except, pending).each do |equation|
         restore = @env.dup
 
         if supply(equation, key, pending, except)
@@ -78,19 +78,32 @@ module Physics
     # A guarded equation states a special case, so it is tried before the
     # general one it stands in for. Without that the answer would depend on
     # the order the laws happened to be included in.
-    def candidates(key, except = nil)
+    def candidates(key, except = nil, pending = [])
       applicable = self.class.equations.select do |name, equation|
-        name != except && equation.variables.include?(key) && applies?(name)
+        name != except && equation.variables.include?(key) && applies?(name, pending)
       end
 
       special, general = applicable.partition { |name, _| self.class.guards.key?(name) }
       (special + general).map(&:last)
     end
 
-    def applies?(name)
+    # A guard may work out what it needs — its condition can mention a quantity
+    # nobody gave, as total internal reflection mentions the relative index.
+    # What it must not work out is anything already being solved for: whether
+    # an equation applies is asked in the middle of solving, and the two would
+    # send each other round for ever.
+    def applies?(name, pending = [])
       guard = self.class.guards[name]
+      return true unless guard
 
-      guard.nil? || satisfies?(guard)
+      condition = self.class.conditions.fetch(guard)
+      (condition.variables - @env.keys).each do |key|
+        return false if pending.include?(key)
+
+        determine(key, nil, pending + [ key ])
+      end
+
+      condition.satisfied?(@env)
     rescue KeyError, RuntimeError
       false
     end

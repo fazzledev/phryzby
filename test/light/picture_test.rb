@@ -73,10 +73,24 @@ class PictureTest < Minitest::Test
     refute_includes drawn(mu1: 1.0, mu2: 1.5), "critical"
   end
 
-  def test_the_normal_gives_way_rather_than_the_rays
-    crowded = labels(drawn(i: 8.deg)).to_h { |text, left, top, | [ text, [ left.round, top.round ] ] }
+  # It names a line that never moves, so it never moves either.
+  def test_the_normal_stays_where_it_is_whatever_the_rays_do
+    everywhere = [ 1, 8, 30, 60, 89 ].map do |degrees|
+      labels(drawn(i: degrees.deg)).find { |text,| text == "normal" }[1..2].map(&:round)
+    end
 
-    assert_equal [ 156, 18 ], crowded.fetch("normal")
-    assert_operator crowded.fetch("incident")[1], :<, crowded.fetch("normal")[1]
+    assert_equal [ everywhere.first ], everywhere.uniq
+  end
+
+  def test_a_label_pushed_aside_stays_put_rather_than_hunting
+    showing = Physics.shown.showing_of
+    seen = (1..179).map do |half|
+      svg = showing.picture(showing.opening.merge(mu1: 1.5, mu2: 1.0, i: (half / 2.0).deg))
+      svg.scan(%r{<text x="([-\d.]+)" y="([-\d.]+)"[^>]*>(critical[^<]*)</text>}).first&.first(2)
+    end.compact.map { |x, y| [ x.to_f, y.to_f ] }
+
+    leaps = seen.each_cons(2).count { |a, b| Math.hypot(b[0] - a[0], b[1] - a[1]) > 12 }
+
+    assert_equal 0, leaps
   end
 end
