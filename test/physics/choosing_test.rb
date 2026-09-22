@@ -83,7 +83,7 @@ class ChoosingTest < Minitest::Test
   # The incident ray is carried on past the boundary, dashed, so which side of
   # it the refracted one came out on reads straight off the picture. At 45° it
   # runs from the meeting point out as far as it came in.
-  def test_the_incident_ray_is_carried_on_unbent
+  def test_the_incident_ray_is_extended_past_the_boundary
     drawn = playing.picture(opening, settled: {})
 
     assert_includes drawn, %(<g stroke-dasharray="3 5">)
