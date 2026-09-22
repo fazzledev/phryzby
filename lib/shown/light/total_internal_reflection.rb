@@ -7,7 +7,6 @@ FINELY = 0.01.deg
 INDEX = 1.0..2.5
 
 Physics::Scenario.including(Reflection, TotalInternalReflection).showing do
-  states TotalInternalReflection
   called "Total internal reflection"
   about "a law that only sometimes holds"
   describes "Chapter 1.4 ran out of answers past the critical angle: every Fresnel equation needs a refracted angle and there is not one. This chapter states what happens instead — <code>r == 1</code> — and states it <em>conditionally</em>, so the solver reaches for it only in the regime where it is true. One equation, one <code>when:</code>, and the word <em>total</em> stops being a claim in prose."

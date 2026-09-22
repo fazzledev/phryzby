@@ -7,7 +7,6 @@ FINELY = 0.01.deg
 INDEX = 1.0..2.5
 
 Physics::Scenario.including(Reflection, Refraction).showing do
-  states Refraction
   called "Refraction"
   about "and the branch problem"
   describes "A ray meeting glass does both things at once, so the question names both laws. Neither law inherits the other — refraction is not a kind of reflection — and neither file mentions the other. A law includes only what it presupposes: Snell’s law is about a ray that has already arrived, so it begins <code>include Incidence</code>. Two laws that merely both happen to hold are composed where the question is asked instead."

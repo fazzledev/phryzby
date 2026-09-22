@@ -16,24 +16,19 @@ module Physics
 
     attr_reader :varied, :shown, :picture
 
-    # Which law the chapter is about, which is not the same as which laws the
-    # demonstration needs: refraction composes reflection to draw the reflected
-    # ray, and is still a chapter about refraction.
-    def states(law) = @law = law
-    def law = @law
-
     def called(name) = @called = name
     def about(phrase) = @about = phrase
     def describes(prose) = @describes = prose
 
-    def heading = @about ? "#{@called || @law.title} <small>\u2014 #{@about}</small>" : (@called || @law.title)
+    def heading = @about ? "#{@called} <small>\u2014 #{@about}</small>" : @called
 
-    # The law states what it is made of; this says what it is called and why
-    # a reader is being shown it.
+    # What is stated is the scenario, not one law inside it. A page that draws
+    # a reflected ray and reports its angle should not be hiding the law that
+    # gives it.
     def stated
       [ "<h1>#{heading}</h1>",
         @describes ? "<p class=\"lede\">#{@describes}</p>" : "",
-        @law.to_html ].join
+        @scenario.to_html ].join
     end
 
     # The engine draws nothing itself; a subject brings its own way of
@@ -133,20 +128,14 @@ module Physics
     end
   end
 
-  # A demonstration answers to the law it is about, which is a name that
-  # already means something. Asked for nothing in particular, it is the one
-  # last declared — a page loads one demonstration, and which law that one is
-  # about is the file's business rather than the page's.
-  def self.shown(law = nil) = law ? (@shown ||= {}).fetch(law) : @latest
-  def self.shows(law, scenario)
-    (@shown ||= {})[law] = scenario
-    @latest = scenario
-  end
+  # A page loads one shown file and shows what it declared.
+  def self.shown = @shown
+  def self.shows(scenario) = @shown = scenario
 
   class Scenario
     def self.showing(&block)
       showing_of.instance_eval(&block)
-      Physics.shows(showing_of.law, self)
+      Physics.shows(self)
       self
     end
 

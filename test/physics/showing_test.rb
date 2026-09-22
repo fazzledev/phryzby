@@ -4,7 +4,7 @@ require_relative "../../lib/shown/light/refraction"
 class ShowingTest < Minitest::Test
   APART = 0.chr
 
-  def shown = Physics.shown(Refraction)
+  def shown = Physics.shown
   def showing = shown.showing_of
   def opening = showing.opening
 

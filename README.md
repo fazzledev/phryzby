@@ -182,7 +182,7 @@ calls: the law states itself, and the demonstration states the playground.
 
 ```ruby
 Physics::Scenario.including(Reflection, Refraction).showing do
-  states Refraction
+  called "Refraction"
 
   vary :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
   vary :mu2, INDEX, step: 0.01, at: 1.5, as: "μ₂ second"

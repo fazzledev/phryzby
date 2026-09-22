@@ -7,7 +7,6 @@ FINELY = 0.01.deg
 INDEX = 1.0..2.5
 
 Physics::Scenario.including(Reflection, Refraction, Reflectance).showing do
-  states Reflectance
   called "Reflectance"
   about "how much, rather than which way"
   describes "Fresnel gives the shares, and they depend on polarisation — two equations and an average for ordinary light. Ask for <code>r</code> alone and the solver works backwards to what it needs: Snell for the refracted angle, then each polarisation, then the mean. Five equations, one question, no order given."
