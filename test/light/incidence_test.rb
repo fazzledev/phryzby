@@ -2,7 +2,7 @@ require "minitest/autorun"
 require_relative "../../lib/light/incidence"
 
 class IncidenceTest < Minitest::Test
-  SURFACE = Physics::Scenario[Incidence]
+  SURFACE = Physics::Scenario.including(Incidence)
 
   def test_it_states_a_quantity_and_is_not_a_law
     assert_equal({ angle_of_incidence: :angle_of_incidence, i: :angle_of_incidence },

@@ -46,7 +46,7 @@ class LawTest < Minitest::Test
       equation(:capped, when: :extreme) { y == 1 }
     end
 
-    Physics::Scenario[law].new(**values)
+    Physics::Scenario.including(law).new(**values)
   end
 
   # A law being edited in a running VM is declared over and over. Each time

@@ -3,7 +3,10 @@ module Physics
     extend Declarations
 
     class << self
-      def [](*laws) = Class.new(self) { laws.each { |law| include law } }
+      # The same verb a law uses to take up another. Whatever declares is
+      # absorbed when it is included, and it makes no difference whether the
+      # thing including it is a law or the scenario being solved.
+      def including(*laws) = Class.new(self) { laws.each { |law| include law } }
 
       def inherited(subclass)
         super

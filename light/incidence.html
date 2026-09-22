@@ -63,7 +63,7 @@ await chapter({
   opening: [ "surface[:i].in_degrees" ],
   examples: [
     "surface[:i].in_degrees",
-    "Physics::Scenario[Incidence].new.solve(:i)",
+    "Physics::Scenario.including(Incidence).new.solve(:i)",
     "Incidence.quantities",
     "Incidence.domains",
   ],

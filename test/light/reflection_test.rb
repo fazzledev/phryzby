@@ -2,7 +2,7 @@ require "minitest/autorun"
 require_relative "../../lib/light/reflection"
 
 class ReflectionTest < Minitest::Test
-  SURFACE = Physics::Scenario[Reflection]
+  SURFACE = Physics::Scenario.including(Reflection)
 
   def test_reflection_equals_incidence
     assert_in_delta 37.0, solved(:rl, i: 37), 1e-6

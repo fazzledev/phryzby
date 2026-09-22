@@ -2,7 +2,7 @@ require "minitest/autorun"
 require_relative "../lib/pythagoras"
 
 class PythagorasTest < Minitest::Test
-  TRIANGLE = Physics::Scenario[Pythagoras]
+  TRIANGLE = Physics::Scenario.including(Pythagoras)
 
   def test_the_block_returned_an_equation_rather_than_a_boolean
     assert_kind_of Physics::Equation, Pythagoras.equations.fetch(:pythagoras)

@@ -59,7 +59,7 @@ end</pre>
         </div>
         <div>
           <p class="cap">and every question it answers</p>
-<pre><span class="said">glass = Physics::Scenario[Refraction]</span>
+<pre><span class="said">glass = Physics::Scenario.including(Refraction)</span>
 
 <span class="said">glass.new(i: 30.deg, mu1: 1.0, mu2: 1.5)
      .solve(:rr).in_degrees</span>
@@ -122,7 +122,7 @@ end</pre>
               <span class="t">Reflection</span>
               <span class="d">The first equation, and what it means for <code>==</code> to build
                 rather than compare. A law is a module and holds nothing;
-                <code>Physics::Scenario[Reflection]</code> is what holds values and solves.</span>
+                <code>Physics::Scenario.including(Reflection)</code> is what holds values and solves.</span>
             </span>
           </a>
         </li>

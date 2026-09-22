@@ -64,7 +64,7 @@ await chapter({
   opening: [ "surface.solve(:rl).in_degrees" ],
   examples: [
     "surface.solve(:rl).in_degrees",
-    "Physics::Scenario[Reflection].new(rl: 55.deg).solve(:i).in_degrees",
+    "Physics::Scenario.including(Reflection).new(rl: 55.deg).solve(:i).in_degrees",
     "Reflection.equations[:law_of_reflection].to_s",
     "Reflection.quantities.values.uniq",
   ],

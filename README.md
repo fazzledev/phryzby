@@ -36,7 +36,7 @@ That is the whole file. A law is a module and holds no values; nothing composes
 laws until a question is asked:
 
 ```ruby
-glass = Physics::Scenario[Refraction]
+glass = Physics::Scenario.including(Refraction)
 
 glass.new(i: 30.deg, mu1: 1.0, mu2: 1.5).solve(:rr).in_degrees
 # => 19.4712, the refracted ray
@@ -59,9 +59,11 @@ an arriving ray has an angle, and that is all — so it extends
 for any. `Reflection` and `Refraction` are laws, extend `Physics::Law`, and
 both begin `include Incidence`.
 
-That is the same `include` that composes a law into a scenario. Anything that
-declares is absorbed the moment it is included, whether the thing including it
-is another law or the scenario being solved.
+That is the same `include` that composes a law into a scenario, which is why
+the scenario spells it the same way: `Physics::Scenario.including(Reflection,
+Refraction)`. Anything that declares is absorbed the moment it is included, and
+it makes no difference whether the thing including it is another law or the
+scenario being solved.
 
 The equation block is evaluated against those declarations and can see nothing
 else, so a quantity the law never named is a `NameError` at declaration rather
@@ -73,7 +75,7 @@ A scenario names the laws that hold where the question is being asked. It is
 not told which equation to use, or in what order:
 
 ```ruby
-surface = Physics::Scenario[Reflection, Refraction, Reflectance]
+surface = Physics::Scenario.including(Reflection, Refraction, Reflectance)
                            .new(i: 40.deg, mu1: 1.0, mu2: 1.5)
 
 surface.solve(:r)         # => 0.0457, the reflected share
@@ -163,7 +165,7 @@ unsatisfied, and prefers a guarded one when both apply, because a special case
 is the one that means something.
 
 ```ruby
-surface = Physics::Scenario[Reflection, TotalInternalReflection]
+surface = Physics::Scenario.including(Reflection, TotalInternalReflection)
 
 surface.new(i: 41.81.deg, mu1: 1.5, mu2: 1.0).solve(:r)  # => 0.979855, Fresnel
 surface.new(i: 41.82.deg, mu1: 1.5, mu2: 1.0).solve(:r)  # => 1.0, this law
@@ -179,7 +181,7 @@ A chapter page holds no description of itself. Its right-hand panel is two
 calls: the law states itself, and the demonstration states the playground.
 
 ```ruby
-Physics::Scenario[Reflection, Refraction].showing do
+Physics::Scenario.including(Reflection, Refraction).showing do
   titled Refraction
 
   vary :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
@@ -224,7 +226,7 @@ code running against the same VM.
 ```
 >> surface.solve(:rr).in_degrees
 => 19.471220634507485
->> Physics::Scenario[Refraction].new(mu1: 1.5, mu2: 1.0, rr: 90.deg).solve(:i).in_degrees
+>> Physics::Scenario.including(Refraction).new(mu1: 1.5, mu2: 1.0, rr: 90.deg).solve(:i).in_degrees
 => 41.81031489575402
 ```
 

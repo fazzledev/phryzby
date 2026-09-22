@@ -62,7 +62,7 @@ class PhysicsTest < Minitest::Test
   # A scenario holds values; only a law states equations. So the throwaway
   # model under test is a law composed into one.
   def model(&declarations)
-    Physics::Scenario[law(&declarations)]
+    Physics::Scenario.including(law(&declarations))
   end
 
   def law(&declarations)

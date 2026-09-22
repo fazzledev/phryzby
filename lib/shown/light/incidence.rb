@@ -5,14 +5,14 @@ ANGLE = (0.5.deg)..(89.5.deg)
 FINELY = 0.01.deg
 INDEX = 1.0..2.5
 
-Physics::Scenario[Incidence].showing do
+Physics::Scenario.including(Incidence).showing do
   titled Incidence
 
   vary :i, ANGLE, step: 0.1.deg, at: 30.deg, in: :degrees, as: "incidence"
 
   show :i, in: :degrees, as: "held"
   show("asked to solve it", alarm: true) do
-    Physics::Scenario[Incidence].new.solve(:i)
+    Physics::Scenario.including(Incidence).new.solve(:i)
   rescue RuntimeError => e
     e.message
   end

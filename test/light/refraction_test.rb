@@ -3,7 +3,7 @@ require_relative "../../lib/light/reflection"
 require_relative "../../lib/light/refraction"
 
 class RefractionTest < Minitest::Test
-  SURFACE = Physics::Scenario[Reflection, Refraction]
+  SURFACE = Physics::Scenario.including(Reflection, Refraction)
   FLAT_ALONG_THE_SURFACE = Math::PI / 2
 
   AIR = 1.0

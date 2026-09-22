@@ -30,7 +30,7 @@ class QuantitiesTest < Minitest::Test
     second = law { quantity :angle, variable: :a; quantity :depth, variable: :d
                    equation(:two) { a == d * 2 } }
 
-    scenario = Physics::Scenario[first, second].new(w: 3.0)
+    scenario = Physics::Scenario.including(first, second).new(w: 3.0)
 
     assert_in_delta 1.5, scenario.solve(:d), 1e-9
     assert_equal %i[angle width depth], scenario.class.quantities.values.uniq

@@ -3,7 +3,7 @@ require_relative "../../lib/light/reflection"
 require_relative "../../lib/light/total_internal_reflection"
 
 class TotalInternalReflectionTest < Minitest::Test
-  SURFACE = Physics::Scenario[Reflection, TotalInternalReflection]
+  SURFACE = Physics::Scenario.including(Reflection, TotalInternalReflection)
 
   AIR = 1.0
   GLASS = 1.5

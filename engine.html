@@ -164,7 +164,7 @@ def law = Pythagoras.equations.fetch(:pythagoras)
 
 def demo(target, given)
   values = given.split(",").map { |pair| k, v = pair.split(":"); [ k.to_sym, v.to_f ] }.to_h
-  triangle = Physics::Scenario[Pythagoras].new(**values)
+  triangle = Physics::Scenario.including(Pythagoras).new(**values)
   answer = triangle.solve(target.to_sym)
 
   [ answer, triangle.holds?(:pythagoras), law.class, law.to_s ].join("|")
@@ -181,10 +181,10 @@ const page = await chapter({
   files: [ { key: "lib/pythagoras.rb", tab: 99 } ],
   harness: HARNESS,
   presents: "Pythagoras",
-  opening: [ "Physics::Scenario[Pythagoras].new(a: 3, b: 4).solve(:c)" ],
+  opening: [ "Physics::Scenario.including(Pythagoras).new(a: 3, b: 4).solve(:c)" ],
   examples: [
-    "Physics::Scenario[Pythagoras].new(a: 3, b: 4).solve(:c)",
-    "Physics::Scenario[Pythagoras].new(b: 4, c: 5).solve(:a)",
+    "Physics::Scenario.including(Pythagoras).new(a: 3, b: 4).solve(:c)",
+    "Physics::Scenario.including(Pythagoras).new(b: 4, c: 5).solve(:a)",
     "Pythagoras.equations[:pythagoras].to_s",
     "Pythagoras.equations[:pythagoras].class",
     "Physics::Solver.root(->(x) { Math.sin(x) }, within: 2.0..4.0)",

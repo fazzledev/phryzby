@@ -4,7 +4,7 @@ require_relative "../../lib/light/refraction"
 require_relative "../../lib/light/reflectance"
 
 class ReflectanceTest < Minitest::Test
-  SURFACE = Physics::Scenario[Reflection, Refraction, Reflectance]
+  SURFACE = Physics::Scenario.including(Reflection, Refraction, Reflectance)
 
   AIR = 1.0
   GLASS = 1.5
