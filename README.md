@@ -196,7 +196,7 @@ play_with Reflection, Refraction do
   output :rr, in: :degrees
   output :no_refracted_ray, in: :plain, alarm: true
 
-  draws Light::Picture do
+  draw Light::Picture do
     media :mu1, :mu2
     ray "incident",  arriving_at: :i
     ray "refracted", crossing_at: :rr, unless: :no_refracted_ray
@@ -222,7 +222,7 @@ of the page, which is the only reason to have the second one open.
 A demonstration is never in a law file. A slider range is not physics, and a
 law that carried one would stop being only a law. But it is on the page, as
 `playground.rb` beside the law, because a declaration you cannot reach is only
-hardcoding that has moved. Delete the reflected ray from the `draws` block and
+hardcoding that has moved. Delete the reflected ray from the `draw` block and
 it leaves the picture; rename it and the label changes; widen an `input` range
 and the slider widens. Nothing about presentation lives in a law file, not even its own title: a law
 states what it is made of, and how a reader is introduced to it belongs with

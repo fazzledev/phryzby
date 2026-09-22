@@ -23,7 +23,7 @@ play_with Reflection, Refraction, Reflectance do
   output :r,  in: :percent
   output("refracted", in: :percent) { 1.0 - solve(:r) }
 
-  draws Light::Picture do
+  draw Light::Picture do
     media :mu1, :mu2
     ray "incident",  arriving_at: :i, angle: true
     ray "reflected", leaving_at: :i, weight: :r

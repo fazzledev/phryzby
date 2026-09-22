@@ -20,7 +20,7 @@ play_with Reflection, Refraction do
   output :rl, in: :degrees
   output :no_refracted_ray, in: :plain, alarm: true
 
-  draws Light::Picture do
+  draw Light::Picture do
     media :mu1, :mu2
     ray "incident",  arriving_at: :i, angle: true
     ray "reflected", leaving_at:  :rl

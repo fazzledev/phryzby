@@ -18,7 +18,7 @@ play_with Incidence do
     e.message
   end
 
-  draws Light::Picture do
+  draw Light::Picture do
     surface called: "surface"
     ray "incident", arriving_at: :i
   end

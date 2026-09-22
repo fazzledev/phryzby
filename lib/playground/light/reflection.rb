@@ -14,7 +14,7 @@ play_with Reflection do
   output :i, in: :degrees
   output :rl, in: :degrees
 
-  draws Light::Picture do
+  draw Light::Picture do
     mirror
     ray "incident",  arriving_at: :i, angle: true
     ray "reflected", leaving_at:  :rl, angle: true

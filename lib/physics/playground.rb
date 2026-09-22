@@ -36,7 +36,7 @@ module Physics
 
     # The engine draws nothing itself; a subject brings its own way of
     # picturing, and this only holds on to it.
-    def draws(canvas, &block)
+    def draw(canvas, &block)
       @canvas = canvas
       @picture = block
     end
@@ -90,8 +90,6 @@ module Physics
       @outputs << { name: name, units: binding.local_variable_get(:in),
                   as: as, alarm: alarm, from: worked_out }
     end
-
-    def draw(&block) = @picture = block
 
     def read(scenario, name)
       return scenario.satisfies?(name) if @scenario.conditions.key?(name)
