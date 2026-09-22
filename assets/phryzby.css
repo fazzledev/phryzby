@@ -153,13 +153,16 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
 /* A control and a reading are the same row: what the number is, the letter
    the law writes it as, the control, the reading. A reading has nothing to
    put in the third column, and that is the whole difference. */
-.field,.out div{display:grid;grid-template-columns:8.6rem 2.4rem 1fr 4.4rem;gap:.5rem;
+.field,.out div{display:grid;grid-template-columns:9.2rem 2.4rem 1fr 4.4rem;gap:.5rem;
   align-items:center;}
 .field{padding:.3rem 0;}
 /* A line between the rows, lighter than the one that divides the two tables,
    so it separates without ruling anything off. */
 .field + .field,.out div + div{border-top:1px solid color-mix(in srgb,var(--rule) 60%,var(--paper));}
-.field > label,.out span:first-child{font-size:.8rem;color:var(--ink-mid);}
+/* The name keeps its own room to the right, so a letter never sits against
+   the end of a name that filled its column. */
+.field > label,.out span:first-child{font-size:.8rem;color:var(--ink-mid);
+  padding-right:.5rem;}
 .field > .var,.out .var{font-family:var(--mono);font-size:.9rem;color:var(--ink-mid);}
 .field output,.out .val{font-family:var(--mono);font-size:.8rem;text-align:right;
   line-height:1.25;}
