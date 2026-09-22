@@ -16,7 +16,10 @@ module Physics
 
     attr_reader :varied, :shown, :picture
 
-    def titled(law) = @law = law
+    # Which law the chapter is about, which is not the same as which laws the
+    # demonstration needs: refraction composes reflection to draw the reflected
+    # ray, and is still a chapter about refraction.
+    def states(law) = @law = law
     def law = @law
 
     def called(name) = @called = name
