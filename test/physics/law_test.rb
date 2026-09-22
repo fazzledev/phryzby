@@ -35,7 +35,34 @@ class LawTest < Minitest::Test
   # Whether an equation applies is asked while solving, so a guard that judged
   # by solving would send the two round each other for ever.
   def test_a_guard_naming_the_quantity_being_solved_for_does_not_loop
-    assert_in_delta 3.0, regime(y: 3.0).solve(:x), 1e-9
+    circular = self.class.law do
+      quantity :x, within: 0.0..50.0
+
+      condition(:extreme) { x > 10 }
+      equation(:plain) { x == 3 }
+      equation(:capped, when: :extreme) { x == 1 }
+    end
+
+    assert_in_delta 3.0, Physics::Scenario.including(circular).new.solve(:x), 1e-9
+  end
+
+  # And it must still be able to: a condition may name something nobody gave.
+  def test_a_guard_works_out_what_its_own_condition_needs
+    derived = self.class.law do
+      quantity :given,   within: 0.0..50.0
+      quantity :doubled, within: 0.0..50.0
+      quantity :answer,  within: 0.0..50.0
+
+      equation(:doubling) { doubled == given * 2 }
+      condition(:large) { doubled > 10 }
+      equation(:ordinary) { answer == 1 }
+      equation(:special, when: :large) { answer == 9 }
+    end
+
+    kind = Physics::Scenario.including(derived)
+
+    assert_in_delta 9.0, kind.new(given: 6).solve(:answer), 1e-9
+    assert_in_delta 1.0, kind.new(given: 2).solve(:answer), 1e-9
   end
 
   def test_an_unguarded_equation_states_no_guard
