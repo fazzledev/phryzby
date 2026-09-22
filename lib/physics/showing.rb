@@ -62,9 +62,13 @@ module Physics
     # page's business, and what the law says is the law's.
     def to_html(values)
       [ "<div id=\"picture\">#{picture(values)}</div>",
-        controls,
-        "<div id=\"readouts\">#{readouts(values)}</div>" ].join
+        head("Inputs"), controls,
+        head("Outputs"), "<div id=\"readouts\">#{readouts(values)}</div>" ].join
     end
+
+    # Each heading names the verb that made what is under it, so the page and
+    # the shown file beside it can be read straight across.
+    def head(text) = "<div class=\"head\">#{text}</div>"
 
     # What changes when a control moves: the picture, the numbers, and the
     # reading beside each control.

@@ -15,7 +15,7 @@ showing Reflection do
   output :rl, in: :degrees
 
   draws Light::Picture do
-    surface called: "mirror"
+    mirror
     ray "incident",  arriving_at: :i, angle: true
     ray "reflected", leaving_at:  :rl, angle: true
   end

@@ -162,6 +162,45 @@ class PictureTest < Minitest::Test
     assert_equal 1, arcs(drawn(mu1: 1.5, mu2: 1.0, i: 60.deg))
   end
 
+  # Notation, drawn without a scenario behind it: none of it asks the laws
+  # anything.
+  def bare(&drawing)
+    picture = Light::Picture.new(nil)
+    picture.instance_eval(&drawing)
+    picture.to_svg
+  end
+
+  HATCHING = %r{<line x1="([\d.]+)" y1="100" x2="([\d.]+)" y2="108"}
+
+  def test_a_mirror_is_hatched_behind_its_face_rather_than_filled
+    drawn = bare { mirror }
+
+    refute_includes drawn, "<rect"
+    assert_equal [ -Light::Picture::HATCH_LEAN ],
+                 drawn.scan(HATCHING).map { |x1, x2| x2.to_f - x1.to_f }.uniq
+  end
+
+  def test_and_the_hatching_runs_the_whole_width_of_it
+    along = bare { mirror }.scan(HATCHING).map { |x1,| x1.to_f }
+
+    assert_operator along.first, :<, Light::Picture::HATCH
+    assert_operator along.last, :>, Light::Picture::WIDTH - 2 * Light::Picture::HATCH
+  end
+
+  def test_a_surface_that_is_not_a_mirror_is_not_hatched
+    assert_empty bare { surface }.scan(HATCHING)
+  end
+
+  # It runs down through shading that can be nearly its own colour, so it is
+  # drawn twice: paper under, line over.
+  def test_the_normal_carries_paper_with_it
+    upright = %r{<line x1="150" y1="10"[^>]*stroke="var\((--[\w-]+)\)" stroke-width="([\d.]+)"}
+    carried, line = bare { surface }.scan(upright)
+
+    assert_equal "--paper", carried.first
+    assert_operator carried.last.to_f, :>, line.last.to_f
+  end
+
   def bands(svg) = svg.scan(%r{>(\u03bc[^<]*)</text>}).flatten
 
   def test_a_band_is_named_when_its_index_is_one_anybody_knows

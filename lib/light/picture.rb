@@ -29,6 +29,19 @@ module Light
       name_the_upright
     end
 
+    HATCH = 9
+    HATCH_DROP = 8
+    HATCH_LEAN = 5
+
+    # The notation a mirror is always drawn in: the reflecting face a solid
+    # line, the back of it hatched. Nothing is behind a mirror, so nothing is
+    # shaded in there either.
+    def mirror(called: "mirror")
+      @shapes.unshift(face, hatching, upright)
+      want(called, [ [ 294, 124, "end" ] ], fixed: true)
+      name_the_upright
+    end
+
     def ray(called, arriving_at: nil, leaving_at: nil, crossing_at: nil,
             weight: nil, angle: false, unless: nil)
       return if skipped?(binding.local_variable_get(:unless))
@@ -254,9 +267,25 @@ module Light
 
     def rule = %(<line x1="0" y1="100" x2="300" y2="100" stroke="var(--rule)" stroke-width="1"/>)
 
+    def face
+      %(<line x1="0" y1="#{CENTRE[1]}" x2="#{WIDTH}" y2="#{CENTRE[1]}" ) +
+        %(stroke="var(--ink-soft)" stroke-width="2"/>)
+    end
+
+    def hatching
+      HATCH_LEAN.step(WIDTH, HATCH).map do |x|
+        %(<line x1="#{x}" y1="#{CENTRE[1]}" x2="#{x - HATCH_LEAN}" y2="#{CENTRE[1] + HATCH_DROP}" ) +
+          %(stroke="var(--ink-soft)" stroke-width="1" stroke-opacity="0.55"/>)
+      end.join
+    end
+
+    # It runs down through shading that can be nearly its own colour, so it
+    # carries a little of the paper with it, the way the labels do.
     def upright
-      %(<line x1="150" y1="10" x2="150" y2="190" stroke="var(--rule)" stroke-width="1" ) +
-        %(stroke-dasharray="3 4"/>)
+      %(<g stroke-dasharray="3 4">) +
+        %(<line x1="150" y1="10" x2="150" y2="190" stroke="var(--paper)" stroke-width="3"/>) +
+        %(<line x1="150" y1="10" x2="150" y2="190" stroke="var(--ink-soft)" stroke-width="1"/>) +
+        %(</g>)
     end
   end
 end
