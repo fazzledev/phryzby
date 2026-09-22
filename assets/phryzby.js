@@ -106,6 +106,7 @@ export const BOOK = [
       { page: "light/incidence.html", files: [ "lib/light/incidence.rb" ] },
       { page: "light/reflection.html", files: [ "lib/light/reflection.rb" ] },
       { page: "light/refraction.html", files: [ "lib/light/refraction.rb" ] },
+      { page: "light/critical-angle.html", files: [] },
       { page: "light/refractive-index.html", files: [ "lib/light/refractive_index.rb" ] },
       { page: "light/reflectance.html", files: [ "lib/light/reflectance.rb" ] },
       { page: "light/total-internal-reflection.html",
@@ -119,9 +120,10 @@ const TITLES = {
   "light/incidence.html": "1.1 · Incidence",
   "light/reflection.html": "1.2 · Reflection",
   "light/refraction.html": "1.3 · Refraction",
-  "light/refractive-index.html": "1.4 · Refractive index",
-  "light/reflectance.html": "1.5 · Reflectance",
-  "light/total-internal-reflection.html": "1.6 · Total internal reflection",
+  "light/critical-angle.html": "1.4 · Critical angle",
+  "light/refractive-index.html": "1.5 · Refractive index",
+  "light/reflectance.html": "1.6 · Reflectance",
+  "light/total-internal-reflection.html": "1.7 · Total internal reflection",
 };
 
 // A file belonging to this page opens in the editor; one belonging to another

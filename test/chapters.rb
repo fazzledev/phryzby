@@ -3,5 +3,8 @@
 require_relative "../lib/playground/light/refraction"
 CHOOSING = Physics.playground
 
+require_relative "../lib/playground/light/critical_angle"
+CRITICAL = Physics.playground
+
 require_relative "../lib/playground/light/refractive_index"
 INDEXED = Physics.playground

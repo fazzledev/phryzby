@@ -26,7 +26,6 @@ play_with Reflection, RefractiveIndex do
     ray "incident",  arriving_at: :i, angle: true
     ray "reflected", leaving_at:  :rl
     ray "refracted", crossing_at: :rr, angle: true, unless: :no_refracted_ray
-    mark "critical", arriving_at: -> { asking(:i, rr: 90.deg) }
     note "no refracted ray", when: :no_refracted_ray
   end
 end

@@ -140,9 +140,10 @@ A law is a module, not a class, because a law is not a kind of another law.
 | 1.1 | `Incidence` | one quantity and no law; declaring is not solving |
 | 1.2 | `Reflection` | the first equation; what it means for `==` to build rather than compare |
 | 1.3 | `Refraction` | Snell and declared domains; media named rather than numbered |
-| 1.4 | `RefractiveIndex` | that the pair is a quotient of two numbers is its own claim |
-| 1.5 | `Reflectance` | Fresnel: three equations, and the solver reaching back through Snell |
-| 1.6 | `TotalInternalReflection` | a law that only sometimes holds |
+| 1.4 | — | the critical angle: a chapter that adds no law, only a question asked backwards |
+| 1.5 | `RefractiveIndex` | that the pair is a quotient of two numbers is its own claim |
+| 1.6 | `Reflectance` | Fresnel: three equations, and the solver reaching back through Snell |
+| 1.7 | `TotalInternalReflection` | a law that only sometimes holds |
 
 Brewster's angle falls out of Fresnel rather than being stated anywhere: the
 p-polarised share reaches 0 at `atan(mu2 / mu1)`, which is why polarised

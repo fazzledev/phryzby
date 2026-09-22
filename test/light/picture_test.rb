@@ -73,11 +73,6 @@ class PictureTest < Minitest::Test
     assert_equal 0, escaped
   end
 
-  def test_a_mark_is_drawn_only_when_there_is_such_an_angle
-    assert_includes drawn(mu1: 1.5, mu2: 1.0), "critical 41.81°"
-    refute_includes drawn(mu1: 1.0, mu2: 1.5), "critical"
-  end
-
   # It names a line that never moves, so it never moves either.
   def test_the_normal_stays_where_it_is_whatever_the_rays_do
     everywhere = [ 1, 8, 30, 60, 89 ].map do |degrees|
