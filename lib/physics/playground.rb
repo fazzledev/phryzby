@@ -13,11 +13,13 @@ module Physics
     def initialize(scenario)
       @scenario = scenario
       @inputs = {}
+      @chosen = {}
+      @given = {}
       @outputs = []
       @picture = nil
     end
 
-    attr_reader :inputs, :outputs, :picture
+    attr_reader :inputs, :chosen, :outputs, :picture
 
     def title(text) = @title = text
     def description(text) = @description = text
@@ -46,7 +48,7 @@ module Physics
     def picture(values, settled: (@settled ||= {}))
       return "" unless @picture
 
-      drawing = @canvas.new(@scenario.new(**values))
+      drawing = @canvas.new(posing(**values), worths(values))
       drawing.instance_eval(&@picture)
       drawn = drawing.to_svg(settled)
       @settled = drawing.settled
@@ -86,6 +88,20 @@ module Physics
                         units: binding.local_variable_get(:in) }
     end
 
+    # A property you have rather than a number you set: the slider steps from
+    # one named thing to the next and reads out the name, never the value
+    # underneath it.
+    def choose(name, table, at:, as: nil)
+      @chosen[name] = table
+      @inputs[name] = { range: 0..(table.size - 1), step: 1, at: table.keys.index(at),
+                        as: as, units: nil, table: table,
+                        marks: table.keys.each_with_index.to_h }
+    end
+
+    # What the laws are actually given, worked out from what was chosen. The
+    # chosen names are in scope, standing for what they are worth.
+    def given(name, &how) = @given[name] = how
+
     def output(name, in: :number, as: nil, alarm: false, &worked_out)
       @outputs << { name: name, units: binding.local_variable_get(:in),
                   as: as, alarm: alarm, from: worked_out }
@@ -98,7 +114,7 @@ module Physics
     end
 
     def readouts(values)
-      scenario = @scenario.new(**values)
+      scenario = posing(**values)
 
       rows = @outputs.map do |entry|
         found = begin
@@ -154,11 +170,14 @@ module Physics
     def standing_on(name, value)
       set = @inputs[name]
       return nil unless set && value
+      return set[:table].key(value) if set[:table]
 
       set[:marks].find { |_, at| (at - value).abs < set[:step] / 2 + 1e-9 }&.first
     end
 
     def reading(set, value)
+      return set[:table].keys[value.to_i].to_s if set[:table]
+
       shown = UNITS.fetch(set[:units]).call(value)
       near = set[:marks].find { |_, mark| (mark - value).abs < set[:step] / 2 + 1e-9 }
 
@@ -169,7 +188,24 @@ module Physics
 
     # The scenario itself, posed with these values — what the console holds on
     # to so somebody can ask it their own questions.
-    def posing(**values) = @scenario.new(**values)
+    def posing(**values) = @scenario.new(**posed(values))
+
+    # What each chosen name is worth, which is the only thing about it a law
+    # could use.
+    def worths(values)
+      @chosen.to_h { |name, table| [ name, table.values[values.fetch(name).to_i] ] }
+    end
+
+    # A chosen name stands for what it is worth, and a `given` turns what was
+    # chosen into something a law has a quantity for.
+    def posed(values)
+      return values if @chosen.empty?
+
+      here = Data.define(*@chosen.keys).new(**worths(values))
+
+      values.except(*@chosen.keys)
+            .merge(@given.transform_values { |how| here.instance_exec(&how) })
+    end
 
     private
 

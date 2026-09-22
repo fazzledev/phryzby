@@ -1,10 +1,10 @@
 require "minitest/autorun"
-require_relative "../../lib/playground/light/refraction"
+require_relative "../chapters"
 
 class PlaygroundTest < Minitest::Test
   APART = 0.chr
 
-  def playing = Physics.playground
+  def playing = INDEXED
   def opening = playing.opening
 
   def test_a_scenario_is_still_a_scenario
@@ -60,7 +60,7 @@ class PlaygroundTest < Minitest::Test
   end
 
   def test_the_chapter_names_itself_apart_from_all_three
-    assert_includes playing.heading, "<h1>Refraction"
+    assert_includes playing.heading, "<h1>Refractive index"
     assert_includes playing.heading, "class=\"lede\""
   end
 

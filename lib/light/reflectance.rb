@@ -1,9 +1,9 @@
-require_relative "refraction"
+require_relative "refractive_index"
 
 module Reflectance
   extend Physics::Law
 
-  include Refraction
+  include RefractiveIndex
 
   quantity :reflectance_s_polarised, variable: :rs
   quantity :reflectance_p_polarised, variable: :rp

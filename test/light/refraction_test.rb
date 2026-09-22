@@ -1,9 +1,9 @@
 require "minitest/autorun"
 require_relative "../../lib/light/reflection"
-require_relative "../../lib/light/refraction"
+require_relative "../../lib/light/refractive_index"
 
 class RefractionTest < Minitest::Test
-  SURFACE = Physics::Scenario.including(Reflection, Refraction)
+  SURFACE = Physics::Scenario.including(Reflection, RefractiveIndex)
   FLAT_ALONG_THE_SURFACE = Math::PI / 2
 
   AIR = 1.0

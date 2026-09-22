@@ -18,7 +18,7 @@ class NotationTest < Minitest::Test
   end
 
   def test_a_fraction_on_its_own_is_not_bracketed
-    refute_includes Refraction.equations.fetch(:relative_index).to_mathml, Physics::BinOp::FENCE % "("
+    refute_includes RefractiveIndex.equations.fetch(:relative_index).to_mathml, Physics::BinOp::FENCE % "("
   end
 
   def test_it_walks_the_tree_rather_than_the_source

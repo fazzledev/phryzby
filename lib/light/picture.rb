@@ -10,8 +10,9 @@ module Light
     HEAD = 7
     FULL = 3
 
-    def initialize(scenario)
+    def initialize(scenario, chosen = {})
       @scenario = scenario
+      @chosen = chosen
       @shapes = []
       @wanted = []
     end
@@ -185,6 +186,7 @@ module Light
 
     def value(name)
       return name if name.is_a?(Numeric)
+      return @chosen[name] if @chosen.key?(name)
       return @scenario.instance_exec(&name) if name.is_a?(Proc)
 
       if @scenario.class.conditions.key?(name)
@@ -209,7 +211,9 @@ module Light
     # The symbol, and what the medium is if it is one anybody has a name for.
     def named_band(name)
       held = value(name)
-      called = held && @scenario.class.playground.standing_on(name, held)
+      ground = @scenario.class.playground
+      called = held && ground.standing_on(name, held)
+      return called.to_s if ground.chosen.key?(name)
 
       called ? "#{symbol(name)} #{called}" : symbol(name)
     end

@@ -18,15 +18,13 @@ costs exactly what a true one does.
 ```ruby
 module Refraction
   extend Physics::Law
+
   include Incidence
 
-  quantity :angle_of_refraction, variable: :rr, within: Physics::A_RIGHT_ANGLE
-  quantity :refractive_index_of_first_medium,  variable: :mu1
-  quantity :refractive_index_of_second_medium, variable: :mu2
-  quantity :relative_refractive_index,         variable: :mu21
+  quantity :angle_of_refraction,       variable: :rr, within: Physics::A_RIGHT_ANGLE
+  quantity :relative_refractive_index, variable: :mu21
 
-  equation(:relative_index) { mu21 == mu2 / mu1 }
-  equation(:snells_law)     { mu21 == sin(i) / sin(rr) }
+  equation(:snells_law) { mu21 == sin(i) / sin(rr) }
 
   condition(:no_refracted_ray) { sin(i) / mu21 > 1 }
 end
@@ -38,13 +36,13 @@ laws until a question is asked:
 ```ruby
 glass = Physics::Scenario.including(Refraction)
 
-glass.new(i: 30.deg, mu1: 1.0, mu2: 1.5).solve(:rr).in_degrees
+glass.new(i: 30.deg, mu21: 1.5).solve(:rr).in_degrees
 # => 19.4712, the refracted ray
 
-glass.new(i: 30.deg, rr: 19.4712.deg, mu1: 1.0).solve(:mu2)
-# => 1.5000, the material itself
+glass.new(i: 30.deg, rr: 19.4712.deg).solve(:mu21)
+# => 1.5000, the pair of media
 
-glass.new(rr: 90.deg, mu1: 1.5, mu2: 1.0).solve(:i).in_degrees
+glass.new(rr: 90.deg, mu21: 1.0 / 1.5).solve(:i).in_degrees
 # => 41.8103, the critical angle
 ```
 
@@ -141,9 +139,10 @@ A law is a module, not a class, because a law is not a kind of another law.
 |---|---|---|
 | 1.1 | `Incidence` | one quantity and no law; declaring is not solving |
 | 1.2 | `Reflection` | the first equation; what it means for `==` to build rather than compare |
-| 1.3 | `Refraction` | Snell, declared domains, and the critical angle as a question not a formula |
-| 1.4 | `Reflectance` | Fresnel: three equations, and the solver reaching back through Snell |
-| 1.5 | `TotalInternalReflection` | a law that only sometimes holds |
+| 1.3 | `Refraction` | Snell and declared domains; media named rather than numbered |
+| 1.4 | `RefractiveIndex` | that the pair is a quotient of two numbers is its own claim |
+| 1.5 | `Reflectance` | Fresnel: three equations, and the solver reaching back through Snell |
+| 1.6 | `TotalInternalReflection` | a law that only sometimes holds |
 
 Brewster's angle falls out of Fresnel rather than being stated anywhere: the
 p-polarised share reaches 0 at `atan(mu2 / mu1)`, which is why polarised

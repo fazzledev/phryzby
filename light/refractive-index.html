@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Refraction — phryzby</title>
+<title>Refractive index — phryzby</title>
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="../assets/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
@@ -13,7 +13,7 @@
 <div class="app">
   <header class="bar">
     <a class="brand" href="../">phryzby</a>
-    <span class="where">light <strong>/ refraction</strong></span>
+    <span class="where">light <strong>/ refractive index</strong></span>
     <span class="grow"></span>
     <span class="status" id="status">Nothing is computed until Ruby boots.</span>
     <label class="toggle"><input type="checkbox" id="auto"> auto-run</label>
@@ -68,19 +68,20 @@
 import { chapter } from "../assets/phryzby.js";
 
 await chapter({
-  page: "light/refraction.html",
+  page: "light/refractive-index.html",
   files: [
-    { key: "lib/light/incidence.rb", tab: 3 },
-    { key: "lib/light/reflection.rb", tab: 2 },
-    { key: "lib/light/refraction.rb", tab: 1 },
+    { key: "lib/light/incidence.rb", tab: 4 },
+    { key: "lib/light/reflection.rb", tab: 3 },
+    { key: "lib/light/refraction.rb", tab: 2 },
+    { key: "lib/light/refractive_index.rb", tab: 1 },
   ],
-  playground: "lib/playground/light/refraction.rb",
+  playground: "lib/playground/light/refractive_index.rb",
   opening: [ "surface.solve(:rr).in_degrees" ],
   examples: [
     "surface.solve(:rr).in_degrees",
-    "surface.solve(:mu21)",
     "surface.satisfies?(:no_refracted_ray)",
-    "Physics::Scenario.including(Refraction).new(i: 45.deg, mu21: 1.5).solve(:rr).in_degrees",
+    "Physics::Scenario.including(RefractiveIndex).new(mu1: 1.5, mu2: 1.0, rr: 90.deg).solve(:i).in_degrees",
+    "surface.solve(:mu21)",
   ],
 });
 </script>
