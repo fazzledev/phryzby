@@ -195,6 +195,13 @@ button.ghost{background:transparent;color:var(--ink-mid);border-color:var(--rule
 /* --- the console --------------------------------------------------------- */
 .console{flex:0 0 auto;display:flex;flex-direction:column;background:var(--wash);
   height:var(--console,13rem);min-height:0;}
+.console.shut{height:auto;}
+.console.shut .log,.console.shut form{display:none;}
+.console .fold{margin-left:auto;border:0;background:transparent;color:var(--ink-soft);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;padding:0 .1rem;flex:0 0 auto;}
+.console .fold:hover{color:var(--ink);}
+.pane.code.shut > .grip{display:none;}
 .console .strip{display:flex;align-items:baseline;gap:.5rem;padding:.45rem .9rem;
   border-bottom:1px solid var(--rule);}
 .console .strip span{font-size:.66rem;text-transform:uppercase;letter-spacing:.12em;
@@ -257,3 +264,12 @@ figure.law .when{margin-left:.55rem;color:var(--ray);text-transform:none;letter-
 #picture svg{display:block;width:100%;height:auto;border:1px solid var(--rule);
   border-radius:6px;background:var(--wash);}
 #demo .field:first-of-type{margin-top:.2rem;}
+
+/* --- the science beside the showing --------------------------------------- */
+.split{display:grid;grid-template-columns:1fr 1fr;flex:1 1 auto;min-height:0;}
+.split .half{display:flex;flex-direction:column;min-width:0;min-height:0;}
+.split .half + .half{border-left:1px solid var(--rule);}
+@media (max-width:1180px){
+  .split{grid-template-columns:1fr;grid-template-rows:1fr 1fr;}
+  .split .half + .half{border-left:0;border-top:1px solid var(--rule);}
+}

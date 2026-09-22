@@ -208,6 +208,10 @@ Edit the law and the panel follows: change `{ i == rl }` to `{ i == rl * 2 }`
 and the reflected ray swings to half the angle, the reading changes, and the
 typeset formula redraws as `i = rl ⋅ 2`.
 
+A chapter page shows both at once: the law on the left, `shown.rb` on the
+right, the panel they produce beside them. Editing either moves the other half
+of the page, which is the only reason to have the second one open.
+
 A demonstration is never in a law file. A slider range is not physics, and a
 law that carried one would stop being only a law. But it is on the page, as
 `shown.rb` beside the law, because a declaration you cannot reach is only

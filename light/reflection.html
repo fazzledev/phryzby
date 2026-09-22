@@ -25,11 +25,23 @@
     <nav class="pane tree" id="tree" aria-label="Files"></nav>
 
     <div class="pane code">
-      <div class="tabs" id="tabs" role="tablist"></div>
-      <div class="editor">
-        <div class="gutter" id="gutter" aria-hidden="true"></div>
-        <pre id="highlight" aria-hidden="true"></pre>
-        <textarea id="source" autocomplete="off"></textarea>
+      <div class="split">
+        <section class="half">
+          <div class="tabs" id="tabs" role="tablist"></div>
+          <div class="editor">
+            <div class="gutter" id="gutter" aria-hidden="true"></div>
+            <pre id="highlight" aria-hidden="true"></pre>
+            <textarea id="source" autocomplete="off"></textarea>
+          </div>
+        </section>
+        <section class="half">
+          <div class="tabs" id="shown-tabs" role="tablist"></div>
+          <div class="editor">
+            <div class="gutter" id="shown-gutter" aria-hidden="true"></div>
+            <pre id="shown-highlight" aria-hidden="true"></pre>
+            <textarea id="shown-source" autocomplete="off"></textarea>
+          </div>
+        </section>
       </div>
 
       <div class="console">

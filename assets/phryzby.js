@@ -275,6 +275,7 @@ export function stage({ second = null, surface = "mirror" } = {}) {
 // --- resizing --------------------------------------------------------------
 
 const AUTO_RUN = "phryzby.autorun";
+const CONSOLE_SHUT = "phryzby.console-shut";
 
 // Reads the setting with no argument, writes it with one.
 function autoRun(next) {
@@ -373,6 +374,35 @@ function mountPanes() {
 
 // --- the console -----------------------------------------------------------
 
+// Remembered like the other settings, because somebody who has folded the
+// console away has said they do not want it.
+function foldConsole(strip) {
+  const box = strip.closest(".console");
+  const code = box.closest(".pane.code");
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "fold";
+
+  const draw = (shut) => {
+    box.classList.toggle("shut", shut);
+    code.classList.toggle("shut", shut);
+    button.textContent = shut ? "show" : "hide";
+    button.setAttribute("aria-expanded", String(!shut));
+  };
+
+  let shut = false;
+  try { shut = localStorage.getItem(CONSOLE_SHUT) === "yes"; } catch { /* never mind */ }
+
+  button.addEventListener("click", () => {
+    shut = !shut;
+    draw(shut);
+    try { localStorage.setItem(CONSOLE_SHUT, shut ? "yes" : "no"); } catch { /* never mind */ }
+  });
+
+  strip.append(button);
+  draw(shut);
+}
+
 function mountConsole({ log, form, input, hint }, { evaluate, examples = [] }) {
   const history = [];
   let position = 0;
@@ -423,6 +453,8 @@ function mountConsole({ log, form, input, hint }, { evaluate, examples = [] }) {
     button.addEventListener("click", () => { input.value = example; input.focus(); });
     hint.append(button);
   });
+
+  foldConsole(hint.closest(".strip"));
 
   return { clear: () => log.replaceChildren(), note: (text) => write(text, "noted"), ask };
 }
@@ -669,16 +701,33 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     });
   };
 
+  // The science on one side, how it is shown on the other, both at once —
+  // because the whole point of the second one is watching the first change.
+  const edited = new Map();
+  const markBoth = (half) => (keys) => {
+    edited.set(half, keys);
+    markChanged([ ...edited.values() ].flat());
+  };
+
   let markTree = () => {};
-  const editor = mountEditor(
-    tabbed,
-    { tabs: $("tabs"), pre: $("highlight"), textarea: $("source"), gutter: $("gutter") },
-    { announce: (key) => markTree(key), changed: markChanged },
-  );
+  const halves = [
+    [ tabbed.filter((file) => file.key !== shows?.file),
+      { tabs: $("tabs"), pre: $("highlight"), textarea: $("source"), gutter: $("gutter") } ],
+    [ tabbed.filter((file) => file.key === shows?.file),
+      { tabs: $("shown-tabs"), pre: $("shown-highlight"),
+        textarea: $("shown-source"), gutter: $("shown-gutter") } ],
+  ];
+
+  const editors = halves
+    .filter(([ files, where ]) => files.length && where.textarea)
+    .map(([ files, where ], half) =>
+      mountEditor(files, where, { announce: (key) => markTree(key), changed: markBoth(half) }));
+
+  const editor = editors[0];
   markTree = mountTree($("tree"), {
     here: page,
     loaded: new Set(tabbed.map((file) => file.key)),
-    open: (key) => editor.showPath(key),
+    open: (key) => editors.forEach((one) => one.showPath(key)),
   });
   markTree(tabbed[0].key);
 
@@ -768,7 +817,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   });
 
   const evaluate = () => {
-    editor.remember();
+    editors.forEach((one) => one.remember());
     const sources = loaded.map((file) => file.code);
 
     // Nothing is taken away until everything parses, so a half-typed law
@@ -831,7 +880,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
 
   if (reset) {
     reset.addEventListener("click", () => {
-      editor.reset();
+      editors.forEach((one) => one.reset());
       if (vm) rerun();
     });
   }
@@ -847,12 +896,13 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       if (auto.checked) (vm ? rerun() : boot());
     });
 
-    $("source").addEventListener("input", () => {
+    [ $("source"), $("shown-source") ].filter(Boolean).forEach((typed) =>
+      typed.addEventListener("input", () => {
       if (!auto.checked || !vm || booting) return;
       clearTimeout(pending);
       say("Waiting for you to stop typing…");
       pending = setTimeout(rerun, 700);
-    });
+    }));
 
     if (auto.checked) boot();
   }
