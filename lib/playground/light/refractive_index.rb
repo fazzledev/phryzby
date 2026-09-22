@@ -11,14 +11,14 @@ play_with Reflection, RefractiveIndex do
   title "Refractive index"
   description "What each medium does to light is one number, and only the ratio of the two ever shows."
 
-  input :i,   ANGLE, step: FINELY, default: 30.deg, in: :degrees, as: "incidence"
+  input :i,   ANGLE, step: FINELY, default: 30.deg, as: "incidence"
   input :mu1, INDEX, step: 0.01, default: 1.0, as: "μ₁ first", marks: REFRACTIVE_MEDIA
   input :mu2, INDEX, step: 0.01, default: 1.5, as: "μ₂ second", marks: REFRACTIVE_MEDIA
 
-  output :mu21, in: :number
-  output("sin i ÷ sin rr", in: :number) { Math.sin(solve(:i)) / Math.sin(solve(:rr)) }
-  output :rr, in: :degrees
-  output :no_refracted_ray, in: :plain, alarm: true
+  output :mu21
+  output("sin i ÷ sin rr") { Math.sin(solve(:i)) / Math.sin(solve(:rr)) }
+  output :rr
+  output :no_refracted_ray, alarm: true
 
   draw Light::Picture do
     media :mu1, :mu2

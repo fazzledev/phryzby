@@ -7,9 +7,9 @@ play_with Incidence do
   title "Incidence"
   description "A ray arrives at a surface. The angle it makes with the normal is where every other law starts."
 
-  input :i, ANGLE, step: 0.1.deg, default: 30.deg, in: :degrees, as: "incidence"
+  input :i, ANGLE, step: 0.1.deg, default: 30.deg, as: "incidence"
 
-  output :i, in: :degrees, as: "held"
+  output :i, as: "held"
   output("asked to solve it", alarm: true) do
     Physics::Scenario.including(Incidence).new.solve(:i)
   rescue RuntimeError => e

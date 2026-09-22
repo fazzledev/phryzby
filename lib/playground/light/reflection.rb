@@ -7,10 +7,10 @@ play_with Reflection do
   title "Reflection"
   description "A ray striking a mirror leaves at the same angle it arrived at, on the other side of the normal."
 
-  input :i, ANGLE, step: 0.1.deg, default: 30.deg, in: :degrees, as: "incidence"
+  input :i, ANGLE, step: 0.1.deg, default: 30.deg, as: "incidence"
 
-  output :i, in: :degrees
-  output :rl, in: :degrees
+  output :i
+  output :rl
 
   draw Light::Picture do
     mirror

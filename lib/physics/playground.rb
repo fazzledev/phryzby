@@ -83,9 +83,9 @@ module Physics
       [ picture(values), readouts(values), labels.join("\u0002") ].join("\u0000")
     end
 
-    def input(name, range, step:, default:, in: :number, as: nil, marks: {})
+    def input(name, range, step:, default:, in: nil, as: nil, marks: {})
       @inputs[name] = { range: range, step: step, default: default, as: as, marks: marks,
-                        units: binding.local_variable_get(:in) }
+                        units: binding.local_variable_get(:in) || read_as(name) }
     end
 
     # A property you have rather than a number you set: the slider steps from
@@ -102,9 +102,19 @@ module Physics
     # chosen names are in scope, standing for what they are worth.
     def given(name, &how) = @given[name] = how
 
-    def output(name, in: :number, as: nil, alarm: false, &worked_out)
-      @outputs << { name: name, units: binding.local_variable_get(:in),
+    def output(name, in: nil, as: nil, alarm: false, &worked_out)
+      @outputs << { name: name, units: binding.local_variable_get(:in) || read_as(name),
                   as: as, alarm: alarm, from: worked_out }
+    end
+
+    # How a quantity reads is something the laws have already said. One held
+    # to a right angle is an angle; a condition is a yes or a no. Only what no
+    # law names — a worked-out block, a fraction — has to say so itself.
+    def read_as(name)
+      return :plain if @scenario.conditions.key?(name)
+      return :degrees if @scenario.domains[@scenario.quantities[name]] == A_RIGHT_ANGLE
+
+      :number
     end
 
     def read(scenario, name)
