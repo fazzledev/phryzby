@@ -22,7 +22,7 @@ class PictureTest < Minitest::Test
     trapped = drawn(mu1: 1.5, mu2: 1.0, i: 60.deg)
 
     assert_equal 2, rays(trapped)
-    assert_includes trapped, "no refracted ray"
+    assert_includes trapped, "all of it turns back"
   end
 
   # Set the first medium denser and there is an angle past which nothing gets
@@ -37,7 +37,7 @@ class PictureTest < Minitest::Test
   end
 
   def test_the_note_stays_away_while_its_condition_is_false
-    refute_includes drawn, "no refracted ray"
+    refute_includes drawn, "all of it turns back"
   end
 
   def test_the_media_are_labelled_the_way_the_law_writes_them

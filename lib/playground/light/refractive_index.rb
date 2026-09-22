@@ -7,14 +7,14 @@ INDEX = 1.0..4.0
 
 play_with Reflection, RefractiveIndex do
   title "Refractive Index"
-  description "What each medium does to light is one number, and only the ratio of the two ever shows."
+  description "The same crossing, with the number behind it taken apart. What each medium does to light is one number, and only the ratio of the two ever shows."
 
   input :i, default: 30.deg
   input :mu1, INDEX, default: 1.33, marks: REFRACTIVE_MEDIA
   input :mu2, INDEX, default: 1.0, marks: REFRACTIVE_MEDIA
 
   output :mu21
-  output("sin i ÷ sin rr") { Math.sin(solve(:i)) / Math.sin(solve(:rr)) }
+  output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
   output :rr
   output :no_refracted_ray, alarm: true
 
@@ -24,6 +24,6 @@ play_with Reflection, RefractiveIndex do
     ray "reflected", leaving_at:  :rl
     ray "refracted", crossing_at: :rr, angle: true, unless: :no_refracted_ray
     mark "critical", arriving_at: -> { asking(:i, rr: 90.deg) }
-    note "no refracted ray", when: :no_refracted_ray
+    note "all of it turns back", when: :no_refracted_ray
   end
 end
