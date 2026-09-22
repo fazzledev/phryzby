@@ -29,11 +29,11 @@ module Light
       name_the_upright
     end
 
-    def ray(called, arriving_at: nil, leaving_at: nil, crossing_at: nil, weight: nil, unless: nil)
+    def ray(called, arriving_at: nil, leaving_at: nil, crossing_at: nil,
+            weight: nil, angle: false, unless: nil)
       return if skipped?(binding.local_variable_get(:unless))
 
-      angle = arriving_at || leaving_at || crossing_at
-      turned = value(angle)
+      turned = value(arriving_at || leaving_at || crossing_at)
       return if turned.nil?
 
       share = weight && value(weight)
@@ -44,6 +44,8 @@ module Light
       @shapes << arrow(*from, *to, drawn, share ? 0.32 + 0.68 * share : 0.95)
       want(share ? "#{called} #{(share * 100).round}%" : called.to_s,
            beyond(from, to), colour: "var(--ray)")
+
+      swept(turned, arriving_at, crossing_at) if angle
     end
 
     # A reference line at an angle, drawn the way the normal is: faint, dashed,
@@ -80,6 +82,37 @@ module Light
     end
 
     private
+
+    ARC = 30
+    ARC_STEPS = 14
+
+    # The angle a ray makes with the normal, drawn where it is made: an arc
+    # from the normal round to the ray, on the ray's own side of it.
+    def swept(turned, arriving, crossing)
+      sideways = arriving ? -1 : 1
+      downward = crossing ? 1 : -1
+
+      drawn = (0..ARC_STEPS).map do |n|
+        at(turned * n / ARC_STEPS, sideways, downward, ARC).map { |one| one.round(2) }.join(" ")
+      end
+
+      @shapes << %(<path d="M #{drawn.join(" L ")}" fill="none" stroke="var(--ink-soft)" ) +
+                 %(stroke-width="1" stroke-opacity="0.65"/>)
+
+      want(format("%.1f°", turned.in_degrees),
+           [ 12, 22, 32 ].map { |out| told(turned / 2, sideways, downward, ARC + out) })
+    end
+
+    def at(turned, sideways, downward, radius)
+      [ CENTRE[0] + sideways * Math.sin(turned) * radius,
+        CENTRE[1] + downward * Math.cos(turned) * radius ]
+    end
+
+    def told(turned, sideways, downward, radius)
+      x, y = at(turned, sideways, downward, radius)
+
+      [ x, y + (downward.negative? ? 0 : 7), "middle" ]
+    end
 
     PAST = 14
     ASIDE = 0.55

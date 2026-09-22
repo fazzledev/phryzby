@@ -9,7 +9,10 @@ class PictureTest < Minitest::Test
     showing.picture(showing.opening.merge(**changes), settled: {})
   end
 
-  def rays(svg) = svg.scan(/<path/).size
+  # A ray is counted by its arrowhead: the arcs marking angles are paths too.
+  def rays(svg) = svg.scan(/<path[^>]*z"/).size
+
+  def arcs(svg) = svg.scan(/<path[^>]*fill="none"/).size
 
   def test_every_ray_is_drawn_when_there_is_one
     assert_equal 3, rays(drawn)
@@ -147,6 +150,18 @@ class PictureTest < Minitest::Test
     assert_in_delta upper, lower, 1e-9
   end
 
+  def test_an_angle_is_marked_only_where_it_is_asked_for
+    assert_equal 2, arcs(drawn)
+  end
+
+  def test_and_the_arc_is_labelled_with_the_angle_it_sweeps
+    assert_includes drawn(i: 42.deg), "42.0\u00b0"
+  end
+
+  def test_an_angle_that_has_no_ray_is_not_marked
+    assert_equal 1, arcs(drawn(mu1: 1.5, mu2: 1.0, i: 60.deg))
+  end
+
   def bands(svg) = svg.scan(%r{>(\u03bc[^<]*)</text>}).flatten
 
   def test_a_band_is_named_when_its_index_is_one_anybody_knows
@@ -156,5 +171,4 @@ class PictureTest < Minitest::Test
   def test_and_is_only_its_symbol_between_them
     assert_equal [ "\u03bc\u2081 air", "\u03bc\u2082" ], bands(drawn(mu1: 1.0, mu2: 2.0))
   end
-
 end

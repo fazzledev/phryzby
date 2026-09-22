@@ -25,9 +25,10 @@ showing Reflection, Refraction, Reflectance do
 
   draws Light::Picture do
     media :mu1, :mu2
-    ray "incident",  arriving_at: :i
+    ray "incident",  arriving_at: :i, angle: true
     ray "reflected", leaving_at: :i, weight: :r
-    ray "refracted", crossing_at: :rr, weight: -> { 1.0 - solve(:r) }, unless: :no_refracted_ray
+    ray "refracted", crossing_at: :rr, angle: true,
+        weight: -> { 1.0 - solve(:r) }, unless: :no_refracted_ray
     mark "critical", arriving_at: -> { asking(:i, rr: 90.deg) }
     note "no refracted ray — Fresnel has nothing to say", when: :no_refracted_ray
   end

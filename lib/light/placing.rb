@@ -74,10 +74,12 @@ module Light
       one[0] < other[2] && other[0] < one[2] && one[1] < other[3] && other[1] < one[3]
     end
 
+    # Labels keep clear of each other but not of the picture, so each carries a
+    # little of the paper with it and stays legible over a ray it crosses.
     def drawn((x, y, anchor), want)
       %(<text x="#{x.round(1)}" y="#{y.round(1)}" fill="#{want[:colour]}" ) +
-        %(text-anchor="#{anchor}" font-family="ui-monospace, monospace" ) +
-        %(font-size="11">#{want[:text]}</text>)
+        %(text-anchor="#{anchor}" font-family="ui-monospace, monospace" font-size="11" ) +
+        %(stroke="var(--paper)" stroke-width="2.5" paint-order="stroke">#{want[:text]}</text>)
     end
   end
 end

@@ -16,7 +16,7 @@ showing Reflection do
 
   draws Light::Picture do
     surface called: "mirror"
-    ray "incident",  arriving_at: :i
-    ray "reflected", leaving_at:  :rl
+    ray "incident",  arriving_at: :i, angle: true
+    ray "reflected", leaving_at:  :rl, angle: true
   end
 end
