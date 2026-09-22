@@ -11,8 +11,8 @@ play_with Reflection, Refraction do
   description "A ray crossing into another medium bends, and the two media together decide which way."
 
   input  :i,    ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
-  choose :from, REFRACTIVE_MEDIA, at: "air"
-  choose :into, REFRACTIVE_MEDIA, at: "glass"
+  choose :from, REFRACTIVE_MEDIA
+  choose :into, REFRACTIVE_MEDIA, default: "glass"
 
   given(:mu21) { into / from }
 

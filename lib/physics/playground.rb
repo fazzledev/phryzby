@@ -91,9 +91,9 @@ module Physics
     # A property you have rather than a number you set: the slider steps from
     # one named thing to the next and reads out the name, never the value
     # underneath it.
-    def choose(name, table, at:, as: nil)
+    def choose(name, table, default: table.keys.first, as: nil)
       @chosen[name] = table
-      @inputs[name] = { range: 0..(table.size - 1), step: 1, at: table.keys.index(at),
+      @inputs[name] = { range: 0..(table.size - 1), step: 1, at: table.keys.index(default),
                         as: as, units: nil, table: table,
                         marks: table.keys.each_with_index.to_h }
     end
