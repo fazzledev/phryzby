@@ -152,7 +152,7 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
   background:var(--wash);}
 .field{display:grid;grid-template-columns:7.4rem 1fr 4.4rem;gap:.5rem;align-items:center;
   margin-bottom:.5rem;}
-.field label{font-size:.8rem;color:var(--ink-mid);}
+.field > label{font-size:.8rem;color:var(--ink-mid);}
 .field input[type=range]{width:100%;accent-color:var(--ray);display:block;}
 .field .track{position:relative;}
 .marks{position:relative;height:1.2rem;margin-bottom:.1rem;}
@@ -167,6 +167,17 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
   white-space:nowrap;opacity:0;transition:opacity .1s;pointer-events:none;}
 .mark:hover span,.mark:focus-visible span{opacity:1;color:var(--ink);}
 .mark.on span{opacity:1;color:var(--ray);}
+/* A few named things to pick between, each worth pressing anywhere on it. */
+.picks{display:flex;flex-wrap:wrap;gap:.3rem;grid-column:2/4;}
+.pick{display:inline-flex;align-items:center;cursor:pointer;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.02em;color:var(--ink-soft);
+  padding:.22rem .5rem;border:1px solid var(--rule);border-radius:999px;
+  transition:color .1s,border-color .1s,background .1s;}
+.pick input{position:absolute;opacity:0;width:0;height:0;}
+.pick:hover{color:var(--ink);border-color:var(--ink-soft);}
+.pick:has(input:checked){color:var(--paper);background:var(--ray);border-color:var(--ray);}
+.pick:has(input:focus-visible){outline:2px solid var(--ray);outline-offset:2px;}
+
 .field select{font:inherit;font-size:.8rem;padding:.3rem;grid-column:2/4;
   background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:5px;}
 .field output{font-family:var(--mono);font-size:.8rem;text-align:right;line-height:1.25;}

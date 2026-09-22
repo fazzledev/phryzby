@@ -28,17 +28,22 @@ class ChoosingTest < Minitest::Test
     refute_includes posed.keys, :refractive_index_of_second_medium
   end
 
-  def test_a_chosen_slider_reads_out_its_name
-    assert_includes playing.controls, ">air</output>"
-    assert_includes playing.controls, ">glass</output>"
+  def test_a_choice_offers_every_medium_by_name
+    offered = playing.controls
+                     .scan(%r{<input type="radio" name="from"[^>]*><span>([^<]+)</span>}).flatten
+
+    assert_equal MEDIA.keys, offered
   end
 
-  def test_and_steps_one_medium_at_a_time
-    field = playing.controls[/<input type="range" id="from"[^>]*>/]
+  def test_and_takes_exactly_one_of_them_per_choice
+    taken = playing.controls.scan(/<input type="radio" name="(\w+)"[^>]*checked>/).flatten
 
-    assert_includes field, 'min="0"'
-    assert_includes field, "max=\"#{MEDIA.size - 1}\""
-    assert_includes field, 'step="1"'
+    assert_equal %w[from into], taken
+  end
+
+  def test_and_it_is_the_one_the_chapter_opened_on
+    assert_includes playing.controls, %(name="from" data-input="from" value="#{AIR}" checked)
+    assert_includes playing.controls, %(name="into" data-input="into" value="#{GLASS}" checked)
   end
 
   def test_into_a_denser_medium_it_bends_toward_the_normal

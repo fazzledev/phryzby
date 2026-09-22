@@ -797,9 +797,13 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
 
   // A page that is shown rather than drawn: the law states itself into one
   // half, the demonstration into the other, and nothing here knows optics.
+  // A radio speaks only when it is the one chosen; everything else always
+  // speaks for itself.
+  const settings = () => [ ...document.querySelectorAll("#demo [data-input]") ]
+    .filter((control) => control.type !== "radio" || control.checked);
+
   const reading = () => {
-    const pairs = [ ...document.querySelectorAll("#demo [data-input]") ]
-      .map((control) => `${control.dataset.input}: ${control.value}`);
+    const pairs = settings().map((control) => `${control.dataset.input}: ${control.value}`);
 
     return pairs.length ? `{ ${pairs.join(", ")} }` : `Physics.playground.opening`;
   };
@@ -833,8 +837,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     if (statement && presents) statement.innerHTML = vm.eval(`${presents}.to_html`).toString();
     if (!playground) return;
 
-    const held = [ ...document.querySelectorAll("#demo [data-input]") ]
-      .map((control) => [ control.dataset.input, control.value ]);
+    const held = settings().map((control) => [ control.dataset.input, control.value ]);
 
     $("heading").innerHTML = vm.eval(`Physics.playground.heading`).toString();
     $("law").innerHTML = vm.eval(`Physics.playground.stated`).toString();
@@ -843,6 +846,9 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     // Re-rendering draws the controls back at their declared start, so where
     // they had been dragged to is put back.
     held.forEach(([ name, value ]) => {
+      const back = document.querySelector(`#demo [data-input="${name}"][value="${value}"]`);
+      if (back) { back.checked = true; return; }
+
       const control = document.querySelector(`#demo [data-input="${name}"]`);
       if (control) control.value = value;
     });
@@ -859,7 +865,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   const magnets = (control) => {
     const notched = [ ...document.querySelectorAll(`.mark[data-for="${control.dataset.input}"]`) ]
       .map((notch) => Number(notch.dataset.set));
-    const alike = [ ...document.querySelectorAll("#demo [data-input]") ]
+    const alike = settings()
       .filter((one) => one !== control && one.min === control.min && one.max === control.max)
       .map((one) => Number(one.value));
 
@@ -888,7 +894,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     $("demo").addEventListener("input", (event) => {
       if (!event.target.dataset.input) return;
 
-      if (dragging) snap(event.target);
+      if (dragging && event.target.type === "range") snap(event.target);
       move();
     });
 

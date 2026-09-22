@@ -137,14 +137,28 @@ module Physics
     end
 
     def controls
-      @inputs.map do |name, set|
-        "<div class=\"field\"><label for=\"#{name}\">#{set[:as] || named(name)}</label>" \
-          "<div class=\"track\">#{marked(name, set)}" \
-          "<input type=\"range\" id=\"#{name}\" data-input=\"#{name}\" " \
-          "min=\"#{set[:range].begin}\" max=\"#{set[:range].end}\" step=\"#{set[:step]}\" " \
-          "value=\"#{set[:at]}\"></div>" \
-          "<output id=\"#{name}-out\">#{reading(set, set[:at])}</output></div>"
-      end.join
+      @inputs.map { |name, set| set[:table] ? picked(name, set) : slid(name, set) }.join
+    end
+
+    def slid(name, set)
+      "<div class=\"field\"><label for=\"#{name}\">#{set[:as] || named(name)}</label>" \
+        "<div class=\"track\">#{marked(name, set)}" \
+        "<input type=\"range\" id=\"#{name}\" data-input=\"#{name}\" " \
+        "min=\"#{set[:range].begin}\" max=\"#{set[:range].end}\" step=\"#{set[:step]}\" " \
+        "value=\"#{set[:at]}\"></div>" \
+        "<output id=\"#{name}-out\">#{reading(set, set[:at])}</output></div>"
+    end
+
+    # One of a few named things, with nothing in between them to slide through.
+    def picked(name, set)
+      buttons = set[:table].keys.each_with_index.map do |called, at|
+        "<label class=\"pick\"><input type=\"radio\" name=\"#{name}\" " \
+          "data-input=\"#{name}\" value=\"#{at}\"#{at == set[:at] ? " checked" : ""}>" \
+          "<span>#{called}</span></label>"
+      end
+
+      "<div class=\"field\"><label>#{set[:as] || named(name)}</label>" \
+        "<div class=\"picks\">#{buttons.join}</div></div>"
     end
 
     # Notches along the track, at the values somebody would recognise. Each is
