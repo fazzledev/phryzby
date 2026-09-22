@@ -5,7 +5,7 @@ class PictureTest < Minitest::Test
   # Fresh each time: the placer remembers where labels settled, and a test
   # should not depend on what the test before it drew.
   def drawn(**changes)
-    playing = INDEXED
+    playing = DRAWING
     playing.picture(playing.opening.merge(**changes), settled: {})
   end
 
@@ -94,7 +94,7 @@ class PictureTest < Minitest::Test
   end
 
   def test_a_label_pushed_aside_stays_put_rather_than_hunting
-    playing = INDEXED
+    playing = DRAWING
     seen = (1..179).map do |half|
       svg = playing.picture(playing.opening.merge(mu1: 1.5, mu2: 1.0, i: (half / 2.0).deg))
       svg.scan(%r{<text x="([-\d.]+)" y="([-\d.]+)"[^>]*>(critical[^<]*)</text>}).first&.first(2)
@@ -115,7 +115,7 @@ class PictureTest < Minitest::Test
   # thrown aside rather than left to follow them. The geometry is a mirror
   # image, so the throw has to be too.
   def test_two_shallow_rays_are_thrown_aside_equally
-    playing = INDEXED
+    playing = DRAWING
     placed = anchored(playing.picture(playing.opening.merge(i: 5.deg), settled: {}))
 
     assert_in_delta NORMAL - placed.fetch("incident").first,
@@ -123,7 +123,7 @@ class PictureTest < Minitest::Test
   end
 
   def test_and_far_enough_aside_to_be_read
-    playing = INDEXED
+    playing = DRAWING
     placed = anchored(playing.picture(playing.opening.merge(i: 5.deg), settled: {}))
 
     assert_operator placed.fetch("reflected").first - placed.fetch("incident").first, :>, 24

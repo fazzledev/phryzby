@@ -56,7 +56,7 @@ class RatioTest < Minitest::Test
   # against air, because it is what water is against air.
   def test_and_by_as_much_as_the_chapters_that_name_their_media
     assert_equal bands(drawn(mu21: 1.33)).first.last,
-                 INDEXED.picture(INDEXED.opening.merge(mu1: 1.0, mu2: 1.33), settled: {})
+                 DRAWING.picture(DRAWING.opening.merge(mu1: 1.0, mu2: 1.33), settled: {})
                         .scan(/<rect[^>]*y="100"[^>]*opacity="([\d.]+)"/).flatten.first
   end
 

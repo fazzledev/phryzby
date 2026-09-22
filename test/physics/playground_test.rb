@@ -4,7 +4,7 @@ require_relative "../chapters"
 class PlaygroundTest < Minitest::Test
   APART = 0.chr
 
-  def playing = INDEXED
+  def playing = DRAWING
   def opening = playing.opening
 
   def test_a_scenario_is_still_a_scenario
@@ -60,7 +60,7 @@ class PlaygroundTest < Minitest::Test
   end
 
   def test_the_chapter_names_itself_apart_from_all_three
-    assert_includes playing.heading, "<h1>Refractive Index"
+    assert_includes playing.heading, "<h1>Drawing"
     assert_includes playing.heading, "class=\"lede\""
   end
 

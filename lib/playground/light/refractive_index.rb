@@ -9,9 +9,10 @@ play_with Reflection, RefractiveIndex do
   title "Refractive Index"
   description "The same crossing, with the number behind it taken apart. What each medium does to light is one number, and only the ratio of the two ever shows."
 
-  input :i, default: 30.deg
   input :mu1, INDEX, default: 1.33, marks: REFRACTIVE_MEDIA
   input :mu2, INDEX, default: 1.0, marks: REFRACTIVE_MEDIA
+
+  input(:i) { 30.deg }
 
   output :mu21
   output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
