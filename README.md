@@ -181,7 +181,7 @@ A chapter page holds no description of itself. Its right-hand panel is two
 calls: the law states itself, and the demonstration states the playground.
 
 ```ruby
-Physics::Scenario.including(Reflection, Refraction).showing do
+showing Reflection, Refraction do
   title "Refraction"
   description "A ray crossing into another medium bends, by as much as the two media differ."
 
@@ -195,6 +195,7 @@ Physics::Scenario.including(Reflection, Refraction).showing do
     media :mu1, :mu2
     ray "incident",  arriving_at: :i
     ray "refracted", crossing_at: :rr, unless: :no_refracted_ray
+    mark "critical", arriving_at: -> { asking(:i, rr: 90.deg) }
     note "no refracted ray", when: :no_refracted_ray
   end
 end

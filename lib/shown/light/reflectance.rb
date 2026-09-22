@@ -6,7 +6,7 @@ ANGLE = (0.5.deg)..(89.5.deg)
 FINELY = 0.01.deg
 INDEX = 1.0..2.5
 
-Physics::Scenario.including(Reflection, Refraction, Reflectance).showing do
+showing Reflection, Refraction, Reflectance do
   title "Reflectance"
   description "At any boundary some light turns back and the rest crosses. How much of each depends on the angle, and on polarisation."
 
@@ -26,6 +26,7 @@ Physics::Scenario.including(Reflection, Refraction, Reflectance).showing do
     ray "incident",  arriving_at: :i
     ray "reflected", leaving_at: :i, weight: :r
     ray "refracted", crossing_at: :rr, weight: -> { 1.0 - solve(:r) }, unless: :no_refracted_ray
+    mark "critical", arriving_at: -> { asking(:i, rr: 90.deg) }
     note "no refracted ray — Fresnel has nothing to say", when: :no_refracted_ray
   end
 end

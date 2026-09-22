@@ -6,7 +6,7 @@ ANGLE = (0.5.deg)..(89.5.deg)
 FINELY = 0.01.deg
 INDEX = 1.0..2.5
 
-Physics::Scenario.including(Reflection, TotalInternalReflection).showing do
+showing Reflection, TotalInternalReflection do
   title "Total internal reflection"
   description "Past a certain angle, light leaving a denser medium cannot cross at all. All of it turns back."
 
@@ -14,12 +14,6 @@ Physics::Scenario.including(Reflection, TotalInternalReflection).showing do
   input :mu1, INDEX, step: 0.01, at: 1.5, as: "μ₁ first"
   input :mu2, INDEX, step: 0.01, at: 1.0, as: "μ₂ second"
 
-  output("critical angle") do
-    next "none" unless self[:mu2] < self[:mu1]
-
-    format("%.2f°", Physics::Scenario.including(Refraction)
-      .new(mu1: self[:mu1], mu2: self[:mu2], rr: 90.deg).solve(:i).in_degrees)
-  end
   output :no_refracted_ray, in: :plain, alarm: true
   output :r, in: :percent
   output("solved from") { satisfies?(:no_refracted_ray) ? ":everything_reflects" : ":unpolarised" }
@@ -29,6 +23,7 @@ Physics::Scenario.including(Reflection, TotalInternalReflection).showing do
     ray "incident",  arriving_at: :i
     ray "reflected", leaving_at: :i, weight: :r
     ray "refracted", crossing_at: :rr, weight: -> { 1.0 - solve(:r) }, unless: :no_refracted_ray
+    mark "critical", arriving_at: -> { asking(:i, rr: 90.deg) }
     note "trapped — every ray turns back", when: :no_refracted_ray
   end
 end

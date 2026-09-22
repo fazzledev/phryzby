@@ -68,6 +68,11 @@ class PictureTest < Minitest::Test
     assert_equal 0, escaped
   end
 
+  def test_a_mark_is_drawn_only_when_there_is_such_an_angle
+    assert_includes drawn(mu1: 1.5, mu2: 1.0), "critical 41.81°"
+    refute_includes drawn(mu1: 1.0, mu2: 1.5), "critical"
+  end
+
   def test_the_normal_gives_way_rather_than_the_rays
     crowded = labels(drawn(i: 8.deg)).to_h { |text, left, top, | [ text, [ left.round, top.round ] ] }
 

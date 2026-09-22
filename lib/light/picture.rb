@@ -46,6 +46,20 @@ module Light
            beyond(from, to), colour: "var(--ray)")
     end
 
+    # A reference line at an angle, drawn the way the normal is: faint, dashed,
+    # out from where the rays meet. Nothing is drawn if there is no such angle.
+    def mark(text, arriving_at:)
+      turned = value(arriving_at)
+      return if turned.nil?
+
+      tip = [ CENTRE[0] - Math.sin(turned) * REACH * 1.2, CENTRE[1] - Math.cos(turned) * REACH * 1.2 ]
+      @shapes << %(<line x1="#{CENTRE[0]}" y1="#{CENTRE[1]}" x2="#{tip[0].round(2)}" ) +
+                 %(y2="#{tip[1].round(2)}" stroke="var(--red)" stroke-width="1" ) +
+                 %(stroke-opacity="0.55" stroke-dasharray="4 3"/>)
+
+      want("#{text} #{format("%.2f°", turned.in_degrees)}", beyond(tip, CENTRE), colour: "var(--red)")
+    end
+
     def note(text, when: nil)
       held = binding.local_variable_get(:when)
       return if held && !value(held)

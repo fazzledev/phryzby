@@ -126,8 +126,19 @@ module Physics
   end
 
   # A page loads one shown file and shows what it declared.
-  def self.shown = @outputs
-  def self.shows(scenario) = @outputs = scenario
+  def self.shown = @showing
+  def self.shows(scenario) = @showing = scenario
+
+  module Sideways
+    # The same surface asked a different question: everything it knows except
+    # the thing being asked for, plus whatever is given instead.
+    def asking(target, **knowns)
+      key = self.class.quantities.fetch(target)
+      posed = as_posed.reject { |held, _| held == key }
+
+      self.class.new(**posed, **knowns).solve(target)
+    end
+  end
 
   class Scenario
     def self.showing(&block)
@@ -139,3 +150,8 @@ module Physics
     def self.showing_of = @showing ||= Showing.new(self)
   end
 end
+
+Physics::Scenario.include(Physics::Sideways)
+
+# A shown file opens by naming the laws it is about and nothing else.
+def showing(*laws, &how) = Physics::Scenario.including(*laws).showing(&how)

@@ -28,8 +28,26 @@ class ShowingTest < Minitest::Test
     assert_includes showing.readouts(opening), "19.47°"
   end
 
-  def test_a_reading_worked_out_by_hand_is_shown_too
-    assert_includes showing.readouts(opening.merge(mu1: 1.5, mu2: 1.0)), "41.81°"
+  def test_a_sideways_question_poses_the_situation_afresh
+    here = shown.new(**opening.merge(mu1: 1.5, mu2: 1.0))
+    here.solve(:rl)
+
+    assert_in_delta 41.8103, here.asking(:i, rr: 90.deg).in_degrees, 1e-3
+  end
+
+  def test_what_was_solved_along_the_way_is_not_carried_into_it
+    here = shown.new(**opening.merge(mu1: 1.5, mu2: 1.0))
+    here.solve(:rr)
+    here.solve(:rl)
+
+    refute_in_delta here[:i].in_degrees, here.asking(:i, rr: 90.deg).in_degrees, 1e-6
+  end
+
+  def test_the_situation_it_was_asked_of_is_left_alone
+    here = shown.new(**opening.merge(mu1: 1.5, mu2: 1.0))
+    here.asking(:i, rr: 90.deg)
+
+    assert_in_delta 30.0, here[:i].in_degrees, 1e-9
   end
 
   def test_a_reading_that_cannot_be_worked_out_says_so

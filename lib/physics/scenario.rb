@@ -17,9 +17,16 @@ module Physics
     def initialize(**values)
       @env = {}
       values.each { |key, value| @env[self.class.quantities.fetch(key)] = value }
+
+      # What the situation was posed with, as against what solving it has
+      # since worked out.
+      @given = @env.keys.freeze
     end
 
+    def as_posed = @env.slice(*@given)
+
     def [](name) = @env[self.class.quantities.fetch(name)]
+    def known = @env.dup
 
     # Anything the equation mentions and does not yet know is worked out
     # first — but never from the equation being checked, or it would make
