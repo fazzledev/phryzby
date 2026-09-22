@@ -286,6 +286,24 @@ export function stage({ second = null, surface = "mirror" } = {}) {
 
 const AUTO_RUN = "phryzby.autorun";
 const CONSOLE_SHUT = "phryzby.console-shut";
+const EDITS = "phryzby.edits";
+
+// What the reader has typed, by the path they typed it into. A law belongs to
+// the book and not to the page that happens to be showing it, so an edit made
+// in one chapter is still in force in the next. For the visit only: somebody
+// opening the site again should be reading the repository, not last week's
+// experiment.
+function edits(next) {
+  try {
+    if (next === undefined) return JSON.parse(sessionStorage.getItem(EDITS) || "{}");
+    if (Object.keys(next).length) sessionStorage.setItem(EDITS, JSON.stringify(next));
+    else sessionStorage.removeItem(EDITS);
+  } catch {
+    // A browser that refuses storage still edits; it just forgets on the way
+    // to the next chapter.
+  }
+  return next || {};
+}
 
 // Reads the setting with no argument, writes it with one.
 function autoRun(next) {
@@ -604,7 +622,10 @@ function mountEditor(files, { tabs, pre, textarea, gutter },
     changed(files.filter((_, n) => edited(n)).map((file) => file.key));
   };
 
+  // Remembered on every repaint rather than only on the way out, because what
+  // is carried to the next chapter is read off the file and not the textarea.
   const repaint = () => {
+    remember();
     pre.innerHTML = highlight(textarea.value) + "\n";
     rule();
     sync();
@@ -652,14 +673,18 @@ function mountEditor(files, { tabs, pre, textarea, gutter },
 // --- the page --------------------------------------------------------------
 
 async function fetchRuby(files) {
+  const carried = edits();
+
   return Promise.all(files.map(async (file) => {
     // Revalidated rather than taken from cache: a stale law running against a
     // fresh page fails in ways that look like the law is wrong.
     const code = (await fetch(at(file.key), { cache: "no-cache" }).then((r) => r.text())).trimEnd();
 
     // `original` is what the repository says, `code` what the reader has done
-    // to it since. The gutter and Revert both measure from it.
-    return { ...file, label: file.label || file.key.split("/").pop(), code, original: code };
+    // to it since — here or in a chapter they were reading before this one.
+    // The gutter and Revert both measure from `original`.
+    return { ...file, label: file.label || file.key.split("/").pop(),
+             code: carried[file.key] ?? code, original: code };
   }));
 }
 
@@ -725,9 +750,11 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     .sort((a, b) => a.at - b.at).map((entry) => entry.file);
 
   // VS Code's habit: a bar in the gutter beside every line you touched, a dot
-  // on the tab, an M on the file in the tree.
+  // on the tab, an M on the file in the tree. Files this page is not showing
+  // can be marked too, because an edit carried in from another chapter is
+  // still in force here.
   const markChanged = (keys) => {
-    const dirty = new Set(keys);
+    const dirty = new Set([ ...keys, ...Object.keys(edits()) ]);
 
     // Nothing to put back, nothing to press.
     if (reset) reset.disabled = dirty.size === 0;
@@ -740,11 +767,24 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     });
   };
 
+  // What this page has changed, kept where the next chapter will look for it.
+  // Files it is not showing are left alone: only the reader's Revert takes an
+  // edit back, and it takes back all of them.
+  const carry = (keys) => {
+    const shown = new Set(loaded.map((file) => file.key));
+    const held = Object.fromEntries(Object.entries(edits())
+                                          .filter(([ key ]) => !shown.has(key)));
+
+    keys.forEach((key) => { held[key] = loaded.find((file) => file.key === key).code; });
+    edits(held);
+  };
+
   // The science on one side, how it is shown on the other, both at once —
   // because the whole point of the second one is watching the first change.
   const edited = new Map();
   const markBoth = (half) => (keys) => {
     edited.set(half, keys);
+    carry([ ...edited.values() ].flat());
     markChanged([ ...edited.values() ].flat());
   };
 
@@ -769,6 +809,9 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     open: (key) => editors.forEach((one) => one.showPath(key)),
   });
   markTree(tabbed[0].key);
+
+  // The editors flagged themselves before the tree existed to be flagged.
+  markChanged([ ...edited.values() ].flat());
 
   let vm = null;
 
@@ -982,6 +1025,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
 
   if (reset) {
     reset.addEventListener("click", () => {
+      edits({});
       editors.forEach((one) => one.reset());
       if (vm) rerun();
     });
