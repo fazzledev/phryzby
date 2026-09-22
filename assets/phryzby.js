@@ -788,8 +788,9 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     $("readouts").innerHTML = readouts;
     labels.split("\u0002").forEach((pair) => {
       const [ name, text ] = pair.split("\u0001");
+      // Ruby wrote this, and it may carry a caption under the number.
       const shown = document.getElementById(`${name}-out`);
-      if (shown) shown.textContent = text;
+      if (shown) shown.innerHTML = text;
     });
   };
 

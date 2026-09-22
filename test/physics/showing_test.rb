@@ -71,4 +71,29 @@ class ShowingTest < Minitest::Test
     assert_equal :mu1, showing.written_for(:refractive_index_of_first_medium)
     assert_equal :i, showing.written_for(:angle_of_incidence)
   end
+  def test_a_marked_input_offers_the_marks_to_aim_at
+    controls = showing.controls
+
+    assert_includes controls, 'list="mu1-marks"'
+    assert_includes controls, '<option value="1.5" label="glass">'
+    assert_includes controls, '<option value="2.42" label="diamond">'
+  end
+
+  def test_an_unmarked_input_offers_none
+    refute_includes showing.controls, 'list="i-marks"'
+  end
+
+  def test_a_reading_says_what_it_is_sitting_on
+    _, _, labels = showing.moved(opening.merge(mu2: 2.42)).split(APART)
+
+    assert_includes labels, "2.42<small>diamond</small>"
+  end
+
+  def test_and_says_nothing_between_them
+    _, _, labels = showing.moved(opening.merge(mu2: 2.0)).split(APART)
+    mu2 = labels.split(2.chr).find { |pair| pair.start_with?("mu2") }
+
+    refute_includes mu2, "<small>"
+  end
+
 end

@@ -66,13 +66,13 @@ module Physics
     # What changes when a control moves: the picture, the numbers, and the
     # reading beside each control.
     def moved(values)
-      labels = @inputs.map { |name, set| "#{name}\u0001#{UNITS.fetch(set[:units]).call(values[name])}" }
+      labels = @inputs.map { |name, set| "#{name}\u0001#{reading(set, values[name])}" }
 
       [ picture(values), readouts(values), labels.join("\u0002") ].join("\u0000")
     end
 
-    def input(name, range, step:, at:, in: :number, as: nil)
-      @inputs[name] = { range: range, step: step, at: at, as: as,
+    def input(name, range, step:, at:, in: :number, as: nil, marks: {})
+      @inputs[name] = { range: range, step: step, at: at, as: as, marks: marks,
                         units: binding.local_variable_get(:in) }
     end
 
@@ -116,9 +116,33 @@ module Physics
       @inputs.map do |name, set|
         "<div class=\"field\"><label for=\"#{name}\">#{set[:as] || named(name)}</label>" \
           "<input type=\"range\" id=\"#{name}\" data-input=\"#{name}\" min=\"#{set[:range].begin}\" " \
-          "max=\"#{set[:range].end}\" step=\"#{set[:step]}\" value=\"#{set[:at]}\">" \
-          "<output id=\"#{name}-out\">#{UNITS.fetch(set[:units]).call(set[:at])}</output></div>"
+          "max=\"#{set[:range].end}\" step=\"#{set[:step]}\" value=\"#{set[:at]}\"" \
+          "#{ticks(name, set)}>" \
+          "<output id=\"#{name}-out\">#{reading(set, set[:at])}</output></div>#{marked(name, set)}"
       end.join
+    end
+
+    # Notches the slider can be aimed at, and the name of whatever it is
+    # sitting on.
+    def ticks(name, set)
+      return "" if set[:marks].empty?
+
+      " list=\"#{name}-marks\""
+    end
+
+    def marked(name, set)
+      return "" if set[:marks].empty?
+
+      options = set[:marks].map { |called, value| "<option value=\"#{value}\" label=\"#{called}\">" }
+
+      "<datalist id=\"#{name}-marks\">#{options.join}</datalist>"
+    end
+
+    def reading(set, value)
+      shown = UNITS.fetch(set[:units]).call(value)
+      near = set[:marks].find { |_, mark| (mark - value).abs < set[:step] / 2 + 1e-9 }
+
+      near ? "#{shown}<small>#{near.first}</small>" : shown
     end
 
     def opening = @inputs.transform_values { |set| set[:at] }

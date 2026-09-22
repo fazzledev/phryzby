@@ -4,15 +4,17 @@ require_relative "../../light/picture"
 
 ANGLE = (0.5.deg)..(89.5.deg)
 FINELY = 0.01.deg
-INDEX = 1.0..2.5
+INDEX = 1.0..4.0
+MEDIA = { "air" => 1.0, "water" => 1.33, "glass" => 1.5, "diamond" => 2.42,
+          "cinnabar" => 3.2, "silicon" => 3.9 }.freeze
 
 showing Reflection, Refraction do
   title "Refraction"
   description "A ray crossing into another medium bends, by as much as the two media differ."
 
   input :i,   ANGLE, step: FINELY, at: 30.deg, in: :degrees, as: "incidence"
-  input :mu1, INDEX, step: 0.01, at: 1.0, as: "μ₁ first"
-  input :mu2, INDEX, step: 0.01, at: 1.5, as: "μ₂ second"
+  input :mu1, INDEX, step: 0.01, at: 1.0, as: "μ₁ first", marks: MEDIA
+  input :mu2, INDEX, step: 0.01, at: 1.5, as: "μ₂ second", marks: MEDIA
 
   output :rr, in: :degrees
   output :rl, in: :degrees
