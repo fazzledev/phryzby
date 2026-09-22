@@ -25,10 +25,21 @@ module Light
       name_the_upright
     end
 
-    def surface(called: "surface")
-      @shapes.unshift(ground(0.55), rule, upright)
+    def surface(called: "surface", across: nil)
+      @shapes.unshift(*banded(across && value(across)), rule, upright)
       want(called, [ [ 294, 114, "end" ] ], fixed: true)
       name_the_upright
+    end
+
+    # Told nothing, a surface is just a surface and the far side of it is
+    # something. Told the ratio, it shades whichever side the ratio says is
+    # the denser, by as much as it says: 1.33 of the other one looks the way
+    # water looks against air, because it is the same number.
+    def banded(turn)
+      return [ ground(0.55) ] if turn.nil?
+      return [] if (turn - 1).abs < 1e-9
+
+      turn > 1 ? [ ground(shade(turn)) ] : [ ground(shade(1 / turn), 0) ]
     end
 
     HATCH = 9

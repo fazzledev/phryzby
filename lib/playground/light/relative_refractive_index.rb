@@ -11,13 +11,12 @@ play_with Reflection, Refraction do
   input :i, default: 30.deg
   input :mu21, RATIO, default: 0.75, marks: { "alike" => 1.0 }
 
-  output :mu21
   output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
   output :rr
   output :no_refracted_ray, alarm: true
 
   draw Light::Picture do
-    surface
+    surface across: :mu21
     ray "incident",  arriving_at: :i, angle: true
     ray "reflected", leaving_at:  :rl
     ray "refracted", crossing_at: :rr, angle: true, unless: :no_refracted_ray

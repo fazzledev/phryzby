@@ -36,6 +36,24 @@ class RatioTest < Minitest::Test
     assert_equal "30.00°", says(mu21: 1.0).fetch("angle of refraction")
   end
 
+  # The ratio says which of the two is the denser and by how much, and that is
+  # all the shading can honestly say.
+  def test_the_denser_side_is_the_shaded_one_whichever_side_it_is
+    assert_equal [ [ "0", "0.117" ] ], bands(drawn)
+    assert_equal [ [ "100", "0.166" ] ], bands(drawn(mu21: 1.5))
+    assert_empty bands(drawn(mu21: 1.0))
+  end
+
+  # The same number shades the same: a ratio of 1.33 looks the way water looks
+  # against air, because it is what water is against air.
+  def test_and_by_as_much_as_the_chapters_that_name_their_media
+    assert_equal bands(drawn(mu21: 1.33)).first.last,
+                 INDEXED.picture(INDEXED.opening.merge(mu1: 1.0, mu2: 1.33), settled: {})
+                        .scan(/<rect[^>]*y="100"[^>]*opacity="([\d.]+)"/).flatten.first
+  end
+
+  def bands(svg) = svg.scan(/<rect[^>]*y="(\d+)"[^>]*opacity="([\d.]+)"/)
+
   # Nothing here knows which two media make the number, so the picture names
   # no medium at all.
   def test_the_picture_names_a_surface_and_not_two_media
