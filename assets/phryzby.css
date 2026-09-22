@@ -155,7 +155,10 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
    put in the third column, and that is the whole difference. */
 .field,.out div{display:grid;grid-template-columns:8.6rem 2.4rem 1fr 4.4rem;gap:.5rem;
   align-items:center;}
-.field{margin-bottom:.5rem;}
+.field{padding:.3rem 0;}
+/* A line between the rows, lighter than the one that divides the two tables,
+   so it separates without ruling anything off. */
+.field + .field,.out div + div{border-top:1px solid color-mix(in srgb,var(--rule) 60%,var(--paper));}
 .field > label,.out span:first-child{font-size:.8rem;color:var(--ink-mid);}
 .field > .var,.out .var{font-family:var(--mono);font-size:.9rem;color:var(--ink-mid);}
 .field output,.out .val{font-family:var(--mono);font-size:.8rem;text-align:right;
@@ -189,7 +192,7 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
   background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:5px;}
 .field output small{display:block;font-size:.68rem;color:var(--ink-soft);}
 .out{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.7rem;}
-.out div{padding:.16rem 0;}
+.out div{padding:.3rem 0;}
 .out .val{grid-column:4;}
 .out .alarm .val{color:var(--red);font-weight:600;}
 .out hr{border:0;border-top:1px solid var(--rule);margin:.45rem 0;}
