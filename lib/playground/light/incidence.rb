@@ -7,13 +7,6 @@ play_with Incidence do
 
   input :i, default: 30.deg
 
-  output :i, as: "held"
-  output("asked to solve it", alarm: true) do
-    Physics::Scenario.including(Incidence).new.solve(:i)
-  rescue RuntimeError => e
-    e.message
-  end
-
   draw Light::Picture do
     surface
     ray "incident", arriving_at: :i, angle: true

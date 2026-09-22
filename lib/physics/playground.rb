@@ -65,10 +65,13 @@ module Physics
 
     # The playground, and nothing else. Where it sits on the page is the
     # page's business, and what the law says is the law's.
+    # A chapter that works nothing out says nothing under Outputs, and the
+    # heading goes with it.
     def to_html(values)
       [ "<div id=\"picture\">#{picture(values)}</div>",
         head("Inputs"), controls,
-        head("Outputs"), "<div id=\"readouts\">#{readouts(values)}</div>" ].join
+        @outputs.empty? ? "" : head("Outputs"),
+        "<div id=\"readouts\">#{readouts(values)}</div>" ].join
     end
 
     # Each heading names the verb that made what is under it, so the page and
