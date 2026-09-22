@@ -681,7 +681,8 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   // the declaration itself sits beside the law, because changing it is the
   // point.
   const shown = shows
-    ? [ { key: "lib/light/picture.rb", hidden: true },
+    ? [ { key: "lib/light/placing.rb", hidden: true },
+        { key: "lib/light/picture.rb", hidden: true },
         { key: shows, label: "shown.rb", tab: 1.5 } ]
     : [];
   const loaded = await fetchRuby([ ...engine, ...files, ...shown ]);

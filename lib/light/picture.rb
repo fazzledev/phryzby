@@ -1,4 +1,5 @@
 require_relative "../physics"
+require_relative "placing"
 
 module Light
   class Picture
@@ -11,19 +12,21 @@ module Light
 
     def initialize(scenario)
       @scenario = scenario
-      @parts = []
-      @below = nil
+      @shapes = []
+      @wanted = []
     end
 
     def media(first, second)
-      @below = [ first, second ]
-      @parts.unshift(ground(0.3), rule, normal,
-                     label(294, 94, symbol(first), anchor: "end"),
-                     label(294, 114, symbol(second), anchor: "end"))
+      @shapes.unshift(ground(0.3), rule, upright)
+      want(symbol(first), [ [ 294, 94, "end" ] ])
+      want(symbol(second), [ [ 294, 114, "end" ] ])
+      name_the_upright
     end
 
     def surface(called: "surface")
-      @parts.unshift(ground(0.55), rule, normal, label(294, 114, called, anchor: "end"))
+      @shapes.unshift(ground(0.55), rule, upright)
+      want(called, [ [ 294, 114, "end" ] ])
+      name_the_upright
     end
 
     def ray(called, arriving_at: nil, leaving_at: nil, crossing_at: nil, weight: nil, unless: nil)
@@ -38,42 +41,76 @@ module Light
       return if drawn < 1e-9
 
       from, to = ends(turned, arriving_at, leaving_at)
-      @parts << arrow(*from, *to, drawn, share ? 0.32 + 0.68 * share : 0.95)
-      @parts << named(from, to, share ? "#{called} #{(share * 100).round}%" : called.to_s)
+      @shapes << arrow(*from, *to, drawn, share ? 0.32 + 0.68 * share : 0.95)
+      want(share ? "#{called} #{(share * 100).round}%" : called.to_s,
+           beyond(from, to), colour: "var(--ray)")
     end
 
     def note(text, when: nil)
       held = binding.local_variable_get(:when)
       return if held && !value(held)
 
-      @parts << label(CENTRE[0], 162, text, colour: "var(--red)")
+      want(text, [ [ CENTRE[0], 162, "middle" ], [ CENTRE[0], 150, "middle" ],
+                   [ CENTRE[0], 176, "middle" ] ], colour: "var(--red)")
     end
 
     def to_svg
-      %(<svg id="diagram" viewBox="0 0 #{WIDTH} #{HEIGHT}" aria-label="the picture">#{@parts.join}</svg>)
+      drawn = Placing.new(WIDTH, HEIGHT).resolve(@wanted)
+
+      %(<svg id="diagram" viewBox="0 0 #{WIDTH} #{HEIGHT}" aria-label="the picture">) +
+        @shapes.join + drawn.join + "</svg>"
     end
 
     private
 
-    PAST = 10
+    PAST = 14
+    ASIDE = 0.55
 
-    # A label belongs at the loose end of its ray and outside it. Which end,
-    # which side, and whether it sits above or below all follow from one
-    # direction: the way out from where the rays meet. The incident ray is
-    # drawn inward, so its loose end is its tail; for the rest it is the head,
-    # and nothing has to say so.
-    def named(from, to, text)
-      outer = [ from, to ].max_by { |point| away(point) }
-      span = away(outer)
-      return if span.zero?
-
-      out = [ (outer[0] - CENTRE[0]) / span, (outer[1] - CENTRE[1]) / span ]
-
-      label(outer[0] + out[0] * PAST, outer[1] + out[1] * PAST + (out[1].negative? ? -2 : 9),
-            text, colour: "var(--ray)", anchor: sideways(out[0]))
+    def want(text, spots, colour: "var(--ink-soft)", last: false)
+      @wanted << { text: text, spots: spots, colour: colour, last: last }
     end
 
-    def sideways(across) = across.abs < 0.25 ? "middle" : (across.negative? ? "end" : "start")
+    # The dashed line has a whole height to be named anywhere along, so it asks
+    # last and takes what is left.
+    def name_the_upright
+      want("normal", (15..185).step(11).flat_map { |y| [ [ 156, y, "start" ], [ 144, y, "end" ] ] },
+           last: true)
+    end
+
+    # Out past the tip, then further out, then swung off to either side — a ray
+    # would rather be labelled near itself than exactly where it points.
+    def beyond(from, to)
+      outer = [ from, to ].max_by { |point| away(point) }
+      span = away(outer)
+      return [ [ outer[0], outer[1], "middle" ] ] if span.zero?
+
+      [ 0.0, 0.4, -0.4, 0.8, -0.8, 1.3, -1.3 ].flat_map do |swing|
+        [ PAST, PAST * 2, PAST * 0.4, -PAST * 0.8 ].flat_map do |push|
+          spot = settle(outer, swing, push)
+
+          # The same point read the other way round: a label with no room to
+          # its right can still grow to its left.
+          [ spot, [ spot[0], spot[1], spot[2] == "end" ? "start" : "end" ] ]
+        end
+      end
+    end
+
+    def settle(outer, swing, push)
+      span = away(outer)
+      across, down = (outer[0] - CENTRE[0]) / span, (outer[1] - CENTRE[1]) / span
+      across, down = turn(across, down, swing)
+      across = across.negative? ? -[ across.abs, ASIDE ].max : [ across, ASIDE ].max
+      length = Math.hypot(across, down)
+
+      [ outer[0] + across / length * push,
+        outer[1] + down / length * push + (down.negative? ? -2 : 9),
+        across.negative? ? "end" : "start" ]
+    end
+
+    def turn(across, down, by)
+      [ across * Math.cos(by) - down * Math.sin(by),
+        across * Math.sin(by) + down * Math.cos(by) ]
+    end
 
     def away(point) = Math.hypot(point[0] - CENTRE[0], point[1] - CENTRE[1])
 
@@ -139,14 +176,9 @@ module Light
 
     def rule = %(<line x1="0" y1="100" x2="300" y2="100" stroke="var(--rule)" stroke-width="1"/>)
 
-    def normal
+    def upright
       %(<line x1="150" y1="10" x2="150" y2="190" stroke="var(--rule)" stroke-width="1" ) +
-        %(stroke-dasharray="3 4"/>) + label(156, 15, "normal", anchor: "start")
-    end
-
-    def label(x, y, text, colour: "var(--ink-soft)", anchor: "middle")
-      %(<text x="#{x}" y="#{y}" fill="#{colour}" text-anchor="#{anchor}" ) +
-        %(font-family="ui-monospace, monospace" font-size="11">#{text}</text>)
+        %(stroke-dasharray="3 4"/>)
     end
   end
 end
