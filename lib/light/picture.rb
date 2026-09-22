@@ -44,7 +44,7 @@ module Light
     end
 
     def ray(called, arriving_at: nil, leaving_at: nil, crossing_at: nil,
-            weight: nil, angle: false, unless: nil)
+            weight: nil, angle: false, unbent: false, unless: nil)
       return if skipped?(binding.local_variable_get(:unless))
 
       turned = value(arriving_at || leaving_at || crossing_at)
@@ -55,6 +55,7 @@ module Light
       return if drawn < 1e-9
 
       from, to = ends(turned, arriving_at, leaving_at)
+      @shapes << straight_on(turned) if unbent
       @shapes << arrow(*from, *to, drawn, share ? 0.32 + 0.68 * share : 0.95)
       want(share ? "#{called} #{(share * 100).round}%" : called.to_s,
            beyond(from, to), colour: "var(--ray)")
@@ -73,6 +74,15 @@ module Light
       @shapes << carried(CENTRE, tip, "var(--red)", "4 3")
 
       want("#{text} #{format("%.2f°", turned.in_degrees)}", beyond(tip, CENTRE), colour: "var(--red)")
+    end
+
+    # Where the ray would have carried on had it not bent. Which side of it
+    # the refracted ray comes out on is the whole of what bending is.
+    def straight_on(turned)
+      on = [ (CENTRE[0] + Math.sin(turned) * REACH).round(2),
+             (CENTRE[1] + Math.cos(turned) * REACH).round(2) ]
+
+      carried(CENTRE, on, "var(--ray)", "3 5")
     end
 
     def note(text, when: nil)

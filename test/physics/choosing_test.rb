@@ -80,6 +80,16 @@ class ChoosingTest < Minitest::Test
     refute(named.any? { |text| text.start_with?("μ") })
   end
 
+  # The incident ray is carried on past the boundary, dashed, so which side of
+  # it the refracted one came out on reads straight off the picture. At 45° it
+  # runs from the meeting point out as far as it came in.
+  def test_the_incident_ray_is_carried_on_unbent
+    drawn = playing.picture(opening, settled: {})
+
+    assert_includes drawn, %(<g stroke-dasharray="3 5">)
+    assert_includes drawn, %(<line x1="150" y1="100" x2="203.74" y2="153.74" stroke="var(--ray)")
+  end
+
   def test_the_denser_of_the_two_is_still_the_more_shaded
     thin, thick = playing.picture(opening.merge(from: AIR, into: DIAMOND), settled: {})
                          .scan(/<rect[^>]*opacity="([\d.]+)"/).flatten.map(&:to_f)

@@ -22,7 +22,7 @@ play_with Refraction do
 
   draw Light::Picture do
     media :from, :into
-    ray "incident",  arriving_at: :i
+    ray "incident",  arriving_at: :i, unbent: true
     ray "refracted", crossing_at: :rr, unless: :no_refracted_ray
     note "no refracted ray", when: :no_refracted_ray
   end
