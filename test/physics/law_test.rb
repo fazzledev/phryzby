@@ -114,7 +114,6 @@ class LawTest < Minitest::Test
     assert_equal %i[borrowed own], law.quantities.values.uniq
   end
 
-
   def self.trivial
     law { quantity :thing; equation(:trivial) { thing == 1 } }
   end
