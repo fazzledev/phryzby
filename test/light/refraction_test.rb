@@ -114,6 +114,12 @@ class RefractionTest < Minitest::Test
     assert_raises(RuntimeError) { ray.solve(:rr) }
   end
 
+  def test_an_index_far_beyond_any_real_material_still_solves
+    steep = SURFACE.new(i: 45.deg, mu1: AIR, mu2: 1_000.0)
+
+    assert_in_delta 0.0405, steep.solve(:rr).in_degrees, 1e-4
+  end
+
   private
 
   CRITICAL = Math.asin(AIR / GLASS).in_degrees

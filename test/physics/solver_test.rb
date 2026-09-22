@@ -56,4 +56,21 @@ class SolverTest < Minitest::Test
     assert_nil Physics::Solver.newton(->(x) { -(x * x) - 1 }, 1.0)
   end
 
+  # Nothing declared means nothing to choose between, so the answer may be
+  # anywhere. It used to be quietly confined to a range nobody asked for.
+  def test_an_undeclared_quantity_may_answer_far_from_zero
+    assert_in_delta 5_000.0, Physics::Solver.root(->(x) { x - 5_000 }), 1e-6
+    assert_in_delta(-5_000.0, Physics::Solver.root(->(x) { x + 5_000 }), 1e-6)
+  end
+
+  # sin goes to zero at the foot of the branch, so the residual blows up
+  # there. The scan has to step inside rather than stand on it.
+  def test_a_root_just_inside_a_singular_end_is_still_found
+    wanted = Math.asin(0.7071 / 1_000)
+
+    assert_in_delta wanted,
+                    Physics::Solver.root(->(x) { 1_000 - 0.7071 / Math.sin(x) },
+                                         within: 0.0..(Math::PI / 2)), 1e-9
+  end
+
 end

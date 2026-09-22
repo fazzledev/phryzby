@@ -121,7 +121,7 @@ module Physics
     def root_of(equation, key, range)
       residual = ->(x) { equation.residual(@env.merge(key => x)) }
 
-      Solver.root(residual, within: range || self.class.domains[key] || Solver::DEFAULT_RANGE)
+      Solver.root(residual, within: range || self.class.domains[key])
     end
   end
 end

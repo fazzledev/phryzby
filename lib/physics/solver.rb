@@ -1,11 +1,17 @@
 module Physics
   module Solver
-    DEFAULT_RANGE = -10.0..10.0
+    SOMEWHERE = 1.0
 
     module_function
 
-    def root(residual, within: DEFAULT_RANGE, guess: midpoint(within))
-      found = newton(residual, guess)
+    # A branch is declared when an equation has more than one root and only
+    # one of them is real. Where none is declared there is nothing to choose
+    # between, so Newton is asked and believed — and it may answer anywhere,
+    # rather than inside a range nobody asked for.
+    def root(residual, within: nil, guess: nil)
+      return newton(residual, guess || SOMEWHERE) unless within
+
+      found = newton(residual, guess || midpoint(within))
       found = nil unless found && within.cover?(found)
       found || bisect(residual, within)
     end
@@ -29,9 +35,11 @@ module Physics
       nil
     end
 
+    SCAN = 1000
+
     def bisect(residual, range, steps: 200)
       lo, hi = range.begin, range.end
-      scan = lo.step(by: (hi - lo) / 1000.0, to: hi).each_cons(2).find do |a, b|
+      scan = along(residual, lo, hi).each_cons(2).find do |a, b|
         fa = finite(residual, a)
         fb = finite(residual, b)
         fa && fb && fa * fb <= 0
@@ -46,6 +54,18 @@ module Physics
         finite(residual, lo) * finite(residual, mid) <= 0 ? hi = mid : lo = mid
       end
       (lo + hi) / 2.0
+    end
+
+    # An end of the range where the residual blows up — a sine going to zero,
+    # say — is approached rather than stood on, so that a root just inside it
+    # is still inside the first step rather than beyond the edge of the scan.
+    def along(residual, lo, hi)
+      step = (hi - lo) / SCAN
+      walked = lo.step(by: step, to: hi).to_a
+      walked[0] = lo + step / SCAN unless finite(residual, lo)
+      walked[-1] = hi - step / SCAN unless finite(residual, hi)
+
+      walked
     end
 
     def finite(residual, x)

@@ -128,6 +128,11 @@ It is also the only thing the solver is told. Nothing supplies a starting
 point: Newton begins at the middle of the declared branch, and a root found
 outside it is discarded in favour of bisecting inside it.
 
+Where no branch is declared there is nothing to choose between, so Newton is
+asked and believed, and the answer may be anywhere. There used to be a fallback
+range of ±10 for quantities nobody had declared, which quietly refused any
+refractive index over ten.
+
 ## Chapters
 
 A law is a module, not a class, because a law is not a kind of another law.
