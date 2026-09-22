@@ -13,7 +13,7 @@ play_with Refraction do
 
   draw Light::Picture do
     media "air", "water"
-    ray "incident",  arriving_at: :i,  angle: true
+    ray "incident",  arriving_at: :i,  angle: true, extended: true
     ray "refracted", crossing_at: :rr, angle: true
   end
 end

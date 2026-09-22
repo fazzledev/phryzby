@@ -14,7 +14,7 @@ play_with Refraction do
 
   draw Light::Picture do
     media "water", "air"
-    ray "incident",  arriving_at: :i,  angle: true
+    ray "incident",  arriving_at: :i,  angle: true, extended: true
     ray "refracted", crossing_at: :rr, angle: true, unless: :no_refracted_ray
     note "no refracted ray", when: :no_refracted_ray
   end
