@@ -196,14 +196,14 @@ module Light
 
     def ground(opacity, top = 100)
       %(<rect x="0" y="#{top}" width="#{WIDTH}" height="#{HEIGHT / 2}" ) +
-        %(fill="var(--rule)" opacity="#{opacity}"/>)
+        %(fill="var(--ink-soft)" opacity="#{opacity}"/>)
     end
 
     # Denser reads denser. Refraction turns on the ratio of the two indices,
     # so what matters is that the halves can be told apart at a glance.
-    THINNEST = 0.06
-    PER_INDEX = 0.22
-    THICKEST = 0.5
+    THINNEST = 0.04
+    PER_INDEX = 0.34
+    THICKEST = 0.62
 
     def shade(index)
       return 0.3 unless index
