@@ -1,9 +1,8 @@
-require_relative "../../light/reflection"
 require_relative "../../light/refraction"
 require_relative "../../light/refractive_media"
 require_relative "../../light/picture"
 
-play_with Reflection, Refraction do
+play_with Refraction do
   title "Refraction"
   description "A ray crossing into another medium bends, and the two media together decide which way."
 
@@ -24,7 +23,6 @@ play_with Reflection, Refraction do
   draw Light::Picture do
     media :from, :into
     ray "incident",  arriving_at: :i
-    ray "reflected", leaving_at:  :rl
     ray "refracted", crossing_at: :rr, unless: :no_refracted_ray
     note "no refracted ray", when: :no_refracted_ray
   end
