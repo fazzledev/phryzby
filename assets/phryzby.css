@@ -150,7 +150,7 @@ h1 small{font-weight:400;color:var(--ink-soft);font-size:.74em;letter-spacing:0;
 .head:first-child{margin-top:0;}
 svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-radius:8px;
   background:var(--wash);}
-.field{display:grid;grid-template-columns:7.4rem 1fr 4.4rem;gap:.5rem;align-items:center;
+.field{display:grid;grid-template-columns:8.6rem 2.4rem 1fr 4.4rem;gap:.5rem;align-items:center;
   margin-bottom:.5rem;}
 .field > label{font-size:.8rem;color:var(--ink-mid);}
 .field input[type=range]{width:100%;accent-color:var(--ray);display:block;}
@@ -168,7 +168,7 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
 .mark:hover span,.mark:focus-visible span{opacity:1;color:var(--ink);}
 .mark.on span{opacity:1;color:var(--ray);}
 /* A few named things to pick between, each worth pressing anywhere on it. */
-.picks{display:flex;flex-wrap:wrap;gap:.3rem;grid-column:2/4;}
+.picks{display:flex;flex-wrap:wrap;gap:.3rem;grid-column:3/5;}
 .pick{display:inline-flex;align-items:center;cursor:pointer;
   font-family:var(--mono);font-size:.72rem;letter-spacing:.02em;color:var(--ink-soft);
   padding:.22rem .5rem;border:1px solid var(--rule);border-radius:999px;
@@ -178,13 +178,13 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
 .pick:has(input:checked){color:var(--paper);background:var(--ray);border-color:var(--ray);}
 .pick:has(input:focus-visible){outline:2px solid var(--ray);outline-offset:2px;}
 
-.field select{font:inherit;font-size:.8rem;padding:.3rem;grid-column:2/4;
+.field select{font:inherit;font-size:.8rem;padding:.3rem;grid-column:3/5;
   background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:5px;}
 .field output{font-family:var(--mono);font-size:.8rem;text-align:right;line-height:1.25;}
 .field output small{display:block;font-size:.68rem;color:var(--ink-soft);}
 /* The symbol the equation writes this quantity as, beside the name it reads
    it by. Set the way the law is set, so the eye can carry one to the other. */
-.field label small,.out span small{font-family:var(--mono);font-size:.88em;
+.field > .var,.out span small{font-family:var(--mono);font-size:.74rem;
   color:var(--ink-soft);opacity:.75;}
 .out{font-family:var(--mono);font-size:.78rem;border-top:1px solid var(--rule);
   margin-top:.8rem;padding-top:.7rem;}

@@ -163,7 +163,7 @@ module Physics
     end
 
     def slid(name, set)
-      "<div class=\"field\"><label for=\"#{name}\">#{set[:as] || named(name)}</label>" \
+      "<div class=\"field\">#{titles(name, set, aimed: true)}" \
         "<div class=\"track\">#{marked(name, set)}" \
         "<input type=\"range\" id=\"#{name}\" data-input=\"#{name}\" " \
         "min=\"#{set[:range].begin}\" max=\"#{set[:range].end}\" step=\"#{set[:step]}\" " \
@@ -179,8 +179,16 @@ module Physics
           "<span>#{called}</span></label>"
       end
 
-      "<div class=\"field\"><label>#{set[:as] || named(name)}</label>" \
+      "<div class=\"field\">#{titles(name, set)}" \
         "<div class=\"picks\">#{buttons.join}</div></div>"
+    end
+
+    # A control is named twice: by what the number is, and by the letter the
+    # equation above writes it as. They get a column each, so a long name
+    # wrapping does not push the letter about.
+    def titles(name, set, aimed: false)
+      "<label#{aimed ? " for=\"#{name}\"" : ""}>#{set[:as] || called(name)}</label>" \
+        "<span class=\"var\">#{written(name)}</span>"
     end
 
     # Notches along the track, at the values somebody would recognise. Each is
@@ -245,13 +253,22 @@ module Physics
 
     private
 
-    # What the law calls it, and what it writes it as. The long name says what
-    # the number is; the symbol beside it is the one in the equation above.
-    def named(name)
-      called = (@scenario.quantities[name] || name).to_s.tr("_", " ")
-      return called unless @scenario.quantities.key?(name)
+    def called(name) = (@scenario.quantities[name] || name).to_s.tr("_", " ")
 
-      "#{called} <small>(#{Physics.symbol(written_for(name))})</small>"
+    # What the equation writes it as. A condition is not a quantity and has no
+    # letter of its own.
+    def written(name)
+      return nil unless @scenario.quantities.key?(name)
+
+      "(#{Physics.symbol(written_for(name))})"
+    end
+
+    # A readout has one line to say both in, so it says them one after the
+    # other.
+    def named(name)
+      symbol = written(name)
+
+      symbol ? "#{called(name)} <small>#{symbol}</small>" : called(name)
     end
   end
 
