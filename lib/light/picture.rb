@@ -210,13 +210,13 @@ module Light
     # The symbol, and what the medium is if it is one anybody has a name for.
     def named_band(name)
       held = value(name)
-      called = held && @scenario.class.showing_of.standing_on(name, held)
+      called = held && @scenario.class.playground.standing_on(name, held)
 
       called ? "#{symbol(name)} #{called}" : symbol(name)
     end
 
     def symbol(name)
-      written = @scenario.class.showing_of.written_for(name).to_s
+      written = @scenario.class.playground.written_for(name).to_s
       stem = Physics::GREEK.find { |greek| written.start_with?(greek) }
       letter = stem ? Physics::LETTER.fetch(stem) : written[0]
       trail = written[(stem ? stem.length : 1)..].to_s

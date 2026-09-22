@@ -186,7 +186,7 @@ A chapter page holds no description of itself. Its right-hand panel is two
 calls: the law states itself, and the demonstration states the playground.
 
 ```ruby
-showing Reflection, Refraction do
+play_with Reflection, Refraction do
   title "Refraction"
   description "A ray crossing into another medium bends, by as much as the two media differ."
 
@@ -207,7 +207,7 @@ end
 ```
 
 Nothing is assigned. A demonstration answers to the law it is about —
-`Physics.shown(Refraction)` — because that is a name the book already has, and
+`play_with Refraction` — because that is a name the book already has, and
 an invented one would mean nothing to anybody.
 
 The sliders, the readings, the rays and their labels all come out of that.
@@ -215,18 +215,18 @@ Edit the law and the panel follows: change `{ i == rl }` to `{ i == rl * 2 }`
 and the reflected ray swings to half the angle, the reading changes, and the
 typeset formula redraws as `i = rl ⋅ 2`.
 
-A chapter page shows both at once: the law on the left, `shown.rb` on the
+A chapter page shows both at once: the law on the left, `playground.rb` on the
 right, the panel they produce beside them. Editing either moves the other half
 of the page, which is the only reason to have the second one open.
 
 A demonstration is never in a law file. A slider range is not physics, and a
 law that carried one would stop being only a law. But it is on the page, as
-`shown.rb` beside the law, because a declaration you cannot reach is only
+`playground.rb` beside the law, because a declaration you cannot reach is only
 hardcoding that has moved. Delete the reflected ray from the `draws` block and
 it leaves the picture; rename it and the label changes; widen an `input` range
 and the slider widens. Nothing about presentation lives in a law file, not even its own title: a law
 states what it is made of, and how a reader is introduced to it belongs with
-the rest of the showing.
+the rest of the playground.
 
 ## The demo
 
@@ -277,9 +277,9 @@ lib/physics/
   scenario.rb          composing laws, choosing an equation, solving what it needs
   angles.rb            Numeric#deg, #in_degrees, and the branch an angle lives on
   notation.rb          the same tree walked again, as MathML
-  showing.rb           what can be varied, what to read, what to draw
+  playground.rb        what can be varied, what to read, what to draw
 lib/light/picture.rb   rays and media: the vocabulary optics is drawn in
-lib/shown/light/*.rb   one per chapter, shown beside the law it demonstrates
+lib/playground/light/*.rb  one per chapter, beside the law it demonstrates
 lib/light/incidence.rb what every optical law includes
 lib/light/*.rb         one law per file, each including the one before it
 test/                  mirrors lib/

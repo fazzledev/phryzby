@@ -8,7 +8,7 @@ INDEX = 1.0..4.0
 MEDIA = { "air" => 1.0, "water" => 1.33, "glass" => 1.5, "diamond" => 2.42,
           "cinnabar" => 3.2, "silicon" => 3.9 }.freeze
 
-showing Reflection, Refraction do
+play_with Reflection, Refraction do
   title "Refraction"
   description "A ray crossing into another medium bends, by as much as the two media differ."
 

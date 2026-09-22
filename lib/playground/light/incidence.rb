@@ -5,7 +5,7 @@ ANGLE = (0.5.deg)..(89.5.deg)
 FINELY = 0.01.deg
 INDEX = 1.0..2.5
 
-showing Incidence do
+play_with Incidence do
   title "Incidence"
   description "A ray arrives at a surface. The angle it makes with the normal is where every other law starts."
 

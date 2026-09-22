@@ -8,7 +8,7 @@ INDEX = 1.0..4.0
 MEDIA = { "air" => 1.0, "water" => 1.33, "glass" => 1.5, "diamond" => 2.42,
           "cinnabar" => 3.2, "silicon" => 3.9 }.freeze
 
-showing Reflection, Refraction, Reflectance do
+play_with Reflection, Refraction, Reflectance do
   title "Reflectance"
   description "At any boundary some light turns back and the rest crosses. How much of each depends on the angle, and on polarisation."
 

@@ -86,7 +86,7 @@ const at = (path) => new URL(path, ROOT).href;
 
 const PARTS = [
   "expression", "equation", "scope", "quantities", "law", "solver", "scenario", "angles",
-  "notation", "showing",
+  "notation", "playground",
 ];
 
 // Order is the order the requires in lib/physics.rb imply.
@@ -685,7 +685,7 @@ async function loadVM(onStatus) {
  *   opening — the chapter's one move, run in the console the moment Ruby boots
  */
 export async function chapter({ page, files, harness = "", onSolve, showEngine = false,
-                                examples = [], opening = [], presents = null, shows = null }) {
+                                examples = [], opening = [], presents = null, playground = null }) {
   const status = $("status");
   const run = $("run");
   const reset = $("reset");
@@ -703,12 +703,12 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   // them. The vocabulary it draws with is machinery and stays out of the way;
   // the declaration itself sits beside the law, because changing it is the
   // point.
-  const shown = shows
+  const played = playground
     ? [ { key: "lib/light/placing.rb", hidden: true },
         { key: "lib/light/picture.rb", hidden: true },
-        { key: shows, label: "shown.rb", tab: 1.5 } ]
+        { key: playground, label: "playground.rb", tab: 1.5 } ]
     : [];
-  const loaded = await fetchRuby([ ...engine, ...files, ...shown ]);
+  const loaded = await fetchRuby([ ...engine, ...files, ...played ]);
   const tabbed = loaded.filter((file) => !file.hidden)
     .map((file, index) => ({ file, at: file.tab ?? index }))
     .sort((a, b) => a.at - b.at).map((entry) => entry.file);
@@ -739,11 +739,11 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
 
   let markTree = () => {};
   const halves = [
-    [ tabbed.filter((file) => file.key !== shows),
+    [ tabbed.filter((file) => file.key !== playground),
       { tabs: $("tabs"), pre: $("highlight"), textarea: $("source"), gutter: $("gutter") } ],
-    [ tabbed.filter((file) => file.key === shows),
-      { tabs: $("shown-tabs"), pre: $("shown-highlight"),
-        textarea: $("shown-source"), gutter: $("shown-gutter") } ],
+    [ tabbed.filter((file) => file.key === playground),
+      { tabs: $("playground-tabs"), pre: $("playground-highlight"),
+        textarea: $("playground-source"), gutter: $("playground-gutter") } ],
   ];
 
   const editors = halves
@@ -781,7 +781,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       if (!vm) return onSolve ? onSolve(null) : undefined;
       try {
         if (onSolve) onSolve(vm);
-        if (shows) move();
+        if (playground) move();
         say("Solved in Ruby.");
       } catch (error) {
         say(String(error).split("\n")[0], true);
@@ -799,13 +799,13 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     const pairs = [ ...document.querySelectorAll("#demo [data-input]") ]
       .map((control) => `${control.dataset.input}: ${control.value}`);
 
-    return pairs.length ? `{ ${pairs.join(", ")} }` : `Physics.shown.showing_of.opening`;
+    return pairs.length ? `{ ${pairs.join(", ")} }` : `Physics.playground.opening`;
   };
 
   const move = () => {
     vm.eval(`Console.inputs = ${reading()}`);
     const [ picture, readouts, labels ] =
-      vm.eval(`Physics.shown.showing_of.moved(${reading()})`).toString().split("\u0000");
+      vm.eval(`Physics.playground.moved(${reading()})`).toString().split("\u0000");
 
     $("picture").innerHTML = picture;
     $("readouts").innerHTML = readouts;
@@ -829,14 +829,14 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   const present = () => {
     const statement = $("statement");
     if (statement && presents) statement.innerHTML = vm.eval(`${presents}.to_html`).toString();
-    if (!shows) return;
+    if (!playground) return;
 
     const held = [ ...document.querySelectorAll("#demo [data-input]") ]
       .map((control) => [ control.dataset.input, control.value ]);
 
-    $("heading").innerHTML = vm.eval(`Physics.shown.showing_of.heading`).toString();
-    $("law").innerHTML = vm.eval(`Physics.shown.showing_of.stated`).toString();
-    $("demo").innerHTML = vm.eval(`Physics.shown.showing_of.to_html(${reading()})`).toString();
+    $("heading").innerHTML = vm.eval(`Physics.playground.heading`).toString();
+    $("law").innerHTML = vm.eval(`Physics.playground.stated`).toString();
+    $("demo").innerHTML = vm.eval(`Physics.playground.to_html(${reading()})`).toString();
 
     // Re-rendering draws the controls back at their declared start, so where
     // they had been dragged to is put back.
@@ -845,7 +845,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       if (control) control.value = value;
     });
 
-    vm.eval(`def surface = Physics.shown.new(**Console.inputs)`);
+    vm.eval(`def surface = Physics.playground.posing(**Console.inputs)`);
     move();
   };
 
@@ -874,7 +874,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     if (near !== undefined) control.value = near;
   };
 
-  if (shows) {
+  if (playground) {
     // Only a drag is caught by a magnet. Stepping with the arrow keys has to
     // be able to walk past one, or a value beside a notch is unreachable.
     let dragging = false;
@@ -981,7 +981,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       if (auto.checked) (vm ? rerun() : boot());
     });
 
-    [ $("source"), $("shown-source") ].filter(Boolean).forEach((typed) =>
+    [ $("source"), $("playground-source") ].filter(Boolean).forEach((typed) =>
       typed.addEventListener("input", () => {
       if (!auto.checked || !vm || booting) return;
       clearTimeout(pending);

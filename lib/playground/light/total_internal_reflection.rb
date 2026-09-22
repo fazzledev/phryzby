@@ -8,7 +8,7 @@ INDEX = 1.0..4.0
 MEDIA = { "air" => 1.0, "water" => 1.33, "glass" => 1.5, "diamond" => 2.42,
           "cinnabar" => 3.2, "silicon" => 3.9 }.freeze
 
-showing Reflection, TotalInternalReflection do
+play_with Reflection, TotalInternalReflection do
   title "Total internal reflection"
   description "Past a certain angle, light leaving a denser medium cannot cross at all. All of it turns back."
 

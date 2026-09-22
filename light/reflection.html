@@ -36,11 +36,11 @@
           <section class="stated" id="law"></section>
         </section>
         <section class="half">
-          <div class="tabs" id="shown-tabs" role="tablist"></div>
+          <div class="tabs" id="playground-tabs" role="tablist"></div>
           <div class="editor">
-            <div class="gutter" id="shown-gutter" aria-hidden="true"></div>
-            <pre id="shown-highlight" aria-hidden="true"></pre>
-            <textarea id="shown-source" autocomplete="off"></textarea>
+            <div class="gutter" id="playground-gutter" aria-hidden="true"></div>
+            <pre id="playground-highlight" aria-hidden="true"></pre>
+            <textarea id="playground-source" autocomplete="off"></textarea>
           </div>
         </section>
       </div>
@@ -73,7 +73,7 @@ await chapter({
     { key: "lib/light/incidence.rb", tab: 2 },
     { key: "lib/light/reflection.rb", tab: 1 },
   ],
-  shows: "lib/shown/light/reflection.rb",
+  playground: "lib/playground/light/reflection.rb",
   opening: [ "surface.solve(:rl).in_degrees" ],
   examples: [
     "surface.solve(:rl).in_degrees",

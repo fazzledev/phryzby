@@ -1,5 +1,5 @@
 module Physics
-  class Showing
+  class Playground
     HANDLE = "0.85rem".freeze
     HALF_HANDLE = "0.425rem".freeze
 
@@ -70,7 +70,7 @@ module Physics
     end
 
     # Each heading names the verb that made what is under it, so the page and
-    # the shown file beside it can be read straight across.
+    # the playground file beside it can be read straight across.
     def head(text) = "<div class=\"head\">#{text}</div>"
 
     # What changes when a control moves: the picture, the numbers, and the
@@ -169,6 +169,10 @@ module Physics
 
     def opening = @inputs.transform_values { |set| set[:at] }
 
+    # The scenario itself, posed with these values — what the console holds on
+    # to so somebody can ask it their own questions.
+    def posing(**values) = @scenario.new(**values)
+
     private
 
     def named(name)
@@ -176,9 +180,9 @@ module Physics
     end
   end
 
-  # A page loads one shown file and shows what it declared.
-  def self.shown = @showing
-  def self.shows(scenario) = @showing = scenario
+  # A page loads one playground file and plays with what it declared.
+  def self.playground = @playground
+  def self.plays(playground) = @playground = playground
 
   module Sideways
     # The same surface asked a different question: everything it knows except
@@ -192,17 +196,17 @@ module Physics
   end
 
   class Scenario
-    def self.showing(&block)
-      showing_of.instance_eval(&block)
-      Physics.shows(self)
+    def self.played_with(&block)
+      playground.instance_eval(&block)
+      Physics.plays(playground)
       self
     end
 
-    def self.showing_of = @showing ||= Showing.new(self)
+    def self.playground = @playground ||= Playground.new(self)
   end
 end
 
 Physics::Scenario.include(Physics::Sideways)
 
-# A shown file opens by naming the laws it is about and nothing else.
-def showing(*laws, &how) = Physics::Scenario.including(*laws).showing(&how)
+# A playground file opens by naming the laws it is about and nothing else.
+def play_with(*laws, &how) = Physics::Scenario.including(*laws).played_with(&how)

@@ -1,12 +1,12 @@
 require "minitest/autorun"
-require_relative "../../lib/shown/light/refraction"
+require_relative "../../lib/playground/light/refraction"
 
 class PictureTest < Minitest::Test
   # Fresh each time: the placer remembers where labels settled, and a test
   # should not depend on what the test before it drew.
   def drawn(**changes)
-    showing = Physics.shown.showing_of
-    showing.picture(showing.opening.merge(**changes), settled: {})
+    playing = Physics.playground
+    playing.picture(playing.opening.merge(**changes), settled: {})
   end
 
   # A ray is counted by its arrowhead: the arcs marking angles are paths too.
@@ -88,9 +88,9 @@ class PictureTest < Minitest::Test
   end
 
   def test_a_label_pushed_aside_stays_put_rather_than_hunting
-    showing = Physics.shown.showing_of
+    playing = Physics.playground
     seen = (1..179).map do |half|
-      svg = showing.picture(showing.opening.merge(mu1: 1.5, mu2: 1.0, i: (half / 2.0).deg))
+      svg = playing.picture(playing.opening.merge(mu1: 1.5, mu2: 1.0, i: (half / 2.0).deg))
       svg.scan(%r{<text x="([-\d.]+)" y="([-\d.]+)"[^>]*>(critical[^<]*)</text>}).first&.first(2)
     end.compact.map { |x, y| [ x.to_f, y.to_f ] }
 
@@ -109,16 +109,16 @@ class PictureTest < Minitest::Test
   # thrown aside rather than left to follow them. The geometry is a mirror
   # image, so the throw has to be too.
   def test_two_shallow_rays_are_thrown_aside_equally
-    showing = Physics.shown.showing_of
-    placed = anchored(showing.picture(showing.opening.merge(i: 5.deg), settled: {}))
+    playing = Physics.playground
+    placed = anchored(playing.picture(playing.opening.merge(i: 5.deg), settled: {}))
 
     assert_in_delta NORMAL - placed.fetch("incident").first,
                     placed.fetch("reflected").first - NORMAL, 0.5
   end
 
   def test_and_far_enough_aside_to_be_read
-    showing = Physics.shown.showing_of
-    placed = anchored(showing.picture(showing.opening.merge(i: 5.deg), settled: {}))
+    playing = Physics.playground
+    placed = anchored(playing.picture(playing.opening.merge(i: 5.deg), settled: {}))
 
     assert_operator placed.fetch("reflected").first - placed.fetch("incident").first, :>, 24
   end
