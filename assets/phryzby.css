@@ -37,6 +37,7 @@ code{font-family:var(--mono);font-size:.92em;}
 .bar{display:flex;align-items:baseline;gap:.9rem;padding:.65rem 1rem;
   border-bottom:1px solid var(--rule);flex-wrap:wrap;}
 .bar .brand{font-weight:650;letter-spacing:-.01em;text-decoration:none;color:var(--ink);}
+.bar .brand img{width:1.15rem;height:1.15rem;vertical-align:-.25em;margin-right:.38rem;}
 .bar .where{font-family:var(--mono);font-size:.74rem;color:var(--ink-soft);}
 .bar .where strong{color:var(--ink);font-weight:600;}
 .bar .grow{flex:1 1 2rem;}
