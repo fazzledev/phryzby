@@ -83,6 +83,7 @@ module Light
       from, to = ends(turned, arriving_at, leaving_at)
       @shapes << extending(turned) if extended
       @shapes << arrow(*from, *to, drawn, share ? 0.32 + 0.68 * share : 0.95)
+      @shapes << sun(from) if arriving_at
       want(share ? "#{called} #{(share * 100).round}%" : called.to_s,
            beyond(from, to), colour: "var(--ray)")
 
@@ -209,6 +210,29 @@ module Light
       x, y = at(turned, sideways, downward, radius)
 
       [ x, y + (downward.negative? ? 0 : 7), "middle" ]
+    end
+
+    SUN = 4
+    SPOKES = 8
+    SPOKE_IN = 6
+    SPOKE_OUT = 9
+
+    # A ray comes from somewhere. At the tail of the one that arrives, which
+    # is also the end a reader can take hold of, so the picture says where the
+    # light starts and where the hand goes in the same mark.
+    def sun(at)
+      spokes = (0...SPOKES).map do |n|
+        turned = n * 2 * Math::PI / SPOKES
+        across, down = Math.cos(turned), Math.sin(turned)
+
+        %(<line x1="#{(at[0] + across * SPOKE_IN).round(2)}" ) +
+          %(y1="#{(at[1] + down * SPOKE_IN).round(2)}" ) +
+          %(x2="#{(at[0] + across * SPOKE_OUT).round(2)}" ) +
+          %(y2="#{(at[1] + down * SPOKE_OUT).round(2)}" stroke="var(--ray)" stroke-width="1.2"/>)
+      end
+
+      %(<circle cx="#{at[0].round(2)}" cy="#{at[1].round(2)}" r="#{SUN}" fill="var(--ray)"/>) +
+        spokes.join
     end
 
     PAST = 14
