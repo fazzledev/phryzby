@@ -87,7 +87,7 @@ module Light
       # thing ends rather than running through the middle of it.
       @shapes << arrow(*(arriving_at ? stepped(from, to, AWAY) : from), *to,
                        drawn, share ? 0.32 + 0.68 * share : 0.95)
-      @shapes << source(from, to) if arriving_at
+      @shapes << source(from) if arriving_at
       want(share ? "#{called} #{(share * 100).round}%" : called.to_s,
            beyond(from, to), colour: "var(--light)")
 
@@ -236,14 +236,12 @@ module Light
     #
     # The sun where the sun could be. A chapter that rises starts its ray
     # under the water, where the sun has no business being and something else
-    # does, swimming the way the light goes.
-    def source(at, towards)
+    # does. It swims level whatever the ray is doing, because a fish does.
+    def source(at)
       return sun(at) unless @rising
 
-      turned = Math.atan2(towards[1] - at[1], towards[0] - at[0]) * 180 / Math::PI
-
-      %(<g transform="translate(#{at[0].round(2)} #{at[1].round(2)}) ) +
-        %(rotate(#{turned.round(1)})" fill="var(--light)">#{FISH}</g>)
+      %(<g transform="translate(#{at[0].round(2)} #{at[1].round(2)})" ) +
+        %(fill="var(--light)">#{FISH}</g>)
     end
 
     def sun(at)
@@ -261,9 +259,14 @@ module Light
         spokes.join
     end
 
-    FISH = %(<path d="M -8 0 Q 1 -6.5 11 0 Q 1 6.5 -8 0 z"/>) +
-           %(<path d="M -7 0 L -15 -5.5 L -15 5.5 z"/>) +
-           %(<circle cx="6.5" cy="-1.6" r="1" fill="var(--paper)"/>)
+    # A curve rises half as far as the point that pulls it, so the body needs
+    # asking for twice what it should come to. The fins stand where the body
+    # actually is at that point along it, rather than beside it.
+    FISH = %(<path d="M -8 0 Q 2 -10 12 0 Q 2 10 -8 0 z"/>) +
+           %(<path d="M -7 0 L -14 -4 L -14 4 z"/>) +
+           %(<path d="M -1 -4.6 L 1 -10 L 6 -4.2 z"/>) +
+           %(<path d="M -1 4.6 L 0 8.6 L 4 4.8 z"/>) +
+           %(<circle cx="7" cy="-1.8" r="1" fill="var(--paper)"/>)
 
     PAST = 14
     ASIDE = 0.55
