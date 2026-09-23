@@ -15,6 +15,9 @@ INTERNAL = Physics.playground
 require_relative "../lib/playground/light/critical_angle"
 CRITICAL = Physics.playground
 
+require_relative "../lib/playground/light/into_air"
+INTO_AIR = Physics.playground
+
 require_relative "../lib/playground/light/relative_refractive_index"
 RATIOED = Physics.playground
 

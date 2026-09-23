@@ -1,8 +1,10 @@
 module Light
   # Labels are placed together rather than one at a time. Each says where it
   # would like to be and where it would settle for; the first spot that is
-  # inside the picture and clear of everything already placed wins, and if a
-  # label has no clear spot it takes its first choice rather than vanish.
+  # inside the picture and clear of everything already placed wins. A label
+  # with no clear spot crowds one it cannot avoid rather than hang off the
+  # edge, because each carries a little of the paper with it and stays legible
+  # over what it crosses, while nothing at all can be read past the frame.
   class Placing
     LETTER = 6.2
     ABOVE = 8
@@ -48,7 +50,8 @@ module Light
       held = @settled[want[:text]]
       return held if held && rest.include?(held) && free?(box(held, want[:text]))
 
-      rest.find { |place| free?(box(place, want[:text])) } || home
+      rest.find { |place| free?(box(place, want[:text])) } ||
+        [ home, *rest ].find { |place| inside?(box(place, want[:text])) } || home
     end
 
     def box((x, y, anchor), text)
