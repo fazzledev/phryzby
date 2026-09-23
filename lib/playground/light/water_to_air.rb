@@ -4,7 +4,7 @@ require_relative "../../light/picture"
 
 play_with Refraction do
   title "Refraction: Water to Air"
-  question "Does it bend the same way coming back out?"
+  question "Which way does it bend coming out of water?"
   description "It bends away from the normal instead, and far enough round there is no way across at all."
 
   input :i, default: 45.deg

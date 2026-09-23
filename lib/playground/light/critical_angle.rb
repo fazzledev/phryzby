@@ -5,7 +5,7 @@ require_relative "../../light/picture"
 
 play_with Reflection, Refraction do
   title "Critical Angle"
-  question "Where is the angle past which nothing gets across?"
+  question "At what angle does it stop getting out?"
   description "At 48.75°, for water and air, and no new law is needed to say so: it is Snell asked backwards, with the refracted ray lying flat along the surface."
 
   input :i, default: 30.deg

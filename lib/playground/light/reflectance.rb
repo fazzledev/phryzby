@@ -7,7 +7,7 @@ INDEX = 1.0..4.0
 
 play_with Reflection, RefractiveIndex, Reflectance do
   title "Reflectance"
-  question "Light crosses and light turns back. How much of each?"
+  question "How much of the light gets through?"
   description "It depends on the angle, and on polarisation: the two polarisations are reflected in quite different measure, and at one angle one of them is not reflected at all."
 
   input :i, default: 50.deg
