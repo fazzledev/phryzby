@@ -153,9 +153,10 @@ h1 small{font-weight:400;color:var(--ink-soft);font-size:.74em;letter-spacing:0;
 .head:first-child{margin-top:0;}
 svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-radius:8px;
   background:var(--wash);}
-/* A ray that can be swung says so under the hand. */
-svg[data-drags]{cursor:grab;touch-action:none;}
-svg[data-drags]:active{cursor:grabbing;}
+/* A ray that can be swung says so under the hand, and only where it is. */
+svg[data-drags]{touch-action:none;}
+svg .grab{cursor:grab;}
+svg[data-drags]:active .grab{cursor:grabbing;}
 /* A control and a reading are the same row: what the number is, the letter
    the law writes it as, the control, the reading. A reading has nothing to
    put in the third column, and that is the whole difference. */

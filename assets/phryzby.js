@@ -717,8 +717,10 @@ function mountDragging(frame) {
     return true;
   };
 
+  // Only the quarter the ray is in answers to the hand. Once it has hold, the
+  // pointer can go anywhere and the ray follows as far as it is allowed.
   frame.addEventListener("pointerdown", (event) => {
-    if (!event.target.closest("svg[data-drags]") || !swing(event)) return;
+    if (!event.target.classList.contains("grab") || !swing(event)) return;
 
     swinging = true;
     // A pointer the browser does not know about cannot be captured, which is

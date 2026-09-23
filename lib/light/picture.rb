@@ -144,7 +144,7 @@ module Light
       @settled = placing.settled
 
       %(<svg id="diagram" viewBox="0 0 #{WIDTH} #{HEIGHT}" aria-label="the picture"#{held}>) +
-        @shapes.join + drawn.join + "</svg>"
+        @shapes.join + drawn.join + reachable + "</svg>"
     end
 
     private
@@ -160,6 +160,16 @@ module Light
       return "" unless @dragged
 
       %( data-drags="#{@dragged}" data-into="#{into_first}")
+    end
+
+    # The quarter the incident ray lives in, and the only part of the picture
+    # worth taking hold of. Laid over the rest so the hand is told where the
+    # ray is before it presses, rather than after.
+    def reachable
+      return "" unless @dragged
+
+      %(<rect class="grab" x="0" y="#{first_half}" width="#{CENTRE[0]}" ) +
+        %(height="#{HEIGHT / 2}" fill="transparent"/>)
     end
 
     ARC = 30
