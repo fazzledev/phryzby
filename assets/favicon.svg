@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <title>phryzby — a ruby in the bowl of a p</title>
   <rect width="64" height="64" rx="14" fill="#131315"/>
-  <g transform="translate(0.28 -1.93) scale(0.9208)">
+  <g transform="translate(-3.41 -9) scale(1.1066)">
     <g transform="rotate(-25 32 26)">
     <path d="M25 26 A 37.9 37.9 0 0 1 12.95 53.72 A 66.5 66.5 0 0 0 19 26 z" fill="#FAFAF9"/>
     <path d="M27 26 A 39.9 39.9 0 0 1 17.67 51.65 A 30.7 30.7 0 0 0 31.5 26 z" fill="#888888"/>
