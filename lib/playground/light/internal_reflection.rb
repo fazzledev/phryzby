@@ -5,7 +5,7 @@ require_relative "../../light/picture"
 
 play_with Reflection, Refraction do
   title "Internal Reflection"
-  question "Where does the light go when it cannot get out?"
+  question "What happens to the light that is not refracted?"
   description "Back into the water. Some of the light turns back at every angle, and past the angle where the other one goes it is all that is left."
 
   input :i, default: 30.deg
