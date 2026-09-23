@@ -78,6 +78,8 @@ module Light
       drawn = share ? FULL * share : FULL
       return if drawn < 1e-9
 
+      @dragged ||= arriving_at if draggable?(arriving_at)
+
       from, to = ends(turned, arriving_at, leaving_at)
       @shapes << extending(turned) if extended
       @shapes << arrow(*from, *to, drawn, share ? 0.32 + 0.68 * share : 0.95)
@@ -141,11 +143,24 @@ module Light
       drawn = placing.resolve(@wanted)
       @settled = placing.settled
 
-      %(<svg id="diagram" viewBox="0 0 #{WIDTH} #{HEIGHT}" aria-label="the picture">) +
+      %(<svg id="diagram" viewBox="0 0 #{WIDTH} #{HEIGHT}" aria-label="the picture"#{held}>) +
         @shapes.join + drawn.join + "</svg>"
     end
 
     private
+
+    # A ray whose angle a control sets can be taken hold of and swung, and the
+    # control follows. One the chapter holds cannot: there is nothing for the
+    # dragging to move.
+    def draggable?(name)
+      name.is_a?(Symbol) && @scenario.class.playground.inputs.key?(name)
+    end
+
+    def held
+      return "" unless @dragged
+
+      %( data-drags="#{@dragged}" data-into="#{into_first}")
+    end
 
     ARC = 30
     ARC_STEPS = 14

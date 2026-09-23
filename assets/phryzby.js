@@ -674,6 +674,68 @@ function mountEditor(files, { tabs, pre, textarea, gutter },
   };
 }
 
+// A ray can be taken hold of and swung, and its control follows. The picture
+// says which control that is and which side of the surface the ray arrives
+// on; the angle is read off the normal, which is what the ray means anyway.
+//
+// The drawing does not exist until Ruby has drawn it, and is replaced on
+// every move after that, so the panel around it holds the pointer and the
+// drawing is looked up again each time.
+function mountDragging(frame) {
+  if (!frame) return;
+
+  let swinging = false;
+
+  const swing = (event) => {
+    const svg = frame.querySelector("svg[data-drags]");
+    if (!svg) return false;
+
+    const control = document.getElementById(svg.dataset.drags);
+    if (!control) return false;
+
+    const box = svg.getBoundingClientRect();
+    const x = ((event.clientX - box.left) / box.width) * 300;
+    const y = ((event.clientY - box.top) / box.height) * 200;
+
+    // Past the surface there is no angle of incidence to read, so the far
+    // side counts as edge on rather than as nothing at all.
+    const along = Math.max(0, Number(svg.dataset.into) * (y - 100));
+    const turned = Math.atan2(Math.abs(150 - x), along);
+
+    const step = Number(control.step) || 0.01;
+    const held = Math.min(Number(control.max),
+                          Math.max(Number(control.min), Math.round(turned / step) * step));
+
+    if (Number(control.value) === held) return true;
+
+    control.value = String(held);
+    control.dispatchEvent(new Event("input", { bubbles: true }));
+    return true;
+  };
+
+  frame.addEventListener("pointerdown", (event) => {
+    if (!event.target.closest("svg[data-drags]") || !swing(event)) return;
+
+    swinging = true;
+    // A pointer the browser does not know about cannot be captured, which is
+    // how a test drives this; the drag still works, it just is not exclusive.
+    try { frame.setPointerCapture(event.pointerId); } catch { /* never mind */ }
+    event.preventDefault();
+  });
+
+  frame.addEventListener("pointermove", (event) => { if (swinging) swing(event); });
+
+  const let_go = (event) => {
+    if (!swinging) return;
+
+    swinging = false;
+    try { frame.releasePointerCapture(event.pointerId); } catch { /* never mind */ }
+  };
+
+  frame.addEventListener("pointerup", let_go);
+  frame.addEventListener("pointercancel", let_go);
+}
+
 // --- the page --------------------------------------------------------------
 
 async function fetchRuby(files) {
@@ -963,6 +1025,8 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
       control.value = notch.dataset.set;
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
+
+    mountDragging($("demo"));
   }
 
   const evaluate = () => {
