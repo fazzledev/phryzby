@@ -4,5 +4,5 @@
   <rect x="17" y="22" width="8" height="32" rx="4" fill="#FAFAF9"/>
   <circle cx="32" cy="26" r="15" fill="#FAFAF9"/>
   <circle cx="32" cy="26" r="7" fill="#131315"/>
-  <path d="M32.00 36.26 L23.30 22.39 L24.94 19.44 L39.06 19.44 L40.70 22.39 z" fill="#E4162B"/>
+  <path d="M32.00 35.94 L23.42 23.32 L24.94 20.44 L39.06 20.44 L40.58 23.32 z" fill="#E4162B"/>
 </svg>
