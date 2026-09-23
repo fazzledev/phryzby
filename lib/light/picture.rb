@@ -89,8 +89,11 @@ module Light
       @shapes << arrow(*(arriving_at ? stepped(from, to, AWAY) : from), *to,
                        drawn, share ? 0.32 + 0.68 * share : 0.95)
       @shapes << source(from) if arriving_at
+      # A ray never has its own name written across its own source, and the
+      # spots it asks for are otherwise the same as any other ray's, so two
+      # rays pointing alike are still thrown aside alike.
       want(share ? "#{called} #{(share * 100).round}%" : called.to_s,
-           beyond(from, to), colour: "var(--light)")
+           beyond(from, to), colour: "var(--light)", clear: arriving_at && @standing)
 
       swept(turned, arriving_at, crossing_at) if angle
     end
@@ -105,16 +108,19 @@ module Light
               (CENTRE[1] + into_first * Math.cos(turned) * REACH * 1.2).round(2) ]
       @shapes << carried(CENTRE, tip, "var(--red)", "4 3")
 
+      # It runs out on the arriving side, the same side the ray comes in on,
+      # so it keeps off what is standing there as the ray does.
       want("#{text} #{format("%.2f°", turned.in_degrees)}",
-           beyond(tip, CENTRE) + alongside(tip, CENTRE), colour: "var(--red)")
+           alongside(tip, CENTRE) + beyond(tip, CENTRE),
+           colour: "var(--red)", clear: @standing)
     end
 
-    # Past the tip is where it would rather be read, but a line can be read
-    # anywhere along itself, and a steep one has nothing but a corner out
-    # there. So it works back down towards the surface, either side.
+    # A line can be read anywhere along itself, and the far end of one is
+    # where the light comes from and where a steep mark has nothing but a
+    # corner. So it starts near the surface and works outward, either side.
     def alongside(from, to)
-      (0..4).flat_map do |n|
-        part = 0.9 - n * 0.17
+      (0..7).flat_map do |n|
+        part = 0.22 + n * 0.1
         x = to[0] + (from[0] - to[0]) * part
         y = to[1] + (from[1] - to[1]) * part
 
@@ -244,6 +250,7 @@ module Light
       return sun(at) unless @rising
       return flaw(at) unless wet?
 
+      standing(at, [ -15, -10, 12, 10 ])
       %(<g transform="translate(#{at[0].round(2)} #{at[1].round(2)})" ) +
         %(fill="var(--light)">#{FISH}</g>)
     end
@@ -254,11 +261,13 @@ module Light
     # always a flaw, and catching the light is how a flaw comes to be seen at
     # all.
     def flaw(at)
+      standing(at, [ -6, -6, 6, 6 ])
       %(<g transform="translate(#{at[0].round(2)} #{at[1].round(2)})" fill="var(--light)">) +
         %(<path d="M -5.5 -1.5 L -1.5 -6 L 3.5 -4.5 L 6 0.5 L 2 5.5 L -3.5 3.5 z"/></g>)
     end
 
     def sun(at)
+      standing(at, [ -SPOKE_OUT, -SPOKE_OUT, SPOKE_OUT, SPOKE_OUT ])
       spokes = (0...SPOKES).map do |n|
         turned = n * 2 * Math::PI / SPOKES
         across, down = Math.cos(turned), Math.sin(turned)
@@ -282,13 +291,19 @@ module Light
            %(<path d="M -1 4.6 L 0 8.6 L 4 4.8 z"/>) +
            %(<circle cx="7" cy="-1.8" r="1" fill="var(--paper)"/>)
 
+    # Where the last source drawn stands, for the ray coming out of it to
+    # keep its name off.
+    def standing(at, (left, top, right, bottom))
+      @standing = [ at[0] + left, at[1] + top, at[0] + right, at[1] + bottom ]
+    end
+
     PAST = 14
     ASIDE = 0.55
 
     # Fixed things name themselves once and are never pushed aside; only what
     # moves carries its label about.
-    def want(text, spots, colour: "var(--ink-soft)", fixed: false)
-      @wanted << { text: text, spots: spots, colour: colour, fixed: fixed }
+    def want(text, spots, colour: "var(--ink-soft)", fixed: false, clear: nil)
+      @wanted << { text: text, spots: spots, colour: colour, fixed: fixed, clear: clear }
     end
 
     # It can be read anywhere along the line it names, so it asks for the far

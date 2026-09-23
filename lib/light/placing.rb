@@ -45,13 +45,36 @@ module Light
     # rather than hunting, and comes back the moment it can.
     def choose(want)
       home, *rest = want[:spots]
-      return home if free?(box(home, want[:text]))
+      return home if room?(want, home)
 
       held = @settled[want[:text]]
-      return held if held && rest.include?(held) && free?(box(held, want[:text]))
+      return held if held && rest.include?(held) && room?(want, held)
 
-      rest.find { |place| free?(box(place, want[:text])) } ||
-        [ home, *rest ].find { |place| inside?(box(place, want[:text])) } || home
+      # Somewhere new, and the nearest somewhere to where it was: a label
+      # whose place is taken should step aside, not set off across the
+      # picture. Failing everything, it crowds rather than hangs off the edge.
+      free = rest.select { |place| room?(want, place) }
+      return nearest(free, held) unless free.empty?
+
+      [ home, *rest ].find { |place| room?(want, place, crowding: true) } || home
+    end
+
+    def nearest(free, held) = held ? free.min_by { |place| apart(place, held) } : free.first
+
+    def apart((x, y, _), (was, then_was, _)) = Math.hypot(x - was, y - then_was)
+
+    # Some labels have something of their own to keep off — a ray has the
+    # thing it comes out of. Nobody else is asked to avoid it: it moves with
+    # the ray, and a label made to dodge something that moves does nothing but
+    # hunt.
+    # Some labels have something of their own to keep off as well — a ray has
+    # the thing it comes out of, which it must clear even when it has nowhere
+    # tidy left to go.
+    def room?(want, place, crowding: false)
+      spot = box(place, want[:text])
+      clear = !(want[:clear] && overlaps?(want[:clear], spot))
+
+      clear && (crowding ? inside?(spot) : free?(spot))
     end
 
     def box((x, y, anchor), text)
