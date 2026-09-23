@@ -4,7 +4,7 @@ require_relative "../../light/picture"
 
 play_with Refraction do
   title "Refraction: Air to Water"
-  question "Where does a ray go at a surface it can pass through?"
+  question "Where does a ray go when it hits water?"
   description "It goes through, and bends toward the normal doing so. The two angles are neither equal nor proportional; what they hold to is a ratio of their sines."
 
   input :i, default: 60.deg
