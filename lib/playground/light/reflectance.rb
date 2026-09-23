@@ -7,7 +7,8 @@ INDEX = 1.0..4.0
 
 play_with Reflection, RefractiveIndex, Reflectance do
   title "Reflectance"
-  description "At any boundary some light turns back and the rest crosses. How much of each depends on the angle, and on polarisation."
+  question "Light crosses and light turns back. How much of each?"
+  description "It depends on the angle, and on polarisation: the two polarisations are reflected in quite different measure, and at one angle one of them is not reflected at all."
 
   input :i, default: 50.deg
   input :mu1, INDEX, default: 1.0, marks: REFRACTIVE_MEDIA

@@ -6,7 +6,8 @@ RATIO = 0.25..4.0
 
 play_with Reflection, Refraction do
   title "Relative Refractive Index"
-  description "The crossing held for four chapters was one number all along, and here it is on a slider. Nothing in the law says which two media make it, only what the two of them come to together."
+  question "What have those angles in common?"
+  description "One number each, and the law knows nothing else about the pair: not which two media make it, only what the two of them come to together."
 
   input :mu21, RATIO, default: 0.75, marks: { "critical" => 0.5, "alike" => 1.0 }
 

@@ -7,7 +7,8 @@ INDEX = 1.0..4.0
 
 play_with Reflection, RefractiveIndex do
   title "Refractive Index"
-  description "The same crossing, with the number behind it taken apart. What each medium does to light is one number, and only the ratio of the two ever shows."
+  question "Where does that one number come from?"
+  description "From one number each. What a medium does to light is its own, and only the ratio of the two ever shows."
 
   input :mu1, INDEX, default: 1.33, marks: REFRACTIVE_MEDIA
   input :mu2, INDEX, default: 1.0, marks: REFRACTIVE_MEDIA

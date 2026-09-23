@@ -5,7 +5,8 @@ require_relative "../../light/picture"
 
 play_with Reflection, Refraction do
   title "Into Air"
-  description "The angle the chapter before it named was water's. Every medium has one of its own, and the denser the medium the sooner it stops letting light out."
+  question "Is that angle water's, or does every medium have one?"
+  description "Every medium has one of its own, and the denser the medium the sooner it stops letting light out."
 
   input :from, REFRACTIVE_MEDIA, default: "water"
 

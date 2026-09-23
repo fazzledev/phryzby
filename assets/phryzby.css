@@ -145,6 +145,9 @@ code{font-family:var(--mono);font-size:.92em;}
 h1{font-size:1.12rem;margin:0 0 .5rem;letter-spacing:-.01em;}
 h1 small{font-weight:400;color:var(--ink-soft);font-size:.74em;letter-spacing:0;}
 .lede{color:var(--ink-mid);margin:0 0 1rem;font-size:.85rem;}
+/* The question the chapter before this one left hanging. It is asked first
+   and in the chapter's own voice, so the lede under it reads as the answer. */
+.asked{color:var(--ink);margin:0 0 .5rem;font-size:.95rem;font-style:italic;}
 .head{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);
   margin:1.4rem 0 .6rem;font-weight:600;}
 .head:first-child{margin-top:0;}

@@ -4,7 +4,8 @@ require_relative "../../light/picture"
 
 play_with Refraction do
   title "Any Two Media"
-  description "Any two media, not the one pair. What bends the ray is the two of them together, and which way follows from which is the denser."
+  question "Then what do any two media do to a ray?"
+  description "They bend it, and which way follows from which of them is the denser."
 
   input :from, REFRACTIVE_MEDIA
   input :into, REFRACTIVE_MEDIA, default: "glass"

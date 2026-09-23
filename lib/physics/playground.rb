@@ -24,10 +24,16 @@ module Physics
     def title(text) = @title = text
     def description(text) = @description = text
 
+    # What the chapter is for. The one before it should have left the reader
+    # holding this, and the one after it is whatever this answer leaves
+    # hanging in turn.
+    def question(text) = @question = text
+
     # What the chapter is called and what it is about. It names the whole page,
     # so it belongs to none of the three things the page is made of.
     def heading
       [ "<h1>#{@title}</h1>",
+        @question ? "<p class=\"asked\">#{@question}</p>" : "",
         @description ? "<p class=\"lede\">#{@description}</p>" : "" ].join
     end
 

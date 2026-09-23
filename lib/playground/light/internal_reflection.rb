@@ -5,7 +5,8 @@ require_relative "../../light/picture"
 
 play_with Reflection, Refraction do
   title "Internal Reflection"
-  description "The same crossing, with the ray that does not cross. Some of the light turns back into the water at every angle, and past the angle where the other one goes it is all that is left."
+  question "If it cannot get across, where does it go?"
+  description "Back into the water. Some of the light turns back at every angle, and past the angle where the other one goes it is all that is left."
 
   input :i, default: 30.deg
   input(:mu21) { REFRACTIVE_MEDIA.fetch("air") / REFRACTIVE_MEDIA.fetch("water") }

@@ -4,7 +4,8 @@ require_relative "../../light/picture"
 
 play_with Refraction do
   title "Refraction: Water to Air"
-  description "The same crossing taken the other way. It bends away from the normal now, and far enough round there is no way across at all."
+  question "And the same crossing taken the other way?"
+  description "It bends away from the normal instead, and far enough round there is no way across at all."
 
   input :i, default: 45.deg
   input(:mu21) { REFRACTIVE_MEDIA.fetch("air") / REFRACTIVE_MEDIA.fetch("water") }

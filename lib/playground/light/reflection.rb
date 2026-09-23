@@ -3,7 +3,8 @@ require_relative "../../light/picture"
 
 play_with Reflection do
   title "Reflection"
-  description "A ray striking a mirror leaves at the same angle it arrived at, on the other side of the normal."
+  question "If nothing determines the angle a ray arrives at, what determines the one it leaves at?"
+  description "The arriving angle does. Off a mirror a ray leaves at exactly the angle it came in at, on the other side of the normal, and all of it leaves."
 
   input :i, default: 30.deg
 
