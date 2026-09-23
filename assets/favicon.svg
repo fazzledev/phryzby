@@ -5,6 +5,8 @@
     <g transform="rotate(-25 32 26)">
     <path d="M25 26 A 37.9 37.9 0 0 1 12.95 53.72 A 66.5 66.5 0 0 0 19 26 z" fill="#FAFAF9"/>
     <path d="M27 26 A 39.9 39.9 0 0 1 17.67 51.65 A 30.7 30.7 0 0 0 31.5 26 z" fill="#888888"/>
+    <path d="M33.5 26 A 32.7 32.7 0 0 1 26.57 46.13 A 23.4 23.4 0 0 0 38.0 26 z" fill="#555555"/>
+    <path d="M38.8 26 A 30.0 30.0 0 0 1 14.88 55.38 A 29.4 29.4 0 0 0 43.3 26 z" fill="#383838"/>
     <g transform="translate(0 26) scale(1 0.68) translate(0 -26)">
       <circle cx="32" cy="28" r="14.4" fill="#9A9A9A" stroke="#131315" stroke-width="1.2"/>
       <circle cx="32" cy="26" r="14.4" fill="#FAFAF9" stroke="#131315" stroke-width="1.2"/>
