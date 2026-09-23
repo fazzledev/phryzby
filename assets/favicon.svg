@@ -3,6 +3,6 @@
   <rect width="64" height="64" rx="14" fill="#131315"/>
   <rect x="17" y="22" width="8" height="32" rx="4" fill="#FAFAF9"/>
   <circle cx="32" cy="26" r="15" fill="#FAFAF9"/>
-  <circle cx="32" cy="26" r="10" fill="#131315"/>
-  <path d="M32 16.5 L41.5 26 L32 35.5 L22.5 26 z" fill="#E4162B"/>
+  <circle cx="32" cy="26" r="7" fill="#131315"/>
+  <path d="M32 19.4 L38.6 26 L32 32.6 L25.4 26 z" fill="#E4162B"/>
 </svg>
