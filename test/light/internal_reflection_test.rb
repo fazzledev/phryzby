@@ -9,7 +9,7 @@ class InternalReflectionTest < Minitest::Test
   end
 
   def drawn(**changes) = playing.picture(playing.opening.merge(**changes), settled: {})
-  def rays(svg) = svg.scan(/<path[^>]*z"/).size
+  def rays(svg) = svg.scan(/<path class="head"/).size
 
   # It opens where the chapter before it ended: past the angle, with nothing
   # getting out and the surface behaving as the mirror of 1.2 did.

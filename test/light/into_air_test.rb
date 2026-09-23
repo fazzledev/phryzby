@@ -9,7 +9,7 @@ class IntoAirTest < Minitest::Test
 
   def says(**changes) = playing.readouts(opening.merge(**changes)).scan(READING).to_h
   def drawn(**changes) = playing.picture(opening.merge(**changes), settled: {})
-  def rays(svg) = svg.scan(/<path[^>]*z"/).size
+  def rays(svg) = svg.scan(/<path class="head"/).size
 
   AIR = 0
   WATER = 1

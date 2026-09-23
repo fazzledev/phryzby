@@ -82,8 +82,12 @@ module Light
 
       from, to = ends(turned, arriving_at, leaving_at)
       @shapes << extending(turned) if extended
-      @shapes << arrow(*from, *to, drawn, share ? 0.32 + 0.68 * share : 0.95)
-      @shapes << source(from) if arriving_at
+
+      # A ray that arrives comes out of something, so it starts where that
+      # thing ends rather than running through the middle of it.
+      @shapes << arrow(*(arriving_at ? stepped(from, to, AWAY) : from), *to,
+                       drawn, share ? 0.32 + 0.68 * share : 0.95)
+      @shapes << source(from, to) if arriving_at
       want(share ? "#{called} #{(share * 100).round}%" : called.to_s,
            beyond(from, to), colour: "var(--light)")
 
@@ -212,6 +216,15 @@ module Light
       [ x, y + (downward.negative? ? 0 : 7), "middle" ]
     end
 
+    AWAY = 12
+
+    def stepped(from, to, by)
+      span = Math.hypot(to[0] - from[0], to[1] - from[1])
+
+      [ from[0] + ((to[0] - from[0]) / span * by).round(2),
+        from[1] + ((to[1] - from[1]) / span * by).round(2) ]
+    end
+
     SUN = 4
     SPOKES = 8
     SPOKE_IN = 6
@@ -221,15 +234,20 @@ module Light
     # is also the end a reader can take hold of, so the picture says where the
     # light starts and where the hand goes in the same mark.
     #
-    # It is drawn as the sun only where the sun could be. A chapter that rises
-    # starts its ray inside the water, and the sun has no gills.
-    def source(at)
-      %(<circle cx="#{at[0].round(2)}" cy="#{at[1].round(2)}" r="#{SUN}" fill="var(--light)"/>) +
-        (@rising ? "" : spokes(at))
+    # The sun where the sun could be. A chapter that rises starts its ray
+    # under the water, where the sun has no business being and something else
+    # does, swimming the way the light goes.
+    def source(at, towards)
+      return sun(at) unless @rising
+
+      turned = Math.atan2(towards[1] - at[1], towards[0] - at[0]) * 180 / Math::PI
+
+      %(<g transform="translate(#{at[0].round(2)} #{at[1].round(2)}) ) +
+        %(rotate(#{turned.round(1)})" fill="var(--light)">#{FISH}</g>)
     end
 
-    def spokes(at)
-      (0...SPOKES).map do |n|
+    def sun(at)
+      spokes = (0...SPOKES).map do |n|
         turned = n * 2 * Math::PI / SPOKES
         across, down = Math.cos(turned), Math.sin(turned)
 
@@ -237,8 +255,15 @@ module Light
           %(y1="#{(at[1] + down * SPOKE_IN).round(2)}" ) +
           %(x2="#{(at[0] + across * SPOKE_OUT).round(2)}" ) +
           %(y2="#{(at[1] + down * SPOKE_OUT).round(2)}" stroke="var(--light)" stroke-width="1.2"/>)
-      end.join
+      end
+
+      %(<circle cx="#{at[0].round(2)}" cy="#{at[1].round(2)}" r="#{SUN}" fill="var(--light)"/>) +
+        spokes.join
     end
+
+    FISH = %(<path d="M -8 0 Q 1 -6.5 11 0 Q 1 6.5 -8 0 z"/>) +
+           %(<path d="M -7 0 L -15 -5.5 L -15 5.5 z"/>) +
+           %(<circle cx="6.5" cy="-1.6" r="1" fill="var(--paper)"/>)
 
     PAST = 14
     ASIDE = 0.55
@@ -357,7 +382,7 @@ module Light
 
       %(<line x1="#{x1}" y1="#{y1}" x2="#{bx}" y2="#{by}" stroke="var(--light)" ) +
         %(stroke-width="#{width}" stroke-opacity="#{opacity}"/>) +
-        %(<path d="M #{x2} #{y2} L #{bx - uy * half} #{by + ux * half} ) +
+        %(<path class="head" d="M #{x2} #{y2} L #{bx - uy * half} #{by + ux * half} ) +
         %(L #{bx + uy * half} #{by - ux * half} z" fill="var(--light)" fill-opacity="#{opacity}"/>)
     end
 

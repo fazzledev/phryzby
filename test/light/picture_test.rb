@@ -9,8 +9,9 @@ class PictureTest < Minitest::Test
     playing.picture(playing.opening.merge(**changes), settled: {})
   end
 
-  # A ray is counted by its arrowhead: the arcs marking angles are paths too.
-  def rays(svg) = svg.scan(/<path[^>]*z"/).size
+  # A ray is counted by its arrowhead, which says so: the arcs marking angles
+  # are paths too, and so is anything swimming about in the water.
+  def rays(svg) = svg.scan(/<path class="head"/).size
 
   def arcs(svg) = svg.scan(/<path[^>]*fill="none"/).size
 
