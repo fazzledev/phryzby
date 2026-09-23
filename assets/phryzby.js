@@ -697,10 +697,14 @@ function mountDragging(frame) {
     const x = ((event.clientX - box.left) / box.width) * 300;
     const y = ((event.clientY - box.top) / box.height) * 200;
 
-    // Past the surface there is no angle of incidence to read, so the far
-    // side counts as edge on rather than as nothing at all.
+    // The incident ray arrives on one side of the normal, and the angle it
+    // makes is a magnitude, so crossing over would swing it back up rather
+    // than down through nothing. Both ways out of the quarter it lives in
+    // stop where they leave it: past the normal is square on, past the
+    // surface is edge on.
+    const across = Math.max(0, 150 - x);
     const along = Math.max(0, Number(svg.dataset.into) * (y - 100));
-    const turned = Math.atan2(Math.abs(150 - x), along);
+    const turned = Math.atan2(across, along);
 
     const step = Number(control.step) || 0.01;
     const held = Math.min(Number(control.max),
