@@ -85,7 +85,22 @@ module Light
               (CENTRE[1] - Math.cos(turned) * REACH * 1.2).round(2) ]
       @shapes << carried(CENTRE, tip, "var(--red)", "4 3")
 
-      want("#{text} #{format("%.2f°", turned.in_degrees)}", beyond(tip, CENTRE), colour: "var(--red)")
+      want("#{text} #{format("%.2f°", turned.in_degrees)}",
+           beyond(tip, CENTRE) + alongside(tip, CENTRE), colour: "var(--red)")
+    end
+
+    # Past the tip is where it would rather be read, but a line can be read
+    # anywhere along itself, and a steep one has nothing but a corner out
+    # there. So it works back down towards the surface, either side.
+    def alongside(from, to)
+      (0..4).flat_map do |n|
+        part = 0.9 - n * 0.17
+        x = to[0] + (from[0] - to[0]) * part
+        y = to[1] + (from[1] - to[1]) * part
+
+        [ [ (x - 5).round(2), (y + 4).round(2), "end" ],
+          [ (x + 5).round(2), (y + 4).round(2), "start" ] ]
+      end
     end
 
     # The ray carried on past the boundary, where it would have gone had it
