@@ -7,7 +7,7 @@ INDEX = 1.0..4.0
 
 play_with Reflection, TotalInternalReflection do
   title "Total Internal Reflection"
-  question "And past the angle where nothing gets across?"
+  question "What is left past the angle where nothing gets across?"
   description "All of it turns back. Not most of it: the share is exactly one, and it is one because there is nowhere else for the light to go."
 
   input :i, default: 50.deg
