@@ -6,9 +6,9 @@ require_relative "../../light/picture"
 play_with Reflection, Refraction do
   title "Internal Reflection"
   question "What happens to the light that is not refracted?"
-  description "Back into the water. Some of the light turns back at every angle, and past the angle where the other one goes it is all that is left."
+  description "It turns back into the water, and past this angle that is all of the light: the surface is a mirror. Slide down and the other ray returns, because some of it turns back at every angle."
 
-  input :i, default: 30.deg
+  input :i, default: 60.deg
   input(:mu21) { REFRACTIVE_MEDIA.fetch("air") / REFRACTIVE_MEDIA.fetch("water") }
 
   output :rl

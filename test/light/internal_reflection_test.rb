@@ -11,29 +11,34 @@ class InternalReflectionTest < Minitest::Test
   def drawn(**changes) = playing.picture(playing.opening.merge(**changes), settled: {})
   def rays(svg) = svg.scan(/<path[^>]*z"/).size
 
-  def test_one_ray_arrives_and_two_leave
-    assert_equal 3, rays(drawn)
+  # It opens where the chapter before it ended: past the angle, with nothing
+  # getting out and the surface behaving as the mirror of 1.2 did.
+  def test_it_opens_on_the_ray_that_is_all_that_is_left
+    assert_equal 2, rays(drawn)
+    assert_includes drawn, "all of it turns back"
+    assert_includes reads, "angle of reflection  rl  60.00°"
+    assert_includes reads, "angle of refraction  rr  —"
   end
 
-  # The same water and air as the chapter before it, answered by both laws.
-  def test_it_crosses_the_way_the_chapter_before_said_it_would
-    assert_includes reads, "41.68°"
+  # Slide back down and the crossing one is there again beside it, because
+  # some of the light turns back at every angle and not only past this one.
+  def test_and_below_it_one_ray_arrives_and_two_leave
+    assert_equal 3, rays(drawn(i: 30.deg))
+    assert_includes reads(i: 30.deg), "41.68°"
     assert_includes reads(i: 10.deg), "13.35°"
   end
 
-  def test_and_the_one_that_turns_back_leaves_at_the_angle_it_arrived_at
-    assert_in_delta 30.0, playing.posing(**playing.opening).solve(:rl).in_degrees, 1e-9
-    assert_in_delta 70.0, playing.posing(**playing.opening.merge(i: 70.deg)).solve(:rl).in_degrees, 1e-9
+  def test_the_one_that_turns_back_leaves_at_the_angle_it_arrived_at
+    [ 10, 30, 60, 80 ].each do |degrees|
+      here = playing.posing(**playing.opening.merge(i: degrees.deg))
+
+      assert_in_delta degrees, here.solve(:rl).in_degrees, 1e-9
+    end
   end
 
-  # Past the angle the crossing ray is gone and this one is not, which is the
-  # whole of what the chapter says.
-  def test_past_the_angle_it_is_the_only_one_left
-    trapped = drawn(i: 48.8.deg)
-
-    assert_equal 2, rays(trapped)
-    assert_includes trapped, "all of it turns back"
-    assert_includes reads(i: 48.8.deg), "angle of reflection  rl  48.80°"
-    assert_includes reads(i: 48.8.deg), "angle of refraction  rr  —"
+  # The angle it turns on is water's, named two chapters ago.
+  def test_the_turn_is_at_the_angle_the_book_named
+    assert_equal 3, rays(drawn(i: 48.7.deg))
+    assert_equal 2, rays(drawn(i: 48.8.deg))
   end
 end
