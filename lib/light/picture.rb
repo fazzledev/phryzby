@@ -11,23 +11,35 @@ module Light
     HEAD = 7
     FULL = 3
 
-    def initialize(scenario, chosen = {})
+    def initialize(scenario, chosen = {}, rising: false)
       @scenario = scenario
       @chosen = chosen
+      @rising = rising
       @shapes = []
       @wanted = []
     end
 
+    # Light crossing downwards is the ordinary way to draw it, and the wrong
+    # way round when the first medium is water: a pond is under the air, not
+    # over it. A rising chapter puts its first medium at the bottom and sends
+    # the ray up out of it, and everything that knows which way is into the
+    # first medium asks here.
+    def into_first = @rising ? 1 : -1
+    def first_half = @rising ? 100 : 0
+    def second_half = @rising ? 0 : 100
+    def band_y(half) = half.zero? ? 94 : 114
+
     def media(first, second)
-      @shapes.unshift(ground(shade(value(first)), 0), ground(shade(value(second))), rule, upright)
-      want(named_band(first), [ [ 294, 94, "end" ] ], fixed: true)
-      want(named_band(second), [ [ 294, 114, "end" ] ], fixed: true)
+      @shapes.unshift(ground(shade(value(first)), first_half),
+                      ground(shade(value(second)), second_half), rule, upright)
+      want(named_band(first), [ [ 294, band_y(first_half), "end" ] ], fixed: true)
+      want(named_band(second), [ [ 294, band_y(second_half), "end" ] ], fixed: true)
       name_the_upright
     end
 
     def surface(called: "surface", across: nil)
       @shapes.unshift(*banded(across && value(across)), rule, upright)
-      want(called, [ [ 294, 114, "end" ] ], fixed: true)
+      want(called, [ [ 294, band_y(second_half), "end" ] ], fixed: true)
       name_the_upright
     end
 
@@ -36,10 +48,10 @@ module Light
     # the denser, by as much as it says: 1.33 of the other one looks the way
     # water looks against air, because it is the same number.
     def banded(turn)
-      return [ ground(0.55) ] if turn.nil?
+      return [ ground(0.55, second_half) ] if turn.nil?
       return [] if (turn - 1).abs < 1e-9
 
-      turn > 1 ? [ ground(shade(turn)) ] : [ ground(shade(1 / turn), 0) ]
+      turn > 1 ? [ ground(shade(turn), second_half) ] : [ ground(shade(1 / turn), first_half) ]
     end
 
     HATCH = 9
@@ -82,7 +94,7 @@ module Light
       return if turned.nil?
 
       tip = [ (CENTRE[0] - Math.sin(turned) * REACH * 1.2).round(2),
-              (CENTRE[1] - Math.cos(turned) * REACH * 1.2).round(2) ]
+              (CENTRE[1] + into_first * Math.cos(turned) * REACH * 1.2).round(2) ]
       @shapes << carried(CENTRE, tip, "var(--red)", "4 3")
 
       want("#{text} #{format("%.2f°", turned.in_degrees)}",
@@ -108,7 +120,7 @@ module Light
     # of what bending is.
     def extending(turned)
       on = [ (CENTRE[0] + Math.sin(turned) * REACH).round(2),
-             (CENTRE[1] + Math.cos(turned) * REACH).round(2) ]
+             (CENTRE[1] - into_first * Math.cos(turned) * REACH).round(2) ]
 
       carried(CENTRE, on, "var(--ray)", "3 5")
     end
@@ -117,8 +129,9 @@ module Light
       held = binding.local_variable_get(:when)
       return if held && !value(held)
 
-      want(text, [ [ CENTRE[0], 162, "middle" ], [ CENTRE[0], 150, "middle" ],
-                   [ CENTRE[0], 176, "middle" ] ], colour: "var(--red)")
+      lines = @rising ? [ 38, 50, 24 ] : [ 162, 150, 176 ]
+
+      want(text, lines.map { |y| [ CENTRE[0], y, "middle" ] }, colour: "var(--red)")
     end
 
     attr_reader :settled
@@ -136,12 +149,13 @@ module Light
 
     ARC = 30
     ARC_STEPS = 14
+    ASTRIDE = 28
 
     # The angle a ray makes with the normal, drawn where it is made: an arc
     # from the normal round to the ray, on the ray's own side of it.
     def swept(turned, arriving, crossing)
       sideways = arriving ? -1 : 1
-      downward = crossing ? 1 : -1
+      downward = crossing ? -into_first : into_first
 
       drawn = (0..ARC_STEPS).map do |n|
         at(turned * n / ARC_STEPS, sideways, downward, ARC).map { |one| one.round(2) }.join(" ")
@@ -150,8 +164,15 @@ module Light
       @shapes << %(<path d="M #{drawn.join(" L ")}" fill="none" stroke="var(--ink-soft)" ) +
                  %(stroke-width="1" stroke-opacity="0.65"/>)
 
+      # Out along the bisector first, and further out after that; and if the
+      # whole of that line is spoken for, which it is when a narrow angle
+      # crowds everything into one place, off to either side of it.
       want(format("%.1f°", turned.in_degrees),
-           [ 12, 22, 32 ].map { |out| told(turned / 2, sideways, downward, ARC + out) })
+           [ 12, 22, 32, 44 ].flat_map do |out|
+             x, y, = told(turned / 2, sideways, downward, ARC + out)
+
+             [ [ x, y, "middle" ], [ x + ASTRIDE, y, "middle" ], [ x - ASTRIDE, y, "middle" ] ]
+           end)
     end
 
     def at(turned, sideways, downward, radius)
@@ -260,12 +281,15 @@ module Light
     def symbol(name) = Physics.symbol(@scenario.class.playground.written_for(name))
 
     def ends(turned, arriving, leaving)
+      across = Math.sin(turned) * REACH
+      along = into_first * Math.cos(turned) * REACH
+
       point = if arriving
-                [ CENTRE[0] - Math.sin(turned) * REACH, CENTRE[1] - Math.cos(turned) * REACH ]
+                [ CENTRE[0] - across, CENTRE[1] + along ]
               elsif leaving
-                [ CENTRE[0] + Math.sin(turned) * REACH, CENTRE[1] - Math.cos(turned) * REACH ]
+                [ CENTRE[0] + across, CENTRE[1] + along ]
               else
-                [ CENTRE[0] + Math.sin(turned) * REACH, CENTRE[1] + Math.cos(turned) * REACH ]
+                [ CENTRE[0] + across, CENTRE[1] - along ]
               end
 
       arriving ? [ point, CENTRE ] : [ CENTRE, point ]

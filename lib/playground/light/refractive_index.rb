@@ -20,7 +20,7 @@ play_with Reflection, RefractiveIndex do
   output :rr
   output :no_refracted_ray, alarm: true
 
-  draw Light::Picture do
+  draw Light::Picture, rising: true do
     media :mu1, :mu2
     ray "incident",  arriving_at: :i, angle: true
     ray "reflected", leaving_at:  :rl

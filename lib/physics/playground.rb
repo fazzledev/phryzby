@@ -44,8 +44,9 @@ module Physics
 
     # The engine draws nothing itself; a subject brings its own way of
     # picturing, and this only holds on to it.
-    def draw(canvas, &block)
+    def draw(canvas, **how, &block)
       @canvas = canvas
+      @drawn = how
       @picture = block
     end
 
@@ -54,7 +55,7 @@ module Physics
     def picture(values, settled: (@settled ||= {}))
       return "" unless @picture
 
-      drawing = @canvas.new(posing(**values), worths(values))
+      drawing = @canvas.new(posing(**values), worths(values), **@drawn)
       drawing.instance_eval(&@picture)
       drawn = drawing.to_svg(settled)
       @settled = drawing.settled

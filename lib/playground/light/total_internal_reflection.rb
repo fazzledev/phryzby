@@ -18,7 +18,7 @@ play_with Reflection, TotalInternalReflection do
   output :r, in: :percent
   output("solved from") { satisfies?(:no_refracted_ray) ? ":everything_reflects" : ":unpolarised" }
 
-  draw Light::Picture do
+  draw Light::Picture, rising: true do
     media :mu1, :mu2
     ray "incident",  arriving_at: :i, angle: true
     ray "reflected", leaving_at: :i, weight: :r

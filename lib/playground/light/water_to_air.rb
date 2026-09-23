@@ -13,7 +13,7 @@ play_with Refraction do
   output :rr
   output :no_refracted_ray, alarm: true
 
-  draw Light::Picture do
+  draw Light::Picture, rising: true do
     media "water", "air"
     ray "incident",  arriving_at: :i,  angle: true, extended: true
     ray "refracted", crossing_at: :rr, angle: true, unless: :no_refracted_ray
