@@ -83,9 +83,9 @@ module Light
       from, to = ends(turned, arriving_at, leaving_at)
       @shapes << extending(turned) if extended
       @shapes << arrow(*from, *to, drawn, share ? 0.32 + 0.68 * share : 0.95)
-      @shapes << sun(from) if arriving_at
+      @shapes << source(from) if arriving_at
       want(share ? "#{called} #{(share * 100).round}%" : called.to_s,
-           beyond(from, to), colour: "var(--ray)")
+           beyond(from, to), colour: "var(--light)")
 
       swept(turned, arriving_at, crossing_at) if angle
     end
@@ -125,7 +125,7 @@ module Light
       on = [ (CENTRE[0] + Math.sin(turned) * REACH).round(2),
              (CENTRE[1] - into_first * Math.cos(turned) * REACH).round(2) ]
 
-      carried(CENTRE, on, "var(--ray)", "3 5")
+      carried(CENTRE, on, "var(--light)", "3 5")
     end
 
     def note(text, when: nil)
@@ -220,19 +220,24 @@ module Light
     # A ray comes from somewhere. At the tail of the one that arrives, which
     # is also the end a reader can take hold of, so the picture says where the
     # light starts and where the hand goes in the same mark.
-    def sun(at)
-      spokes = (0...SPOKES).map do |n|
+    #
+    # It is drawn as the sun only where the sun could be. A chapter that rises
+    # starts its ray inside the water, and the sun has no gills.
+    def source(at)
+      %(<circle cx="#{at[0].round(2)}" cy="#{at[1].round(2)}" r="#{SUN}" fill="var(--light)"/>) +
+        (@rising ? "" : spokes(at))
+    end
+
+    def spokes(at)
+      (0...SPOKES).map do |n|
         turned = n * 2 * Math::PI / SPOKES
         across, down = Math.cos(turned), Math.sin(turned)
 
         %(<line x1="#{(at[0] + across * SPOKE_IN).round(2)}" ) +
           %(y1="#{(at[1] + down * SPOKE_IN).round(2)}" ) +
           %(x2="#{(at[0] + across * SPOKE_OUT).round(2)}" ) +
-          %(y2="#{(at[1] + down * SPOKE_OUT).round(2)}" stroke="var(--ray)" stroke-width="1.2"/>)
-      end
-
-      %(<circle cx="#{at[0].round(2)}" cy="#{at[1].round(2)}" r="#{SUN}" fill="var(--ray)"/>) +
-        spokes.join
+          %(y2="#{(at[1] + down * SPOKE_OUT).round(2)}" stroke="var(--light)" stroke-width="1.2"/>)
+      end.join
     end
 
     PAST = 14
@@ -350,10 +355,10 @@ module Light
       bx, by = x2 - ux * HEAD, y2 - uy * HEAD
       half = HEAD * 0.42
 
-      %(<line x1="#{x1}" y1="#{y1}" x2="#{bx}" y2="#{by}" stroke="var(--ray)" ) +
+      %(<line x1="#{x1}" y1="#{y1}" x2="#{bx}" y2="#{by}" stroke="var(--light)" ) +
         %(stroke-width="#{width}" stroke-opacity="#{opacity}"/>) +
         %(<path d="M #{x2} #{y2} L #{bx - uy * half} #{by + ux * half} ) +
-        %(L #{bx + uy * half} #{by - ux * half} z" fill="var(--ray)" fill-opacity="#{opacity}"/>)
+        %(L #{bx + uy * half} #{by - ux * half} z" fill="var(--light)" fill-opacity="#{opacity}"/>)
     end
 
     def ground(opacity, top = 100)

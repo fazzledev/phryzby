@@ -89,7 +89,7 @@ class ChoosingTest < Minitest::Test
     drawn = playing.picture(opening, settled: {})
 
     assert_includes drawn, %(<g stroke-dasharray="3 5">)
-    assert_includes drawn, %(<line x1="150" y1="100" x2="175.99" y2="171.42" stroke="var(--ray)")
+    assert_includes drawn, %(<line x1="150" y1="100" x2="175.99" y2="171.42" stroke="var(--light)")
   end
 
   def test_the_denser_of_the_two_is_still_the_more_shaded
