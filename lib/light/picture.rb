@@ -30,6 +30,7 @@ module Light
     def band_y(half) = half.zero? ? 94 : 114
 
     def media(first, second)
+      @within = value(first)
       @shapes.unshift(ground(shade(value(first)), first_half),
                       ground(shade(value(second)), second_half), rule, upright)
       want(named_band(first), [ [ 294, band_y(first_half), "end" ] ], fixed: true)
@@ -216,6 +217,7 @@ module Light
       [ x, y + (downward.negative? ? 0 : 7), "middle" ]
     end
 
+    WATER = REFRACTIVE_MEDIA.fetch("water")
     AWAY = 12
 
     def stepped(from, to, by)
@@ -234,14 +236,26 @@ module Light
     # is also the end a reader can take hold of, so the picture says where the
     # light starts and where the hand goes in the same mark.
     #
-    # The sun where the sun could be. A chapter that rises starts its ray
-    # under the water, where the sun has no business being and something else
-    # does. It swims level whatever the ray is doing, because a fish does.
+    # The sun where the sun could be, which is over the surface and not under
+    # it. A chapter that rises starts its ray inside the first medium, and
+    # what can be there depends on what it is: a fish if the medium is water,
+    # and inside a solid a flaw, which is the only thing that lives in glass.
     def source(at)
       return sun(at) unless @rising
+      return flaw(at) unless wet?
 
       %(<g transform="translate(#{at[0].round(2)} #{at[1].round(2)})" ) +
         %(fill="var(--light)">#{FISH}</g>)
+    end
+
+    def wet? = @within && (@within - WATER).abs < 1e-9
+
+    # Inside a solid there is nothing alive to be the source, but there is
+    # always a flaw, and catching the light is how a flaw comes to be seen at
+    # all.
+    def flaw(at)
+      %(<g transform="translate(#{at[0].round(2)} #{at[1].round(2)})" fill="var(--light)">) +
+        %(<path d="M -5.5 -1.5 L -1.5 -6 L 3.5 -4.5 L 6 0.5 L 2 5.5 L -3.5 3.5 z"/></g>)
     end
 
     def sun(at)
