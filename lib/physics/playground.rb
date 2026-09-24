@@ -100,10 +100,6 @@ module Physics
     # chapter: a tenth of a degree, a hundredth of an index.
     FINELY = { degrees: 0.1.deg, number: 0.01, speed: 0.1, metres: 0.1 }.freeze
 
-    # An angle is already held within a domain, and a slider can run it. Not
-    # quite to the ends: square on and edge on are both degenerate pictures.
-    SHY = 0.5.deg
-
     # One verb for everything a chapter hands the laws. A range to slide
     # through, a few named things to pick between, or, given a block, a value
     # worked out from what was picked and never shown at all.
@@ -118,11 +114,10 @@ module Physics
                         as: as, marks: marks }
     end
 
-    def as_far_as(name)
-      held = @scenario.domains.fetch(@scenario.quantities[name])
-
-      (held.begin + SHY)..(held.end - SHY)
-    end
+    # An angle is already held within a domain, and a slider runs the whole of
+    # it. The ends are the interesting ones: square on and edge on are where a
+    # law stops saying anything ordinary.
+    def as_far_as(name) = @scenario.domains.fetch(@scenario.quantities[name])
 
     # A property you have rather than a number you set: it steps from one
     # named thing to the next and reads out the name, never the value
