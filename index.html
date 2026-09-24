@@ -42,6 +42,12 @@
         phryzby is a playground to break laws and try physics.
       </p>
 
+      <section class="play" id="play">
+        <p class="cap">go on then — swing the ray</p>
+        <section id="demo"></section>
+        <p class="note" id="play-status">Ruby is on its way down…</p>
+      </section>
+
       <div class="sample">
         <div>
           <p class="cap">the whole of lib/light/refraction.rb</p>
@@ -249,7 +255,7 @@ end</pre>
 </div>
 
 <script type="module">
-import { highlight } from "./assets/phryzby.js";
+import { highlight, playable } from "./assets/phryzby.js";
 
 // The caption claims this is the whole file, so fetch the whole file rather
 // than trust a copy in the markup that can quietly fall behind it.
@@ -263,6 +269,32 @@ try {
 }
 
 law.innerHTML = highlight(law.textContent);
+
+// The essay reads without booting anything. CRuby starts on its way down only
+// when the playground is nearly in view, so by the time the reader arrives at
+// it, it is already answering.
+const status = document.getElementById("play-status");
+const say = (text) => {
+  status.textContent = text;
+  status.hidden = !text;
+};
+
+const watcher = new IntersectionObserver(async (entries) => {
+  if (!entries.some((entry) => entry.isIntersecting)) return;
+
+  watcher.disconnect();
+  try {
+    await playable({
+      playground: "lib/playground/light/refraction.rb",
+      files: [ "lib/light/incidence.rb", "lib/light/refraction.rb" ],
+      onStatus: say,
+    });
+  } catch (error) {
+    say(String(error).split("\n")[0]);
+  }
+}, { rootMargin: "600px" });
+
+watcher.observe(document.getElementById("play"));
 </script>
 </body>
 </html>

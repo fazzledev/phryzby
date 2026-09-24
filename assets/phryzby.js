@@ -742,6 +742,101 @@ function mountDragging(frame) {
   frame.addEventListener("pointercancel", let_go);
 }
 
+// --- a playground, shown ----------------------------------------------------
+// A page that is shown rather than drawn: the law states itself into one half,
+// the demonstration into the other, and nothing here knows optics. A chapter
+// mounts this beside its editor and the cover mounts it on its own, because
+// the playground is the same either way — Ruby draws it, and JavaScript only
+// hands the controls back.
+
+// A radio speaks only when it is the one chosen; everything else always
+// speaks for itself.
+const settings = () => [ ...document.querySelectorAll("#demo [data-input]") ]
+  .filter((control) => control.type !== "radio" || control.checked);
+
+const reading = () => {
+  const pairs = settings().map((control) => `${control.dataset.input}: ${control.value}`);
+
+  return pairs.length ? `{ ${pairs.join(", ")} }` : `Physics.playground.opening`;
+};
+
+const moved = (vm) => {
+  vm.eval(`Console.inputs = ${reading()}`);
+  const [ picture, readouts, labels ] =
+    vm.eval(`Physics.playground.moved(${reading()})`).toString().split("\u0000");
+
+  $("picture").innerHTML = picture;
+  $("readouts").innerHTML = readouts;
+  labels.split("\u0002").forEach((pair) => {
+    const [ name, text ] = pair.split("\u0001");
+    // Ruby wrote this, and it may carry a caption under the number.
+    const shown = document.getElementById(`${name}-out`);
+    if (shown) shown.innerHTML = text;
+
+    // And the notch it is standing on lights up.
+    const control = document.getElementById(name);
+    document.querySelectorAll(`.mark[data-for="${name}"]`).forEach((notch) => {
+      notch.classList.toggle("on",
+        Math.abs(Number(notch.dataset.set) - Number(control.value)) < Number(control.step) / 2);
+    });
+  });
+};
+
+// Values worth landing on exactly: the notches Ruby put under this control,
+// and whatever a control over the same span is set to — two media alike is
+// the case where nothing bends, and it is worth being able to hit.
+const NEAR = 0.013;
+
+const magnets = (control) => {
+  const notched = [ ...document.querySelectorAll(`.mark[data-for="${control.dataset.input}"]`) ]
+    .map((notch) => Number(notch.dataset.set));
+  const alike = settings()
+    .filter((one) => one !== control && one.min === control.min && one.max === control.max)
+    .map((one) => Number(one.value));
+
+  return [ ...notched, ...alike ];
+};
+
+const snap = (control) => {
+  const value = Number(control.value);
+  const reach = (Number(control.max) - Number(control.min)) * NEAR;
+  const [ near ] = magnets(control)
+    .filter((at) => Math.abs(at - value) <= reach)
+    .sort((one, other) => Math.abs(one - value) - Math.abs(other - value));
+
+  if (near !== undefined) control.value = near;
+};
+
+// The controls, handed back to Ruby every time one of them moves.
+function wireDemo(move) {
+  // Only a drag is caught by a magnet. Stepping with the arrow keys has to
+  // be able to walk past one, or a value beside a notch is unreachable.
+  let dragging = false;
+  $("demo").addEventListener("pointerdown", (event) => {
+    dragging = Boolean(event.target.dataset.input);
+  });
+  document.addEventListener("pointerup", () => { dragging = false; });
+
+  $("demo").addEventListener("input", (event) => {
+    if (!event.target.dataset.input) return;
+
+    if (dragging && event.target.type === "range") snap(event.target);
+    move();
+  });
+
+  // A notch is worth pressing, not only aiming at.
+  $("demo").addEventListener("click", (event) => {
+    const notch = event.target.closest(".mark");
+    if (!notch) return;
+
+    const control = document.getElementById(notch.dataset.for);
+    control.value = notch.dataset.set;
+    control.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+
+  mountDragging($("demo"));
+}
+
 // --- the page --------------------------------------------------------------
 
 async function fetchRuby(files) {
@@ -919,40 +1014,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   // takes its old name away with it.
   const defined = new Set(loaded.flatMap((file) => declared(file.original)));
 
-  // A page that is shown rather than drawn: the law states itself into one
-  // half, the demonstration into the other, and nothing here knows optics.
-  // A radio speaks only when it is the one chosen; everything else always
-  // speaks for itself.
-  const settings = () => [ ...document.querySelectorAll("#demo [data-input]") ]
-    .filter((control) => control.type !== "radio" || control.checked);
-
-  const reading = () => {
-    const pairs = settings().map((control) => `${control.dataset.input}: ${control.value}`);
-
-    return pairs.length ? `{ ${pairs.join(", ")} }` : `Physics.playground.opening`;
-  };
-
-  const move = () => {
-    vm.eval(`Console.inputs = ${reading()}`);
-    const [ picture, readouts, labels ] =
-      vm.eval(`Physics.playground.moved(${reading()})`).toString().split("\u0000");
-
-    $("picture").innerHTML = picture;
-    $("readouts").innerHTML = readouts;
-    labels.split("\u0002").forEach((pair) => {
-      const [ name, text ] = pair.split("\u0001");
-      // Ruby wrote this, and it may carry a caption under the number.
-      const shown = document.getElementById(`${name}-out`);
-      if (shown) shown.innerHTML = text;
-
-      // And the notch it is standing on lights up.
-      const control = document.getElementById(name);
-      document.querySelectorAll(`.mark[data-for="${name}"]`).forEach((notch) => {
-        notch.classList.toggle("on",
-          Math.abs(Number(notch.dataset.set) - Number(control.value)) < Number(control.step) / 2);
-      });
-    });
-  };
+  const move = () => moved(vm);
 
   // The law states itself. Not a copy of the source: a second walk of the
   // same tree the solver uses, so an edited law restates itself too.
@@ -981,59 +1043,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
     move();
   };
 
-  // Values worth landing on exactly: the notches Ruby put under this control,
-  // and whatever a control over the same span is set to — two media alike is
-  // the case where nothing bends, and it is worth being able to hit.
-  const NEAR = 0.013;
-
-  const magnets = (control) => {
-    const notched = [ ...document.querySelectorAll(`.mark[data-for="${control.dataset.input}"]`) ]
-      .map((notch) => Number(notch.dataset.set));
-    const alike = settings()
-      .filter((one) => one !== control && one.min === control.min && one.max === control.max)
-      .map((one) => Number(one.value));
-
-    return [ ...notched, ...alike ];
-  };
-
-  const snap = (control) => {
-    const value = Number(control.value);
-    const reach = (Number(control.max) - Number(control.min)) * NEAR;
-    const [ near ] = magnets(control)
-      .filter((at) => Math.abs(at - value) <= reach)
-      .sort((one, other) => Math.abs(one - value) - Math.abs(other - value));
-
-    if (near !== undefined) control.value = near;
-  };
-
-  if (playground) {
-    // Only a drag is caught by a magnet. Stepping with the arrow keys has to
-    // be able to walk past one, or a value beside a notch is unreachable.
-    let dragging = false;
-    $("demo").addEventListener("pointerdown", (event) => {
-      dragging = Boolean(event.target.dataset.input);
-    });
-    document.addEventListener("pointerup", () => { dragging = false; });
-
-    $("demo").addEventListener("input", (event) => {
-      if (!event.target.dataset.input) return;
-
-      if (dragging && event.target.type === "range") snap(event.target);
-      move();
-    });
-
-    // A notch is worth pressing, not only aiming at.
-    $("demo").addEventListener("click", (event) => {
-      const notch = event.target.closest(".mark");
-      if (!notch) return;
-
-      const control = document.getElementById(notch.dataset.for);
-      control.value = notch.dataset.set;
-      control.dispatchEvent(new Event("input", { bubbles: true }));
-    });
-
-    mountDragging($("demo"));
-  }
+  if (playground) wireDemo(move);
 
   const evaluate = () => {
     editors.forEach((one) => one.remember());
@@ -1128,4 +1138,34 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   }
 
   return view;
+}
+
+/**
+ * Mounts one playground on a page that has nothing else — no editor, no tree,
+ * no console. The cover uses this: the same Ruby the chapters run, drawing the
+ * same picture, with only its controls on the page.
+ *
+ *   playground — the .rb that declares what can be moved
+ *   files      — the laws it plays with, in the order their requires imply
+ *   onStatus   — told what the boot is doing, so the page can say so
+ */
+export async function playable({ playground, files = [], onStatus = () => {} }) {
+  const parts = [ ...ENGINE, "lib/light/refractive_media.rb", "lib/light/placing.rb",
+                  "lib/light/picture.rb", ...files, playground ];
+  const loaded = await fetchRuby(parts.map((key) => ({ key })));
+
+  const vm = await loadVM(onStatus);
+  vm.eval(SHIM);
+  loaded.forEach((file) => vm.eval(file.code));
+  vm.eval(CONSOLE);
+
+  const move = () => moved(vm);
+
+  // Ruby writes the controls, then fills the picture they start on.
+  $("demo").innerHTML = vm.eval(`Physics.playground.to_html(${reading()})`).toString();
+  wireDemo(move);
+  move();
+
+  onStatus("");
+  return { vm, move };
 }
