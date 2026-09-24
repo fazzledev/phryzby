@@ -219,7 +219,10 @@ button.ghost{background:transparent;color:var(--ink-mid);border-color:var(--rule
 
 /* --- contents ------------------------------------------------------------ */
 .cover{max-width:50rem;margin:0 auto;padding:3rem 1.5rem 4rem;}
-.cover h1{font-size:1.6rem;}
+/* 2.5em is the two rows beside it: the name's line box plus the tagline's. */
+.cover .hero{width:2.5em;height:2.5em;flex:none;}
+.cover h1{font-size:2.6rem;margin:0 0 .3rem;display:flex;align-items:center;gap:.8rem;}
+.cover h1 small{display:block;font-size:.58em;margin-top:.1rem;}
 .cover .lede{font-size:.95rem;margin-bottom:1.1rem;}
 .ask{font-size:1.28rem;line-height:1.4;color:var(--ink);margin:1.6rem 0 1.4rem;
   letter-spacing:-.01em;padding-left:.9rem;border-left:2px solid var(--ray);}
