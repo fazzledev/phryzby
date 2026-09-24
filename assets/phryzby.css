@@ -235,18 +235,14 @@ button.ghost{background:transparent;color:var(--ink-mid);border-color:var(--rule
 .play #demo{max-width:26rem;margin:0 auto;}
 .play .note{margin:.8rem 0 0;text-align:center;}
 
-.sample{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);
+.sample{display:grid;gap:1px;background:var(--rule);
   border:1px solid var(--rule);border-radius:6px;overflow:hidden;
-  margin:1.8rem 0 1.4rem 50%;transform:translateX(-50%);
-  width:min(74rem,calc(100vw - 3rem));}
+  margin:1.8rem 0 1.4rem;}
 .sample > div{background:var(--paper);padding:.85rem 1rem 1rem;min-width:0;}
 .sample .cap{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;
   text-transform:uppercase;color:var(--ink-soft);margin:0 0 .5rem;}
 .sample pre{margin:0;font-family:var(--mono);font-size:.74rem;line-height:1.65;
   color:var(--ink);overflow-x:auto;white-space:pre;}
-.sample .said{color:var(--ink-soft);}
-.sample .got{color:var(--ray);}
-@media (max-width:60rem){.sample{grid-template-columns:1fr;}}
 
 .toc{list-style:none;padding:0;margin:1.4rem 0 0;}
 .toc li{border-top:1px solid var(--rule);}

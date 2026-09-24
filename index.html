@@ -66,22 +66,6 @@ module Refraction
   condition(:no_refracted_ray) { sin(i) / mu21 &gt; 1 }
 end</pre>
         </div>
-        <div>
-          <p class="cap">and every question it answers</p>
-<pre><span class="said">glass = Physics::Scenario.including(Refraction)</span>
-
-<span class="said">glass.new(i: 30.deg, mu21: 1.5)
-     .solve(:rr).in_degrees</span>
-<span class="got">=&gt; 19.4712     # the refracted ray</span>
-
-<span class="said">glass.new(i: 30.deg, rr: 19.4712.deg)
-     .solve(:mu21)</span>
-<span class="got">=&gt; 1.5000      # the pair of media</span>
-
-<span class="said">glass.new(rr: 90.deg, mu21: 1.0 / 1.5)
-     .solve(:i).in_degrees</span>
-<span class="got">=&gt; 41.8103     # the critical angle</span></pre>
-        </div>
       </div>
       <p class="lede">
         Every chapter below runs CRuby compiled to WebAssembly and evaluates this repository's own
