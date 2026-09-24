@@ -7,6 +7,9 @@ module Physics
       degrees: ->(value) { format("%.2f°", value.in_degrees) },
       percent: ->(value) { format("%.1f%%", value * 100) },
       number:  ->(value) { format("%.4g", value) },
+      metres:  ->(value) { format("%.2f m", value) },
+      seconds: ->(value) { format("%.2f s", value) },
+      speed:   ->(value) { format("%.1f m/s", value) },
       plain:   ->(value) { value ? "yes" : "no" },
     }.freeze
 
@@ -95,7 +98,7 @@ module Physics
 
     # How finely a control moves is a property of what it carries, not of the
     # chapter: a tenth of a degree, a hundredth of an index.
-    FINELY = { degrees: 0.1.deg, number: 0.01 }.freeze
+    FINELY = { degrees: 0.1.deg, number: 0.01, speed: 0.1, metres: 0.1 }.freeze
 
     # An angle is already held within a domain, and a slider can run it. Not
     # quite to the ends: square on and edge on are both degenerate pictures.

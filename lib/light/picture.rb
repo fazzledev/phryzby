@@ -1,5 +1,5 @@
 require_relative "../physics"
-require_relative "placing"
+require_relative "../drawing/placing"
 require_relative "refractive_media"
 
 module Light
@@ -151,7 +151,7 @@ module Light
     attr_reader :settled
 
     def to_svg(settled = {})
-      placing = Placing.new(WIDTH, HEIGHT, settled)
+      placing = Drawing::Placing.new(WIDTH, HEIGHT, settled)
       drawn = placing.resolve(@wanted)
       @settled = placing.settled
 

@@ -43,27 +43,33 @@
       </p>
 
       <section class="play" id="play">
-        <p class="cap">go on then — swing the ray</p>
+        <p class="cap">go on then — throw it</p>
         <section id="demo"></section>
         <p class="note" id="play-status">Ruby is on its way down…</p>
       </section>
 
       <div class="sample">
         <div>
-          <p class="cap">the whole of lib/light/refraction.rb</p>
-<pre id="law">require_relative "incidence"
+          <p class="cap">the whole of lib/flight/projectile.rb</p>
+<pre id="law">require_relative "../physics"
 
-module Refraction
+# Throw something and let go of it. Nothing pushes it after that, so where it
+# goes is settled the instant it leaves your hand — by how fast it left, the
+# angle it left at, and how hard the world pulls down.
+module Projectile
   extend Physics::Law
 
-  include Incidence
+  quantity :speed,          variable: :u
+  quantity :angle_of_throw, variable: :theta, within: Physics::A_RIGHT_ANGLE
+  quantity :gravity,        variable: :g
 
-  quantity :angle_of_refraction,       variable: :rr, within: Physics::A_RIGHT_ANGLE
-  quantity :relative_refractive_index, variable: :mu21
+  quantity :range,          variable: :x
+  quantity :peak,           variable: :h
+  quantity :time_of_flight, variable: :t
 
-  equation(:snells_law) { mu21 == sin(i) / sin(rr) }
-
-  condition(:no_refracted_ray) { sin(i) / mu21 &gt; 1 }
+  equation(:how_far)  { x == u**2 * sin(2 * theta) / g }
+  equation(:how_high) { h == (u * sin(theta))**2 / (2 * g) }
+  equation(:how_long) { t == 2 * u * sin(theta) / g }
 end</pre>
         </div>
       </div>
@@ -88,11 +94,27 @@ end</pre>
         </li>
       </ul>
 
+      <p class="part">Flight</p>
+      <ul class="toc">
+        <li>
+          <a href="flight/projectile.html">
+            <span class="n">1.1</span>
+            <span>
+              <span class="t">Projectile</span>
+              <span class="d">Three equations and no optics at all — the same
+                <code>quantity</code>, <code>equation</code> and <code>solve</code>, on a thrown
+                ball. Ask it where the ball lands, or ask it backwards for the angle that
+                reaches a mark, and the engine does not notice the difference.</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+
       <p class="part">Light</p>
       <ul class="toc">
         <li>
           <a href="light/incidence.html">
-            <span class="n">1.1</span>
+            <span class="n">2.1</span>
             <span>
               <span class="t">Incidence</span>
               <span class="d">One quantity and no law at all — a full name, the short name the
@@ -104,7 +126,7 @@ end</pre>
         </li>
         <li>
           <a href="light/reflection.html">
-            <span class="n">1.2</span>
+            <span class="n">2.2</span>
             <span>
               <span class="t">Reflection</span>
               <span class="d">The first equation, and what it means for <code>==</code> to build
@@ -115,7 +137,7 @@ end</pre>
         </li>
         <li>
           <a href="light/refraction.html">
-            <span class="n">1.3</span>
+            <span class="n">2.3</span>
             <span>
               <span class="t">Refraction: Air to Water</span>
               <span class="d">Air into water, and one slider. A second law composed alongside the
@@ -127,7 +149,7 @@ end</pre>
         </li>
         <li>
           <a href="light/water-to-air.html">
-            <span class="n">1.4</span>
+            <span class="n">2.4</span>
             <span>
               <span class="t">Refraction: Water to Air</span>
               <span class="d">The same crossing the other way, bending away from the normal
@@ -138,7 +160,7 @@ end</pre>
         </li>
         <li>
           <a href="light/internal-reflection.html">
-            <span class="n">1.5</span>
+            <span class="n">2.5</span>
             <span>
               <span class="t">Internal Reflection</span>
               <span class="d">The crossing again, with the ray that does not cross. Two laws
@@ -150,7 +172,7 @@ end</pre>
         </li>
         <li>
           <a href="light/critical-angle.html">
-            <span class="n">1.6</span>
+            <span class="n">2.6</span>
             <span>
               <span class="t">Critical Angle</span>
               <span class="d">The angle the last chapter found by sliding, named and worked out.
@@ -162,7 +184,7 @@ end</pre>
         </li>
         <li>
           <a href="light/into-air.html">
-            <span class="n">1.7</span>
+            <span class="n">2.7</span>
             <span>
               <span class="t">Into Air</span>
               <span class="d">The angle just named was water's. Every medium has one of its own,
@@ -174,7 +196,7 @@ end</pre>
         </li>
         <li>
           <a href="light/relative-refractive-index.html">
-            <span class="n">1.8</span>
+            <span class="n">2.8</span>
             <span>
               <span class="t">Relative Refractive Index</span>
               <span class="d">The crossing four chapters have held turns out to be one number,
@@ -185,7 +207,7 @@ end</pre>
         </li>
         <li>
           <a href="light/refractive-index.html">
-            <span class="n">1.9</span>
+            <span class="n">2.9</span>
             <span>
               <span class="t">Refractive Index</span>
               <span class="d">That the pair reduces to one number each is a claim of its own, and
@@ -196,7 +218,7 @@ end</pre>
         </li>
         <li>
           <a href="light/any-two-media.html">
-            <span class="n">1.10</span>
+            <span class="n">2.10</span>
             <span>
               <span class="t">Any Two Media</span>
               <span class="d">Both media chosen by name, from the one table every chapter
@@ -208,7 +230,7 @@ end</pre>
         </li>
         <li>
           <a href="light/reflectance.html">
-            <span class="n">1.11</span>
+            <span class="n">2.11</span>
             <span>
               <span class="t">Reflectance</span>
               <span class="d">Fresnel: how much goes each way. Three more equations, and one
@@ -219,7 +241,7 @@ end</pre>
         </li>
         <li>
           <a href="light/total-internal-reflection.html">
-            <span class="n">1.12</span>
+            <span class="n">2.12</span>
             <span>
               <span class="t">Total Internal Reflection</span>
               <span class="d">A law that only sometimes holds. One equation,
@@ -246,7 +268,7 @@ import { highlight, playable } from "./assets/phryzby.js";
 const law = document.getElementById("law");
 
 try {
-  const served = await fetch("lib/light/refraction.rb", { cache: "no-cache" });
+  const served = await fetch("lib/flight/projectile.rb", { cache: "no-cache" });
   if (served.ok) law.textContent = (await served.text()).trimEnd();
 } catch {
   // The copy in the markup stands.
@@ -269,8 +291,8 @@ const watcher = new IntersectionObserver(async (entries) => {
   watcher.disconnect();
   try {
     await playable({
-      playground: "lib/playground/light/refraction.rb",
-      files: [ "lib/light/incidence.rb", "lib/light/refraction.rb" ],
+      playground: "lib/playground/flight/projectile.rb",
+      files: [ "lib/flight/projectile.rb" ],
       onStatus: say,
     });
   } catch (error) {

@@ -1,4 +1,4 @@
-module Light
+module Drawing
   # Labels are placed together rather than one at a time. Each says where it
   # would like to be and where it would settle for; the first spot that is
   # inside the picture and clear of everything already placed wins. A label

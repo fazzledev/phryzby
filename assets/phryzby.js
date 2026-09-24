@@ -101,6 +101,12 @@ export const BOOK = [
     files: PARTS.map((part) => `lib/physics/${part}.rb`).concat("lib/pythagoras.rb"),
   },
   {
+    group: "flight",
+    chapters: [
+      { page: "flight/projectile.html", files: [ "lib/flight/projectile.rb" ] },
+    ],
+  },
+  {
     group: "light",
     chapters: [
       { page: "light/incidence.html", files: [ "lib/light/incidence.rb" ] },
@@ -122,18 +128,19 @@ export const BOOK = [
 
 const TITLES = {
   "engine.html": "0 · The Engine",
-  "light/incidence.html": "1.1 · Incidence",
-  "light/reflection.html": "1.2 · Reflection",
-  "light/refraction.html": "1.3 · Refraction: Air to Water",
-  "light/water-to-air.html": "1.4 · Refraction: Water to Air",
-  "light/internal-reflection.html": "1.5 · Internal Reflection",
-  "light/critical-angle.html": "1.6 · Critical Angle",
-  "light/into-air.html": "1.7 · Into Air",
-  "light/relative-refractive-index.html": "1.8 · Relative Refractive Index",
-  "light/refractive-index.html": "1.9 · Refractive Index",
-  "light/any-two-media.html": "1.10 · Any Two Media",
-  "light/reflectance.html": "1.11 · Reflectance",
-  "light/total-internal-reflection.html": "1.12 · Total Internal Reflection",
+  "flight/projectile.html": "1.1 · Projectile",
+  "light/incidence.html": "2.1 · Incidence",
+  "light/reflection.html": "2.2 · Reflection",
+  "light/refraction.html": "2.3 · Refraction: Air to Water",
+  "light/water-to-air.html": "2.4 · Refraction: Water to Air",
+  "light/internal-reflection.html": "2.5 · Internal Reflection",
+  "light/critical-angle.html": "2.6 · Critical Angle",
+  "light/into-air.html": "2.7 · Into Air",
+  "light/relative-refractive-index.html": "2.8 · Relative Refractive Index",
+  "light/refractive-index.html": "2.9 · Refractive Index",
+  "light/any-two-media.html": "2.10 · Any Two Media",
+  "light/reflectance.html": "2.11 · Reflectance",
+  "light/total-internal-reflection.html": "2.12 · Total Internal Reflection",
 };
 
 // A file belonging to this page opens in the editor; one belonging to another
@@ -697,14 +704,16 @@ function mountDragging(frame) {
     const x = ((event.clientX - box.left) / box.width) * 300;
     const y = ((event.clientY - box.top) / box.height) * 200;
 
-    // The incident ray arrives on one side of the normal, and the angle it
-    // makes is a magnitude, so crossing over would swing it back up rather
-    // than down through nothing. Both ways out of the quarter it lives in
-    // stop where they leave it: past the normal is square on, past the
-    // surface is edge on.
-    const across = Math.max(0, 150 - x);
-    const along = Math.max(0, Number(svg.dataset.into) * (y - 100));
-    const turned = Math.atan2(across, along);
+    // An angle is swung about a point and measured off a line, and which
+    // line that is depends on the picture. A ray's angle is measured off the
+    // normal, an upright; a throw's is measured off the ground it leaves.
+    // Either way it is a magnitude, so crossing over the line it is measured
+    // from would swing it back rather than on through nothing: both ways out
+    // of the quarter it lives in stop where they leave it.
+    const turned = svg.dataset.at
+      ? (([ ax, ay ]) => Math.atan2(Math.max(0, ay - y), Math.max(0, x - ax)))
+          (svg.dataset.at.split(" ").map(Number))
+      : Math.atan2(Math.max(0, 150 - x), Math.max(0, Number(svg.dataset.into) * (y - 100)));
 
     const step = Number(control.step) || 0.01;
     const held = Math.min(Number(control.max),
@@ -741,6 +750,17 @@ function mountDragging(frame) {
   frame.addEventListener("pointerup", let_go);
   frame.addEventListener("pointercancel", let_go);
 }
+
+// A playground is filed under its subject, and a subject brings its own way of
+// picturing: lib/playground/flight/projectile.rb is drawn by lib/flight. Where
+// the labels go is neither subject's business, so that is shared.
+const DRAWN = {
+  light: [ "lib/light/refractive_media.rb", "lib/light/picture.rb" ],
+  flight: [ "lib/flight/picture.rb" ],
+};
+
+const drawnBy = (playground) =>
+  [ "lib/drawing/placing.rb", ...DRAWN[playground.split("/")[2]] ];
 
 // --- a playground, shown ----------------------------------------------------
 // A page that is shown rather than drawn: the law states itself into one half,
@@ -906,9 +926,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
   // the declaration itself sits beside the law, because changing it is the
   // point.
   const played = playground
-    ? [ { key: "lib/light/refractive_media.rb", hidden: true },
-        { key: "lib/light/placing.rb", hidden: true },
-        { key: "lib/light/picture.rb", hidden: true },
+    ? [ ...drawnBy(playground).map((key) => ({ key, hidden: true })),
         { key: playground, label: "playground.rb", tab: 1.5 } ]
     : [];
   const loaded = await fetchRuby([ ...engine, ...files, ...played ]);
@@ -1150,8 +1168,7 @@ export async function chapter({ page, files, harness = "", onSolve, showEngine =
  *   onStatus   — told what the boot is doing, so the page can say so
  */
 export async function playable({ playground, files = [], onStatus = () => {} }) {
-  const parts = [ ...ENGINE, "lib/light/refractive_media.rb", "lib/light/placing.rb",
-                  "lib/light/picture.rb", ...files, playground ];
+  const parts = [ ...ENGINE, ...drawnBy(playground), ...files, playground ];
   const loaded = await fetchRuby(parts.map((key) => ({ key })));
 
   const vm = await loadVM(onStatus);
