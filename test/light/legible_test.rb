@@ -55,15 +55,15 @@ class LegibleTest < Minitest::Test
   # red label has to find somewhere else to stand.
   def test_the_chapters_that_change_media_stay_legible
     REFRACTIVE_MEDIA.each_value.with_index do |index, at|
-      legible("1.7 from #{at}", INTO_AIR.picture(INTO_AIR.opening.merge(from: at), settled: {}))
-      legible("1.9 mu1 #{index}", INDEXED.picture(INDEXED.opening.merge(mu1: index), settled: {}))
+      legible("2.7 from #{at}", INTO_AIR.picture(INTO_AIR.opening.merge(from: at), settled: {}))
+      legible("2.8 mu1 #{index}", INDEXED.picture(INDEXED.opening.merge(mu1: index), settled: {}))
       sweeping(DRAWING, "drawing mu1 #{index}", mu1: index)
     end
   end
 
   def test_the_chapter_that_sweeps_the_ratio_stays_legible
     [ 0.25, 0.4, 0.5, 0.75, 1.0, 1.5, 2.5, 4.0 ].each do |ratio|
-      legible("1.8 at #{ratio}", RATIOED.picture(RATIOED.opening.merge(mu21: ratio), settled: {}))
+      legible("2.9 at #{ratio}", RATIOED.picture(RATIOED.opening.merge(mu21: ratio), settled: {}))
     end
   end
 end

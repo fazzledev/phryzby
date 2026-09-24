@@ -1,7 +1,8 @@
 require "minitest/autorun"
 require_relative "../chapters"
 
-# The chapter that puts the held ratio on a slider, and adds no law to do it.
+# The chapter that puts the held ratio on a slider. It costs one file to say
+# what the ratio is, and after that the pair is never needed again.
 class RatioTest < Minitest::Test
   def playing = RATIOED
   def opening = playing.opening
@@ -18,10 +19,22 @@ class RatioTest < Minitest::Test
     assert_equal "41.81°", says.fetch("angle of refraction")
   end
 
-  def test_the_ratio_is_the_law_s_own_quantity_and_no_law_was_added
-    assert_includes Refraction.quantities.keys, :mu21
-    assert_equal [ :snells_law ], Refraction.equations.keys
+  # Snell knows the two media and nothing about a ratio. What a ratio is takes
+  # one equation, in one file, and that is the whole of this chapter's law.
+  def test_the_ratio_is_the_one_thing_this_chapter_adds
+    refute_includes Refraction.quantities.keys, :mu21
+    assert_includes RelativeIndex.quantities.keys, :mu21
+    assert_equal [ :snells_law, :relative_index ], RelativeIndex.equations.keys
     assert_includes playing.controls, %(data-input="mu21")
+  end
+
+  # The first medium is called 1, so the second stands for the pair — and the
+  # ray bends by exactly as much as it does when both are named.
+  def test_naming_the_first_medium_one_leaves_the_second_holding_the_ratio
+    posed = playing.posing(**opening)
+
+    assert_in_delta 1.0, posed[:mu1], 1e-9
+    assert_in_delta opening.fetch(:mu21), posed[:mu2], 1e-9
   end
 
   # The chapters before this one hold the pair and vary the angle. This one

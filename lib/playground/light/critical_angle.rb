@@ -9,7 +9,8 @@ play_with Reflection, Refraction do
   description "At 48.75°, for water and air, and no new law is needed to say so: it is Snell asked backwards, with the refracted ray lying flat along the surface."
 
   input :i, default: 30.deg
-  input(:mu21) { REFRACTIVE_MEDIA.fetch("air") / REFRACTIVE_MEDIA.fetch("water") }
+  input(:mu1) { REFRACTIVE_MEDIA.fetch("water") }
+  input(:mu2) { REFRACTIVE_MEDIA.fetch("air") }
 
   output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
   output :rr

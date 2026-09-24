@@ -24,16 +24,21 @@ class ChoosingTest < Minitest::Test
   end
 
   def test_what_was_chosen_reaches_the_law_as_a_number
-    assert_in_delta 1.5, playing.posing(**opening).solve(:mu21), 1e-9
-    assert_in_delta 13.1801, playing.posing(**opening).solve(:rr).in_degrees, 1e-3
+    posed = playing.posing(**opening)
+
+    assert_in_delta 1.0, posed.solve(:mu1), 1e-9
+    assert_in_delta 1.5, posed.solve(:mu2), 1e-9
+    assert_in_delta 13.1801, posed.solve(:rr).in_degrees, 1e-3
   end
 
-  def test_the_law_is_told_the_ratio_and_never_the_two_media
+  # A name is the reader's handle on a medium and means nothing to the law,
+  # which is given the number that name stands for and never the name.
+  def test_the_law_is_told_the_numbers_and_never_the_names
     posed = playing.posing(**opening).as_posed
 
-    assert_includes posed.keys, :relative_refractive_index
-    refute_includes posed.keys, :refractive_index_of_first_medium
-    refute_includes posed.keys, :refractive_index_of_second_medium
+    assert_includes posed.keys, :refractive_index_of_first_medium
+    assert_includes posed.keys, :refractive_index_of_second_medium
+    refute(posed.keys.any? { |held| %i[from into].include?(held) })
   end
 
   def test_a_choice_offers_every_medium_by_name

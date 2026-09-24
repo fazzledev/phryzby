@@ -71,17 +71,18 @@ import { chapter } from "../assets/phryzby.js";
 await chapter({
   page: "light/relative-refractive-index.html",
   files: [
-    { key: "lib/light/incidence.rb", tab: 3 },
-    { key: "lib/light/reflection.rb", tab: 2 },
-    { key: "lib/light/refraction.rb", tab: 1 },
+    { key: "lib/light/incidence.rb", tab: 4 },
+    { key: "lib/light/reflection.rb", tab: 3 },
+    { key: "lib/light/refraction.rb", tab: 2 },
+    { key: "lib/light/relative_index.rb", tab: 1 },
   ],
   playground: "lib/playground/light/relative_refractive_index.rb",
   opening: [ "surface.solve(:mu21)" ],
   examples: [
     "surface.solve(:mu21)",
     "surface.asking(:i, rr: 90.deg).in_degrees",
-    "Refraction.quantities",
-    "Physics::Scenario.including(Refraction).new(i: 30.deg, mu21: 1.5).solve(:rr).in_degrees",
+    "RelativeIndex.equations",
+    "Physics::Scenario.including(RelativeIndex).new(i: 30.deg, mu1: 1.0, mu21: 1.5).solve(:rr).in_degrees",
   ],
 });
 </script>

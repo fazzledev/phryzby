@@ -9,7 +9,8 @@ play_with Reflection, Refraction do
   description "It turns back into the water, and past this angle that is all of the light: the surface is a mirror. Slide down and the other ray returns, because some of it turns back at every angle."
 
   input :i, default: 60.deg
-  input(:mu21) { REFRACTIVE_MEDIA.fetch("air") / REFRACTIVE_MEDIA.fetch("water") }
+  input(:mu1) { REFRACTIVE_MEDIA.fetch("water") }
+  input(:mu2) { REFRACTIVE_MEDIA.fetch("air") }
 
   output :rl
   output :rr

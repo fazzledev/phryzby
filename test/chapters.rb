@@ -30,7 +30,7 @@ INDEXED = Physics.playground
 # The machinery tests draw rather than read, and want every quantity the
 # picture can be told about on a control. A chapter holds whatever it is not
 # about, and which that is changes as the book is written; this does not.
-play_with Reflection, RefractiveIndex do
+play_with Reflection, RelativeIndex do
   title "Drawing"
   description "Every quantity the picture can be told about, on a control."
 

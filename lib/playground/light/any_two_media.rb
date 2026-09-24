@@ -11,7 +11,8 @@ play_with Refraction do
   input :into, REFRACTIVE_MEDIA, default: "glass"
 
   input(:i)    { 20.deg }
-  input(:mu21) { into / from }
+  input(:mu1) { from }
+  input(:mu2) { into }
 
   output("bends") do
     turned = solve(:rr) - solve(:i)

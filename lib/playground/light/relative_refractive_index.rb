@@ -1,17 +1,19 @@
 require_relative "../../light/reflection"
-require_relative "../../light/refraction"
+require_relative "../../light/relative_index"
 require_relative "../../light/picture"
 
 RATIO = 0.25..4.0
 
-play_with Reflection, Refraction do
+play_with Reflection, RelativeIndex do
   title "Relative Refractive Index"
-  question "What do those angles have in common?"
-  description "One number each, and the law knows nothing else about the pair: not which two media make it, only what the two of them come to together."
+  question "Do both numbers matter, or only what they come to?"
+  description "Only what they come to. One file says so — mu21 is mu2 over mu1 — and here the first medium is called 1, which leaves the second one standing for the pair."
 
   input :mu21, RATIO, default: 0.75, marks: { "critical" => 0.5, "alike" => 1.0 }
 
-  input(:i) { 30.deg }
+  input(:i)   { 30.deg }
+  input(:mu1) { 1.0 }
+  input(:mu2) { mu21 }
 
   output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
   output :rr

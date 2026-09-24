@@ -5,10 +5,11 @@ require_relative "../../light/picture"
 play_with Refraction do
   title "Refraction: Air to Water"
   question "Where does a ray go when it hits water?"
-  description "It goes through, and bends toward the normal doing so. The two angles are neither equal nor proportional; what they hold to is a ratio of their sines."
+  description "It goes through, and bends toward the normal doing so. The two angles are neither equal nor proportional: what each medium does to the sine of its own angle, the other undoes."
 
   input :i, default: 60.deg
-  input(:mu21) { REFRACTIVE_MEDIA.fetch("water") / REFRACTIVE_MEDIA.fetch("air") }
+  input(:mu1) { REFRACTIVE_MEDIA.fetch("air") }
+  input(:mu2) { REFRACTIVE_MEDIA.fetch("water") }
 
   output :rr
 

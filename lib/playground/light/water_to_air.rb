@@ -8,7 +8,8 @@ play_with Refraction do
   description "It bends away from the normal instead, and far enough round there is no way across at all."
 
   input :i, default: 45.deg
-  input(:mu21) { REFRACTIVE_MEDIA.fetch("air") / REFRACTIVE_MEDIA.fetch("water") }
+  input(:mu1) { REFRACTIVE_MEDIA.fetch("water") }
+  input(:mu2) { REFRACTIVE_MEDIA.fetch("air") }
 
   output :rr
   output :no_refracted_ray, alarm: true

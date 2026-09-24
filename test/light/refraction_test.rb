@@ -1,9 +1,9 @@
 require "minitest/autorun"
 require_relative "../../lib/light/reflection"
-require_relative "../../lib/light/refractive_index"
+require_relative "../../lib/light/relative_index"
 
 class RefractionTest < Minitest::Test
-  SURFACE = Physics::Scenario.including(Reflection, RefractiveIndex)
+  SURFACE = Physics::Scenario.including(Reflection, RelativeIndex)
   FLAT_ALONG_THE_SURFACE = Math::PI / 2
 
   AIR = 1.0
@@ -24,13 +24,14 @@ class RefractionTest < Minitest::Test
 
   def test_the_ratio_is_a_quantity_of_its_own_worked_out_from_the_two_media
     ray = ray(from: AIR, into: GLASS, i: 30)
-    ray.solve(:rr)
 
-    assert_in_delta 1.5, ray[:mu21], 1e-9
+    assert_in_delta 1.5, ray.solve(:mu21), 1e-9
   end
 
-  def test_snells_law_is_written_as_the_ratio
-    assert_equal "mu21 == (sin(i) / sin(rr))",
+  # Snell as it is written down: what one medium does to the sine, the other
+  # undoes. Neither number is privileged, and nothing is divided by anything.
+  def test_snells_law_is_written_the_way_it_is_written_down
+    assert_equal "(mu1 * sin(i)) == (mu2 * sin(rr))",
                  Refraction.equations.fetch(:snells_law).to_s
   end
 
@@ -40,11 +41,14 @@ class RefractionTest < Minitest::Test
     assert_in_delta 1.5, ray.solve(:mu21), 1e-4
   end
 
+  # The condition asks after the second medium, which nobody gave: it is the
+  # ratio and the first medium, and it is worked out before the question is
+  # answered.
   def test_a_condition_works_out_the_quantities_it_mentions
-    ray = ray(from: GLASS, into: AIR, i: 50)
+    ray = SURFACE.new(i: 50.deg, mu1: GLASS, mu21: AIR / GLASS)
 
     assert ray.satisfies?(:no_refracted_ray)
-    assert_in_delta 1.0 / 1.5, ray[:mu21], 1e-9
+    assert_in_delta AIR, ray[:mu2], 1e-9
   end
 
   def test_checking_a_law_never_makes_it_true
@@ -104,8 +108,11 @@ class RefractionTest < Minitest::Test
     end
   end
 
-  def test_normal_incidence_is_outside_this_formulation
-    assert_raises(RuntimeError) { solved(:rr, from: AIR, into: GLASS, i: 0) }
+  # Written as a ratio this had no answer — mu21 == 0 / sin(rr) is mu21 for
+  # every rr there is. Written out, the residual is mu2 * sin(rr), and it
+  # goes to nothing exactly where the ray goes straight on.
+  def test_a_ray_arriving_square_on_goes_straight_on
+    assert_in_delta 0.0, solved(:rr, from: AIR, into: GLASS, i: 0), 1e-9
   end
 
   def test_refuses_to_solve_what_is_not_determined

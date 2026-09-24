@@ -11,7 +11,8 @@ play_with Reflection, Refraction do
   input :from, REFRACTIVE_MEDIA, default: "water"
 
   input(:i)    { 30.deg }
-  input(:mu21) { REFRACTIVE_MEDIA.fetch("air") / from }
+  input(:mu1) { from }
+  input(:mu2) { REFRACTIVE_MEDIA.fetch("air") }
 
   output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
   output :rr

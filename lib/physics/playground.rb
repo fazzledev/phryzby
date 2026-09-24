@@ -257,12 +257,14 @@ module Physics
       @chosen.to_h { |name, table| [ name, table.values[values.fetch(name).to_i] ] }
     end
 
-    # A chosen name stands for what it is worth, and a `given` turns what was
-    # chosen into something a law has a quantity for.
+    # A chosen name stands for what it is worth, and a `given` turns what the
+    # page holds — whatever was picked and whatever was slid — into something
+    # a law has a quantity for.
     def posed(values)
       return values if @given.empty?
 
-      here = Data.define(*@chosen.keys).new(**worths(values))
+      held = values.except(*@chosen.keys).merge(worths(values))
+      here = held.empty? ? Data.define.new : Data.define(*held.keys).new(**held)
 
       values.except(*@chosen.keys)
             .merge(@given.transform_values { |how| here.instance_exec(&how) })

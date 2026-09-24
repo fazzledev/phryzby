@@ -12,7 +12,10 @@ class CriticalAngleTest < Minitest::Test
 
   def test_it_holds_the_crossing_the_chapters_before_it_held
     assert_equal({ i: 30.deg }, opening)
-    assert_in_delta 1.0 / 1.33, playing.posing(**opening).solve(:mu21), 1e-9
+    posed = playing.posing(**opening)
+
+    assert_in_delta 1.33, posed.solve(:mu1), 1e-9
+    assert_in_delta 1.0, posed.solve(:mu2), 1e-9
   end
 
   def test_nothing_states_the_critical_angle

@@ -1,21 +1,20 @@
 require_relative "../../light/reflection"
-require_relative "../../light/refractive_index"
+require_relative "../../light/refraction"
 require_relative "../../light/refractive_media"
 require_relative "../../light/picture"
 
 INDEX = 1.0..4.0
 
-play_with Reflection, RefractiveIndex do
+play_with Reflection, Refraction do
   title "Refractive Index"
-  question "Where does that one number come from?"
-  description "From one number each. What a medium does to light is its own, and only the ratio of the two ever shows."
+  question "Where does the bending come from?"
+  description "From one number each. Every medium has its own, the law asks for both, and everything the last five chapters held fixed was a pair of them."
 
   input :mu1, INDEX, default: 1.33, marks: REFRACTIVE_MEDIA
   input :mu2, INDEX, default: 1.0, marks: REFRACTIVE_MEDIA
 
   input(:i) { 30.deg }
 
-  output :mu21
   output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
   output :rr
   output :no_refracted_ray, alarm: true

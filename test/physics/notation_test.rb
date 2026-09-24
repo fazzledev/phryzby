@@ -1,5 +1,6 @@
 require "minitest/autorun"
 require_relative "../../lib/light/total_internal_reflection"
+require_relative "../../lib/light/relative_index"
 require_relative "../../lib/light/reflection"
 
 class NotationTest < Minitest::Test
@@ -10,7 +11,7 @@ class NotationTest < Minitest::Test
   end
 
   def test_a_division_becomes_a_fraction
-    assert_includes Refraction.equations.fetch(:snells_law).to_mathml, "<mfrac>"
+    assert_includes Refraction.conditions.fetch(:no_refracted_ray).to_mathml, "<mfrac>"
   end
 
   def test_a_fraction_raised_to_a_power_is_bracketed
@@ -18,14 +19,14 @@ class NotationTest < Minitest::Test
   end
 
   def test_a_fraction_on_its_own_is_not_bracketed
-    refute_includes RefractiveIndex.equations.fetch(:relative_index).to_mathml, Physics::BinOp::FENCE % "("
+    refute_includes RelativeIndex.equations.fetch(:relative_index).to_mathml, Physics::BinOp::FENCE % "("
   end
 
   def test_it_walks_the_tree_rather_than_the_source
     written = Refraction.equations.fetch(:snells_law)
 
-    assert_equal "mu21 == (sin(i) / sin(rr))", written.to_s
-    assert_includes written.to_mathml, "<msub><mi>μ</mi><mi>21</mi></msub>"
+    assert_equal "(mu1 * sin(i)) == (mu2 * sin(rr))", written.to_s
+    assert_includes written.to_mathml, "<msub><mi>μ</mi><mi>1</mi></msub>"
   end
 
   def test_a_title_comes_from_the_module_name
@@ -38,7 +39,7 @@ class NotationTest < Minitest::Test
 
     assert_includes html, "<td>angle of incidence</td>"
     assert_includes html, "<td>Incidence</td>"
-    assert_includes html, "<td>relative refractive index</td>"
+    assert_includes html, "<td>refractive index of first medium</td>"
   end
 
   def test_a_law_states_its_equations_and_conditions
@@ -88,7 +89,7 @@ class NotationTest < Minitest::Test
 
   def test_a_quantity_is_written_as_the_first_short_name_given_for_it
     assert_equal :i, Refraction.written(:angle_of_incidence)
-    assert_equal :mu21, Refraction.written(:relative_refractive_index)
+    assert_equal :mu21, RelativeIndex.written(:relative_refractive_index)
   end
 
   def test_a_quantity_appears_once_however_many_names_reach_it
