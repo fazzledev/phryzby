@@ -94,26 +94,47 @@ module Flight
       reached = value(:x)
       return "" if speed.nil? || reached.nil? || reached.zero?
 
-      points = (0..STEPS).map do |n|
+      # Nothing pushes it sideways, so it covers the ground at a steady rate:
+      # walking the arc in equal steps of across is walking it in equal steps
+      # of time, which is what lets the ball be paced by the physics below.
+      @walked = (0..STEPS).map do |n|
         across = reached * n / STEPS
         high = across * Math.tan(turned) -
                pull * across**2 / (2 * speed**2 * Math.cos(turned)**2)
-        "#{along(across).round(2)},#{up(high).round(2)}"
+        [ along(across).round(2), up(high).round(2) ]
       end
 
-      %(<path id="flight" d="M #{points.join(' L ')}" fill="none" stroke="var(--light)" ) +
+      drawn = @walked.map { |point| point.join(",") }
+
+      %(<path id="flight" d="M #{drawn.join(' L ')}" fill="none" stroke="var(--light)" ) +
         %(stroke-width="2.5" stroke-linecap="round"/>) + landing(turned) + flying
     end
 
     # The arc is where it went; this is it going. Nothing here chooses how
     # long that takes — the law was asked, and the ball is in the air for the
     # time of flight it answered with. Pull harder and it hurries.
+    #
+    # Nor does anything here choose how it is paced. Left to itself the motion
+    # would run at one speed along the arc, which no thrown thing does: it is
+    # quickest leaving and landing and slowest at the top, where none of its
+    # going is upward any more. So each vertex is told when it is reached —
+    # evenly, because the vertices are even in time — and how far along the
+    # arc that is, which is not even at all.
     def flying
       seconds = value(:t)
-      return "" if seconds.nil? || seconds < 1e-6
+      return "" if seconds.nil? || seconds < 1e-6 || @walked.nil?
+
+      steps = @walked.each_cons(2).map { |(from, to)| Math.hypot(to[0] - from[0], to[1] - from[1]) }
+      arc = steps.sum
+      return "" if arc < 1e-9
+
+      gone = steps.each_with_object([ 0.0 ]) { |step, kept| kept << kept.last + step }
+      reached = gone.map { |so_far| (so_far / arc).round(4) }
+      clock = (0..STEPS).map { |n| (n.to_f / STEPS).round(4) }
 
       %(<circle class="ball" r="3.5" fill="var(--light)">) +
-        %(<animateMotion dur="#{seconds.round(3)}s" repeatCount="indefinite">) +
+        %(<animateMotion dur="#{seconds.round(3)}s" repeatCount="indefinite" ) +
+        %(calcMode="linear" keyTimes="#{clock.join(';')}" keyPoints="#{reached.join(';')}">) +
         %(<mpath href="#flight"/></animateMotion></circle>)
     end
 

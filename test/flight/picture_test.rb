@@ -57,6 +57,35 @@ class FlightPictureTest < Minitest::Test
     assert_includes drawn, %(dur="#{seconds.round(3)}s")
   end
 
+  # Left to itself the motion runs at one speed along the arc. A thrown thing
+  # does not: it is quickest leaving and landing, and at the top none of its
+  # going is upward, so it is down to however fast it is crossing the ground.
+  # The ratio of the two is 1 over cos of the angle it left at.
+  def test_the_ball_is_slowest_at_the_top
+    steps = paces(drawn)
+    middle = steps[steps.size / 2]
+
+    assert_operator middle, :<, steps.first
+    assert_in_delta 1 / Math.cos(45.deg), steps.first / middle, 0.02
+  end
+
+  # Half the time gets it half the way along, whatever the angle: what it does
+  # going up, it undoes coming down.
+  def test_it_is_half_way_along_at_half_the_time
+    [ 20.deg, 45.deg, 80.deg ].each do |turned|
+      svg = drawn(theta: turned)
+      clock = svg[/keyTimes="([^"]+)"/, 1].split(";").map(&:to_f)
+      reached = svg[/keyPoints="([^"]+)"/, 1].split(";").map(&:to_f)
+
+      assert_in_delta 0.5, clock[clock.size / 2], 1e-9
+      assert_in_delta 0.5, reached[reached.size / 2], 1e-3
+    end
+  end
+
+  def paces(svg)
+    svg[/keyPoints="([^"]+)"/, 1].split(";").map(&:to_f).each_cons(2).map { |a, b| b - a }
+  end
+
   def test_a_throw_that_never_leaves_the_ground_has_no_ball_to_fly
     refute_includes drawn(theta: 0.0), "animateMotion"
   end
