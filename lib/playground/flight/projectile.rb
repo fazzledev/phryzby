@@ -18,10 +18,10 @@ play_with Projectile do
   output :h, in: :metres
   output :t, in: :seconds
 
-  draw Flight::Picture do
+  draw Flight::Picture, across: 65 do
     ground
     flight "thrown", leaving_at: :theta
-    span "range", :x
+    reach "range", :x
     apex "peak", :h
   end
 end

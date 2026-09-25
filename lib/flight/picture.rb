@@ -14,23 +14,29 @@ module Flight
     STEPS = 48
     HEAD = 7
 
-    def initialize(scenario, chosen = {}, **_how)
+    # `across` is how much ground is in view, in metres. It is the chapter's
+    # to choose and it does not move: a frame cut to fit whatever was thrown
+    # would draw every throw the same size, and then nothing the reader did
+    # would show.
+    def initialize(scenario, chosen = {}, across: nil)
       @scenario = scenario
       @chosen = chosen
+      @across = across
       @shapes = []
       @wanted = []
     end
 
     # The ground it is thrown from and lands back on. Everything else is
     # measured off this line.
-    # The ground, and how much of it is in the picture. The frame is cut for
-    # the furthest this chapter can throw, and that depends on the pull — so
-    # on a world that pulls less the same arc covers more ground, and the only
-    # honest way to say so is to say how much.
+    # The ground, and how much of it is in the picture — which is fixed, so it
+    # is a ruler as much as a label: everything drawn above it is measured
+    # against this one number.
     def ground(called: nil)
       @shapes.unshift(turf)
-      want(called || format("%g m of ground", (REACH / scale).round), [ [ 294, GROUND + 15, "end" ] ],
-           fixed: true)
+      # Up in the corner, out of the way: it is a caption about the whole
+      # frame rather than a mark on the ground, and everything that is a mark
+      # on the ground wants the room under the line.
+      want(called || format("%g m of ground", span.round), [ [ 294, 14, "end" ] ], fixed: true)
     end
 
     # The whole throw: the arc it flies, the angle it left at, and the hand
@@ -40,29 +46,84 @@ module Flight
       return if turned.nil?
 
       @dragged = leaving_at if draggable?(leaving_at)
-      @shapes.push(arc(turned), swept(turned), thrown)
+      @shapes.push(arc(turned), swept(turned), launched(turned), thrown)
       want(called, aloft(turned), colour: "var(--light)")
     end
 
-    # How far it got, marked on the ground it got there along.
-    def span(called, name)
-      metres = value(name)
-      return if metres.nil?
+    PUSH = 76
 
-      @shapes.push(dropped(along(metres)), tick(along(metres)))
-      want(called, [ [ along(metres), GROUND + 15, "middle" ],
-                     [ along(metres) - 8, GROUND + 15, "end" ],
-                     [ along(metres) + 8, GROUND + 15, "start" ] ])
+    # What it left the hand with, as an arrow: the way it was going and how
+    # fast. A speed is not a distance and cannot be laid on the ground's
+    # scale, so it is drawn against the fastest the chapter allows — which is
+    # the one thing on the page it can honestly be compared with.
+    def launched(turned)
+      speed = value(:u)
+      return "" if speed.nil? || speed <= 0
+
+      long = PUSH * speed / fastest
+      tip = [ (START + Math.cos(turned) * long).round(2),
+              (GROUND - Math.sin(turned) * long).round(2) ]
+      wing = lambda do |swing|
+        [ (tip[0] - Math.cos(turned + swing) * HEAD).round(2),
+          (tip[1] + Math.sin(turned + swing) * HEAD).round(2) ].join(",")
+      end
+
+      %(<line x1="#{START}" y1="#{GROUND}" x2="#{tip[0]}" y2="#{tip[1]}" ) +
+        %(stroke="var(--ink)" stroke-width="1.6"/>) +
+        %(<path class="head" d="M #{tip.join(',')} L #{wing.call(0.42)} L #{wing.call(-0.42)} z" ) +
+        %(fill="var(--ink)"/>).tap { quickly(speed, tip) }
     end
 
-    # The top of the arc, marked across to the edge it is measured from.
-    def apex(called, name)
+    # How fast it left, out past the point of the arrow and off to either side
+    # of it — the same way a ray's name keeps near the ray without standing
+    # on whatever else is there.
+    def quickly(speed, tip)
+      want(format("%.1f m/s", speed),
+           [ [ tip[0] + 7, tip[1] - 5, "start" ], [ tip[0] + 7, tip[1] + 13, "start" ],
+             [ tip[0] - 7, tip[1] - 7, "end" ],   [ tip[0] - 7, tip[1] + 15, "end" ],
+             [ tip[0] + 7, tip[1] - 19, "start" ], [ tip[0] - 7, tip[1] - 21, "end" ] ],
+           colour: "var(--ink-mid)")
+    end
+
+    # How far it got, marked on the ground it got there along — unless it got
+    # further than the picture does, which on a world that pulls lightly it
+    # will. Then all the picture can honestly say is that it went that way.
+    def reach(called, name)
       metres = value(name)
       return if metres.nil?
 
+      if along(metres) > WIDTH - 4
+        return want("#{called} \u2192", [ [ WIDTH - 6, GROUND - 7, "end" ],
+                                        [ WIDTH - 6, GROUND - 19, "end" ] ], colour: "var(--light)")
+      end
+
+      at = along(metres)
+      @shapes.push(dropped(at), tick(at))
+
+      # Under the landing if there is room, and above the ground line if the
+      # ruler has the bottom — which it has whenever the throw is short.
+      want(called, [ [ at, GROUND + 15, "middle" ], [ at + 9, GROUND + 15, "start" ],
+                     [ at - 9, GROUND + 15, "end" ], [ at, GROUND - 9, "middle" ],
+                     [ at + 11, GROUND - 9, "start" ], [ at - 11, GROUND - 9, "end" ],
+                     [ at, GROUND - 21, "middle" ] ])
+    end
+
+    # The top of the arc, marked across to the edge it is measured from — and
+    # not marked at all when the top is above the picture.
+    def apex(called, name)
+      metres = value(name)
+      return if metres.nil? || up(metres) < 6
+
       @shapes.push(levelled(up(metres)))
+
+      # It can be read anywhere along the line it names, so it asks for the
+      # near end first and works out along it only if something is there.
       want(called, [ [ START - 4, up(metres) - 4, "start" ],
-                     [ START - 4, up(metres) + 12, "start" ] ])
+                     [ START - 4, up(metres) + 12, "start" ],
+                     [ WIDTH - 14, up(metres) - 4, "end" ],
+                     [ WIDTH - 14, up(metres) + 12, "end" ],
+                     [ WIDTH / 2, up(metres) - 4, "middle" ],
+                     [ WIDTH / 2, up(metres) + 12, "middle" ] ])
     end
 
     def note(text, when: nil)
@@ -84,11 +145,13 @@ module Flight
 
     private
 
-    # The frame is cut for the fastest throw the chapter allows, and that is
-    # something the playground already said: it is the far end of the control.
+    # Told nothing, the frame is cut for the fastest throw the chapter allows
+    # under the pull it is under — which the playground already said, in the
+    # far end of its own control.
     def fastest = @scenario.class.playground.inputs[:u][:range].end
     def pull = value(:g) || 9.81
-    def scale = REACH / (fastest**2 / pull)
+    def span = @across || fastest**2 / pull
+    def scale = REACH / span
 
     def along(metres) = START + metres * scale
     def up(metres) = GROUND - metres * scale
@@ -209,9 +272,12 @@ module Flight
     end
 
     # Out past the top of the arc, and off to either side of it if something
-    # is already standing there.
-    def aloft(turned)
-      top = [ along(value(:x) / 2), up(value(:h)) ]
+    # is already standing there. A throw whose top is outside the picture is
+    # named where it leaves it instead, since that is the last of it anyone
+    # can see.
+    def aloft(_turned)
+      top = [ along(value(:x) / 2).clamp(30.0, WIDTH - 30.0),
+              up(value(:h)).clamp(16.0, GROUND - 10.0) ]
 
       [ [ top[0], top[1] - 8, "middle" ], [ top[0] + 10, top[1] - 8, "start" ],
         [ top[0] - 10, top[1] - 8, "end" ], [ top[0], top[1] + 14, "middle" ] ]
@@ -226,11 +292,20 @@ module Flight
     end
 
     # The angle is swung about the hand, and measured up from the ground —
-    # not from an upright, the way an optics picture measures one.
+    # not from an upright, the way an optics picture measures one. And the
+    # hand holds two things at once: which way it is thrown is where you are
+    # round from it, how hard is how far out, on the same scale the arrow is
+    # drawn at.
     def held
       return "" unless @dragged
 
-      %( data-drags="#{@dragged}" data-at="#{START} #{GROUND}")
+      %( data-drags="#{@dragged}" data-at="#{START} #{GROUND}") + pulled
+    end
+
+    def pulled
+      return "" unless @scenario.class.playground.inputs.key?(:u)
+
+      %( data-pulls="u" data-per="#{(fastest / PUSH.to_f).round(6)}")
     end
 
     # Everything above the ground answers to the hand.

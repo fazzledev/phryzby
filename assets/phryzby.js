@@ -693,16 +693,29 @@ function mountDragging(frame) {
 
   let swinging = false;
 
+  // A control set to the nearest notch it can reach, without telling the page
+  // yet: a drag may move two of them, and the page should redraw once.
+  const hold = (name, value) => {
+    const control = document.getElementById(name);
+    if (!control) return null;
+
+    const step = Number(control.step) || 0.01;
+    const held = Math.min(Number(control.max),
+                          Math.max(Number(control.min), Math.round(value / step) * step));
+    if (Number(control.value) === held) return control;
+
+    control.value = String(held);
+    return control;
+  };
+
   const swing = (event) => {
     const svg = frame.querySelector("svg[data-drags]");
     if (!svg) return false;
 
-    const control = document.getElementById(svg.dataset.drags);
-    if (!control) return false;
-
     const box = svg.getBoundingClientRect();
     const x = ((event.clientX - box.left) / box.width) * 300;
     const y = ((event.clientY - box.top) / box.height) * 200;
+    const at = svg.dataset.at && svg.dataset.at.split(" ").map(Number);
 
     // An angle is swung about a point and measured off a line, and which
     // line that is depends on the picture. A ray's angle is measured off the
@@ -710,19 +723,20 @@ function mountDragging(frame) {
     // Either way it is a magnitude, so crossing over the line it is measured
     // from would swing it back rather than on through nothing: both ways out
     // of the quarter it lives in stop where they leave it.
-    const turned = svg.dataset.at
-      ? (([ ax, ay ]) => Math.atan2(Math.max(0, ay - y), Math.max(0, x - ax)))
-          (svg.dataset.at.split(" ").map(Number))
+    const turned = at
+      ? Math.atan2(Math.max(0, at[1] - y), Math.max(0, x - at[0]))
       : Math.atan2(Math.max(0, 150 - x), Math.max(0, Number(svg.dataset.into) * (y - 100)));
 
-    const step = Number(control.step) || 0.01;
-    const held = Math.min(Number(control.max),
-                          Math.max(Number(control.min), Math.round(turned / step) * step));
+    const swung = hold(svg.dataset.drags, turned);
+    if (!swung) return false;
 
-    if (Number(control.value) === held) return true;
+    // Round about the hand is which way; out from it is how hard. A picture
+    // that says nothing about the second only ever answers to the first.
+    const pulled = at && svg.dataset.pulls
+      ? hold(svg.dataset.pulls, Math.hypot(x - at[0], y - at[1]) * Number(svg.dataset.per))
+      : null;
 
-    control.value = String(held);
-    control.dispatchEvent(new Event("input", { bubbles: true }));
+    (pulled || swung).dispatchEvent(new Event("input", { bubbles: true }));
     return true;
   };
 
