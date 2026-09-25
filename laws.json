@@ -24,6 +24,20 @@
         "called": "gravity"
       },
       {
+        "id": "q:speed_across",
+        "kind": "quantity",
+        "base": "u",
+        "under": "x",
+        "called": "speed across"
+      },
+      {
+        "id": "q:speed_up",
+        "kind": "quantity",
+        "base": "u",
+        "under": "y",
+        "called": "speed up"
+      },
+      {
         "id": "q:range",
         "kind": "quantity",
         "base": "R",
@@ -94,6 +108,18 @@
         "called": "angle of travel"
       },
       {
+        "id": "e:horizontal_component",
+        "kind": "equation",
+        "said": "horizontal component",
+        "maths": "<msub><mi>u</mi><mi>x</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
+      },
+      {
+        "id": "e:vertical_component",
+        "kind": "equation",
+        "said": "vertical component",
+        "maths": "<msub><mi>u</mi><mi>y</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
+      },
+      {
         "id": "e:horizontal_range",
         "kind": "equation",
         "said": "horizontal range",
@@ -103,13 +129,13 @@
         "id": "e:maximum_height",
         "kind": "equation",
         "said": "maximum height",
-        "maths": "<mi>H</mi><mo>=</mo><mfrac><mrow><msup><mrow><mo class=\"fence\" stretchy=\"false\">(</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mn>2</mn></mrow></msup></mrow><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>g</mi></mrow></mfrac>"
+        "maths": "<mi>H</mi><mo>=</mo><mfrac><mrow><msup><mrow><msub><mi>u</mi><mi>y</mi></msub></mrow><mrow><mn>2</mn></mrow></msup></mrow><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>g</mi></mrow></mfrac>"
       },
       {
         "id": "e:time_of_flight",
         "kind": "equation",
         "said": "time of flight",
-        "maths": "<mi>T</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
+        "maths": "<mi>T</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><msub><mi>u</mi><mi>y</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
       },
       {
         "id": "e:elapsed_time",
@@ -121,25 +147,25 @@
         "id": "e:horizontal_displacement",
         "kind": "equation",
         "said": "horizontal displacement",
-        "maths": "<mi>x</mi><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo>&#x22c5;</mo><mi>t</mi>"
+        "maths": "<mi>x</mi><mo>=</mo><msub><mi>u</mi><mi>x</mi></msub><mo>&#x22c5;</mo><mi>t</mi>"
       },
       {
         "id": "e:vertical_displacement",
         "kind": "equation",
         "said": "vertical displacement",
-        "maths": "<mi>y</mi><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo>&#x22c5;</mo><mi>t</mi><mo>-</mo><mfrac><mrow><mi>g</mi><mo>&#x22c5;</mo><msup><mrow><mi>t</mi></mrow><mrow><mn>2</mn></mrow></msup></mrow><mrow><mn>2</mn></mrow></mfrac>"
+        "maths": "<mi>y</mi><mo>=</mo><msub><mi>u</mi><mi>y</mi></msub><mo>&#x22c5;</mo><mi>t</mi><mo>-</mo><mfrac><mrow><mi>g</mi><mo>&#x22c5;</mo><msup><mrow><mi>t</mi></mrow><mrow><mn>2</mn></mrow></msup></mrow><mrow><mn>2</mn></mrow></mfrac>"
       },
       {
         "id": "e:horizontal_velocity",
         "kind": "equation",
         "said": "horizontal velocity",
-        "maths": "<msub><mi>v</mi><mi>x</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
+        "maths": "<msub><mi>v</mi><mi>x</mi></msub><mo>=</mo><msub><mi>u</mi><mi>x</mi></msub>"
       },
       {
         "id": "e:vertical_velocity",
         "kind": "equation",
         "said": "vertical velocity",
-        "maths": "<msub><mi>v</mi><mi>y</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo>-</mo><mi>g</mi><mo>&#x22c5;</mo><mi>t</mi>"
+        "maths": "<msub><mi>v</mi><mi>y</mi></msub><mo>=</mo><msub><mi>u</mi><mi>y</mi></msub><mo>-</mo><mi>g</mi><mo>&#x22c5;</mo><mi>t</mi>"
       },
       {
         "id": "e:direction_of_travel",
@@ -149,6 +175,30 @@
       }
     ],
     "links": [
+      {
+        "source": "e:horizontal_component",
+        "target": "q:speed_across"
+      },
+      {
+        "source": "e:horizontal_component",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:horizontal_component",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:vertical_component",
+        "target": "q:speed_up"
+      },
+      {
+        "source": "e:vertical_component",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:vertical_component",
+        "target": "q:angle_of_throw"
+      },
       {
         "source": "e:horizontal_range",
         "target": "q:range"
@@ -171,11 +221,7 @@
       },
       {
         "source": "e:maximum_height",
-        "target": "q:speed"
-      },
-      {
-        "source": "e:maximum_height",
-        "target": "q:angle_of_throw"
+        "target": "q:speed_up"
       },
       {
         "source": "e:maximum_height",
@@ -187,11 +233,7 @@
       },
       {
         "source": "e:time_of_flight",
-        "target": "q:speed"
-      },
-      {
-        "source": "e:time_of_flight",
-        "target": "q:angle_of_throw"
+        "target": "q:speed_up"
       },
       {
         "source": "e:time_of_flight",
@@ -215,11 +257,7 @@
       },
       {
         "source": "e:horizontal_displacement",
-        "target": "q:speed"
-      },
-      {
-        "source": "e:horizontal_displacement",
-        "target": "q:angle_of_throw"
+        "target": "q:speed_across"
       },
       {
         "source": "e:horizontal_displacement",
@@ -231,11 +269,7 @@
       },
       {
         "source": "e:vertical_displacement",
-        "target": "q:speed"
-      },
-      {
-        "source": "e:vertical_displacement",
-        "target": "q:angle_of_throw"
+        "target": "q:speed_up"
       },
       {
         "source": "e:vertical_displacement",
@@ -251,11 +285,7 @@
       },
       {
         "source": "e:horizontal_velocity",
-        "target": "q:speed"
-      },
-      {
-        "source": "e:horizontal_velocity",
-        "target": "q:angle_of_throw"
+        "target": "q:speed_across"
       },
       {
         "source": "e:vertical_velocity",
@@ -263,11 +293,7 @@
       },
       {
         "source": "e:vertical_velocity",
-        "target": "q:speed"
-      },
-      {
-        "source": "e:vertical_velocity",
-        "target": "q:angle_of_throw"
+        "target": "q:speed_up"
       },
       {
         "source": "e:vertical_velocity",
@@ -316,6 +342,20 @@
         "called": "gravity"
       },
       {
+        "id": "q:speed_across",
+        "kind": "quantity",
+        "base": "u",
+        "under": "x",
+        "called": "speed across"
+      },
+      {
+        "id": "q:speed_up",
+        "kind": "quantity",
+        "base": "u",
+        "under": "y",
+        "called": "speed up"
+      },
+      {
         "id": "q:range",
         "kind": "quantity",
         "base": "R",
@@ -337,6 +377,18 @@
         "called": "time of flight"
       },
       {
+        "id": "e:horizontal_component",
+        "kind": "equation",
+        "said": "horizontal component",
+        "maths": "<msub><mi>u</mi><mi>x</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
+      },
+      {
+        "id": "e:vertical_component",
+        "kind": "equation",
+        "said": "vertical component",
+        "maths": "<msub><mi>u</mi><mi>y</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
+      },
+      {
         "id": "e:horizontal_range",
         "kind": "equation",
         "said": "horizontal range",
@@ -346,16 +398,40 @@
         "id": "e:maximum_height",
         "kind": "equation",
         "said": "maximum height",
-        "maths": "<mi>H</mi><mo>=</mo><mfrac><mrow><msup><mrow><mo class=\"fence\" stretchy=\"false\">(</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mn>2</mn></mrow></msup></mrow><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>g</mi></mrow></mfrac>"
+        "maths": "<mi>H</mi><mo>=</mo><mfrac><mrow><msup><mrow><msub><mi>u</mi><mi>y</mi></msub></mrow><mrow><mn>2</mn></mrow></msup></mrow><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>g</mi></mrow></mfrac>"
       },
       {
         "id": "e:time_of_flight",
         "kind": "equation",
         "said": "time of flight",
-        "maths": "<mi>T</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
+        "maths": "<mi>T</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><msub><mi>u</mi><mi>y</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
       }
     ],
     "links": [
+      {
+        "source": "e:horizontal_component",
+        "target": "q:speed_across"
+      },
+      {
+        "source": "e:horizontal_component",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:horizontal_component",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:vertical_component",
+        "target": "q:speed_up"
+      },
+      {
+        "source": "e:vertical_component",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:vertical_component",
+        "target": "q:angle_of_throw"
+      },
       {
         "source": "e:horizontal_range",
         "target": "q:range"
@@ -378,11 +454,7 @@
       },
       {
         "source": "e:maximum_height",
-        "target": "q:speed"
-      },
-      {
-        "source": "e:maximum_height",
-        "target": "q:angle_of_throw"
+        "target": "q:speed_up"
       },
       {
         "source": "e:maximum_height",
@@ -394,11 +466,7 @@
       },
       {
         "source": "e:time_of_flight",
-        "target": "q:speed"
-      },
-      {
-        "source": "e:time_of_flight",
-        "target": "q:angle_of_throw"
+        "target": "q:speed_up"
       },
       {
         "source": "e:time_of_flight",

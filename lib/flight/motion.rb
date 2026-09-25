@@ -24,11 +24,11 @@ module Motion
 
   equation(:elapsed_time) { t == k * T }
 
-  equation(:horizontal_displacement) { x == u * cos(theta_0) * t }
-  equation(:vertical_displacement)   { y == u * sin(theta_0) * t - g * t**2 / 2 }
+  equation(:horizontal_displacement) { x == u_x * t }
+  equation(:vertical_displacement)   { y == u_y * t - g * t**2 / 2 }
 
-  equation(:horizontal_velocity) { v_x == u * cos(theta_0) }
-  equation(:vertical_velocity)   { v_y == u * sin(theta_0) - g * t }
+  equation(:horizontal_velocity) { v_x == u_x }
+  equation(:vertical_velocity)   { v_y == u_y - g * t }
 
   # Which way it is going now. This is the angle, plainly: the one the throw
   # left at is the special case, taken at nought seconds, and that is the one
