@@ -174,6 +174,11 @@ svg[data-drags]:active .grab{cursor:grabbing;}
    the end of a name that filled its column. */
 .field > label,.out span:first-child{font-size:.8rem;color:var(--ink-mid);
   padding-right:.5rem;}
+/* A group inside the inputs or the outputs, marked off rather than headed:
+   what is under it belongs to the same page as what is above it. */
+.head.under{margin-top:.55rem;border-top:1px solid var(--rule);padding-top:.5rem;
+  color:var(--ink-soft);text-transform:none;letter-spacing:.04em;}
+
 .field > .var,.out .var{font-family:var(--mono);font-size:.9rem;color:var(--ink-mid);}
 /* The letter a control carries is the one the law writes, set the same way. */
 .field > .var math,.out .var math{font-size:1.02rem;color:var(--ink-mid);}

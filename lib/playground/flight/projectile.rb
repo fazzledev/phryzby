@@ -19,17 +19,19 @@ play_with Projectile do
 
   input(:g) { world }
 
-  input :k, 0.0..1.0, default: 0.5
-
-  output :r, in: :m
-  output :h, in: :m
+  output :r,   in: :m
+  output :h,   in: :m
   output :t_f, in: :s
 
-  output :t,  in: :s
-  output :x,  in: :m
-  output :y,  in: :m
-  output :v_x, in: :"m/s"
-  output :v_y, in: :"m/s"
+  about "one moment of it" do
+    input :k, 0.0..1.0, default: 0.5
+
+    output :t,   in: :s
+    output :x,   in: :m
+    output :y,   in: :m
+    output :v_x, in: :"m/s"
+    output :v_y, in: :"m/s"
+  end
 
   draw Flight::Picture do
     ground

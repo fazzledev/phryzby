@@ -37,6 +37,17 @@ module Physics
     # hanging in turn.
     def question(text) = @question = text
 
+    # A chapter that asks two things at once says which is which. Whatever is
+    # declared inside stands under its own heading, controls and readings
+    # alike, so a reader can see at a glance that the range is the whole
+    # throw and the height is one moment of it.
+    def about(called)
+      was = @about
+      @about = called
+      yield
+      @about = was
+    end
+
     # What the chapter is called and what it is about. It names the whole page,
     # so it belongs to none of the three things the page is made of.
     def heading
@@ -91,7 +102,16 @@ module Physics
 
     # Each heading names the verb that made what is under it, so the page and
     # the playground file beside it can be read straight across.
-    def head(text) = "<div class=\"head\">#{text}</div>"
+    def head(text, under: false) = "<div class=\"head#{under ? " under" : ""}\">#{text}</div>"
+
+    # Each group under the heading it was declared with, and whatever was
+    # declared before any group was opened under none.
+    def grouped(rows, &shown)
+      rows.chunk_while { |one, other| one.first == other.first }
+          .map { |chunk| (chunk.first.first ? head(chunk.first.first, under: true) : "") +
+                         shown.call(chunk.map(&:last)) }
+          .join
+    end
 
     # What changes when a control moves: the picture, the numbers, and the
     # reading beside each control.
@@ -116,7 +136,7 @@ module Physics
 
       @inputs[name] = { range: offered || as_far_as(name), reads: reads,
                         step: FINELY.fetch(reads, 0.01), default: default,
-                        as: as, marks: marks }
+                        as: as, marks: marks, about: @about }
     end
 
     # An angle is already held within a domain, and a slider runs the whole of
@@ -131,13 +151,14 @@ module Physics
       @chosen[name] = table
 
       { range: 0..(table.size - 1), step: 1, as: as, reads: nil, table: table,
+        about: @about,
         default: table.keys.index(default || table.keys.first),
         marks: table.keys.each_with_index.to_h }
     end
 
     def output(name, in: nil, as: nil, alarm: false, &worked_out)
       @outputs << { name: name, reads: binding.local_variable_get(:in) || read_as(name),
-                  as: as, alarm: alarm, from: worked_out }
+                  as: as, alarm: alarm, from: worked_out, about: @about }
     end
 
     # How a quantity reads is something the laws have already said. One held
@@ -173,16 +194,19 @@ module Physics
         end
         label = entry[:as] || (entry[:from] ? entry[:name].to_s : called(entry[:name]))
 
-        "<div#{entry[:alarm] ? ' class="alarm"' : ""}><span>#{label}</span>" \
-          "<span class=\"var\">#{written(entry[:name])}</span>" \
-          "<span class=\"val\">#{found}</span></div>"
+        [ entry[:about],
+          "<div#{entry[:alarm] ? ' class="alarm"' : ""}><span>#{label}</span>" \
+            "<span class=\"var\">#{written(entry[:name])}</span>" \
+            "<span class=\"val\">#{found}</span></div>" ]
       end
 
-      "<div class=\"out\">#{rows.join}</div>"
+      grouped(rows) { |shown| "<div class=\"out\">#{shown.join}</div>" }
     end
 
     def controls
-      @inputs.map { |name, set| set[:table] ? picked(name, set) : slid(name, set) }.join
+      grouped(@inputs.map { |name, set|
+        [ set[:about], set[:table] ? picked(name, set) : slid(name, set) ]
+      }) { |shown| shown.join }
     end
 
     def slid(name, set)
