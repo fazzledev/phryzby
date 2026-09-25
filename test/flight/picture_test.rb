@@ -155,10 +155,38 @@ class FlightPictureTest < Minitest::Test
     assert_equal 1, seen.map(&:last).uniq.size
   end
 
+  # Standing further back draws the same throw smaller, and says so on the
+  # ground. This is the reader's answer to a throw that left the picture, and
+  # the reason the frame can stay fixed without the chapter having to pick one
+  # width that suits the moon and jupiter both.
+  def test_standing_further_back_draws_the_same_throw_smaller
+    seen = IN_VIEW.keys.each_index.map do |view|
+      svg = drawn(in_view: view)
+      [ svg[/<path id="flight" d="M ([^"]+)"/, 1].split(" L ").last.split(",").first.to_f,
+        svg[/>(\d+) m of ground</, 1].to_i ]
+    end
+
+    assert_equal seen.map(&:first).sort.reverse, seen.map(&:first)
+    assert_equal IN_VIEW.values, seen.map(&:last)
+  end
+
+  # Twice the ground in view is half the throw on the page, and the picture
+  # is a ruler either way.
+  def test_the_ground_in_view_is_what_everything_is_drawn_against
+    IN_VIEW.keys.each_index do |view|
+      svg = drawn(in_view: view)
+      reached = svg[/<path id="flight" d="M ([^"]+)"/, 1].split(" L ").last.split(",").first.to_f
+      metres = THROWN.posing(**THROWN.opening).solve(:x)
+
+      assert_in_delta Flight::Picture::REACH / IN_VIEW.values[view].to_f,
+                      (reached - Flight::Picture::START) / metres, 1e-3
+    end
+  end
+
   # And when it reaches past the edge, the picture says so rather than
   # marking a spot that is not in it.
   def test_a_throw_that_leaves_the_picture_is_not_marked_where_it_lands
-    moon = drawn(world: GRAVITY.keys.index("moon"))
+    moon = drawn(world: GRAVITY.keys.index("moon"), in_view: 0)
 
     assert_includes moon, ">range \u2192<"
     refute_includes moon, ">range<"

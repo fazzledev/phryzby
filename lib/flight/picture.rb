@@ -149,12 +149,17 @@ module Flight
 
     private
 
-    # Told nothing, the frame is cut for the fastest throw the chapter allows
-    # under the pull it is under — which the playground already said, in the
-    # far end of its own control.
+    # How much ground is in view. A chapter that offers it as a control is
+    # answered from there, because then it is the reader's; failing that it is
+    # the chapter's, in `across`; and failing that the frame is cut for the
+    # fastest throw the chapter allows under the pull it is under, which the
+    # playground already said in the far end of its own control.
+    #
+    # What it must not be is cut to fit whatever was just thrown. That draws
+    # every throw the same size, and then nothing the reader does shows.
     def fastest = @scenario.class.playground.inputs[:u][:range].end
     def pull = value(:g) || 9.81
-    def span = @across || fastest**2 / pull
+    def span = (value(:in_view) || @across || fastest**2 / pull).to_f
     def scale = REACH / span
 
     def along(metres) = START + metres * scale
@@ -173,7 +178,7 @@ module Flight
         across = reached * n / STEPS
         high = across * Math.tan(turned) -
                pull * across**2 / (2 * speed**2 * Math.cos(turned)**2)
-        [ along(across).round(2), up(high).round(2) ]
+        [ along(across).round(3), up(high).round(3) ]
       end
 
       drawn = @walked.map { |point| point.join(",") }
