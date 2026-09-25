@@ -1,5 +1,7 @@
 require "minitest/autorun"
+require_relative "../lib/physics"
 require_relative "../tools/law_graph"
+require_relative "../lib/light/relative_index"
 
 # The web the page draws is generated from the laws, so it can fall behind
 # them. This is the thing that notices: a law that gains a quantity and a file
@@ -11,16 +13,29 @@ class LawGraphTest < Minitest::Test
                  "laws.json is behind the laws — run: ruby tools/law_graph.rb"
   end
 
-  def test_every_equation_reaches_every_quantity_it_mentions
-    web = LawGraph.web(Projectile)
-    named = web[:nodes].map { |node| node[:id] }
+  # Every chapter has one, and every edge in it reaches a node that is in it.
+  def test_every_chapter_has_a_web_that_joins_up
+    webs = LawGraph.chapters
 
-    Projectile.equations.each do |name, equation|
-      equation.variables.each do |quantity|
-        assert_includes web[:links], { source: "e:#{name}", target: "q:#{quantity}" }
-      end
+    assert_equal 13, webs.size
+    webs.each do |page, web|
+      named = web[:nodes].map { |node| node[:id] }
+
+      assert_empty web[:links].flat_map { |link| link.values_at(:source, :target) } - named,
+                   "#{page} has an edge reaching nothing"
+      assert_path_exists page
     end
-    assert_empty web[:links].flat_map { |link| link.values_at(:source, :target) } - named
+  end
+
+  # A chapter composes, so its web is of everything it plays with at once —
+  # the throw's nine equations, and reflectance reaching back through Snell.
+  def test_a_chapter_s_web_is_all_the_laws_it_plays_with
+    webs = LawGraph.chapters
+    pills = ->(page) { webs.fetch(page)[:nodes].count { |node| node[:kind] != "quantity" } }
+
+    assert_equal 9, pills.call("flight/projectile.html")
+    assert_operator pills.call("light/total-internal-reflection.html"), :>,
+                    pills.call("light/reflectance.html")
   end
 
   # The letter and its subscript travel apart, so the page can set one under
