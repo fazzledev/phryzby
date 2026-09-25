@@ -146,7 +146,7 @@ module Flight
     # outside the picture, because the measure would have no end in it.
     def apex(called, name)
       metres = value(name)
-      reached = value(:r)
+      reached = value(:R)
       return if metres.nil? || reached.nil?
 
       top = up(metres)
@@ -253,7 +253,7 @@ module Flight
     # y = x tan θ − g x² ⁄ 2u² cos²θ, walked from the hand to the ground.
     def arc(turned)
       speed = value(:u)
-      reached = value(:r)
+      reached = value(:R)
       return "" if speed.nil? || reached.nil? || reached.zero?
 
       # Nothing pushes it sideways, so it covers the ground at a steady rate:
@@ -367,7 +367,7 @@ module Flight
     # named where it leaves it instead, since that is the last of it anyone
     # can see.
     def aloft(_turned)
-      top = [ along(value(:r) / 2).clamp(30.0, WIDTH - 30.0),
+      top = [ along(value(:R) / 2).clamp(30.0, WIDTH - 30.0),
               up(value(:h)).clamp(16.0, GROUND - 10.0) ]
 
       [ [ top[0], top[1] - 8, "middle" ], [ top[0] + 10, top[1] - 8, "start" ],

@@ -10,11 +10,11 @@ module Projectile
   quantity :angle_of_throw,  variable: :theta_0, within: Physics::A_RIGHT_ANGLE
   quantity :gravity,         variable: :g
 
-  quantity :range,           variable: :r
+  quantity :range,           variable: :R
   quantity :peak,            variable: :h
   quantity :time_of_flight,  variable: :t_f
 
-  equation(:horizontal_range) { r == u**2 * sin(2 * theta_0) / g }
+  equation(:horizontal_range) { R == u**2 * sin(2 * theta_0) / g }
   equation(:maximum_height)   { h == (u * sin(theta_0))**2 / (2 * g) }
   equation(:time_of_flight)   { t_f == 2 * u * sin(theta_0) / g }
 

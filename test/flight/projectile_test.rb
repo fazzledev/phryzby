@@ -12,7 +12,7 @@ class ProjectileTest < Minitest::Test
   def test_it_carries_a_throw_as_far_as_the_range_formula_does
     one = thrown(u: 20.0, theta_0: 45.deg)
 
-    assert_in_delta 400.0 / EARTH, one.solve(:r), 1e-9
+    assert_in_delta 400.0 / EARTH, one.solve(:R), 1e-9
   end
 
   def test_it_reaches_the_height_the_vertical_speed_buys
@@ -30,20 +30,20 @@ class ProjectileTest < Minitest::Test
   # Forty-five degrees is not written anywhere in the law. It is where the
   # range happens to peak, and the law is asked rather than told.
   def test_no_angle_throws_it_further_than_forty_five_degrees
-    furthest = (1..89).max_by { |degrees| thrown(u: 20.0, theta_0: degrees.deg).solve(:r) }
+    furthest = (1..89).max_by { |degrees| thrown(u: 20.0, theta_0: degrees.deg).solve(:R) }
 
     assert_equal 45, furthest
   end
 
   # The sideways question: not where it lands, but how to land it there.
   def test_it_answers_for_the_angle_that_reaches_a_mark
-    asked = thrown(u: 20.0, theta_0: 45.deg).asking(:theta_0, r: 30.0)
+    asked = thrown(u: 20.0, theta_0: 45.deg).asking(:theta_0, R: 30.0)
 
-    assert_in_delta 30.0, thrown(u: 20.0, theta_0: asked).solve(:r), 1e-6
+    assert_in_delta 30.0, thrown(u: 20.0, theta_0: asked).solve(:R), 1e-6
   end
 
   def test_it_answers_for_the_speed_a_range_needs
-    one = THROW.new(g: EARTH, theta_0: 45.deg, r: 400.0 / EARTH)
+    one = THROW.new(g: EARTH, theta_0: 45.deg, R: 400.0 / EARTH)
 
     assert_in_delta 20.0, one.solve(:u), 1e-6
   end
@@ -54,7 +54,7 @@ class ProjectileTest < Minitest::Test
   def test_half_way_through_is_half_the_range_and_all_of_the_peak
     half = thrown(u: 20.0, theta_0: 40.deg, k: 0.5)
 
-    assert_in_delta half.solve(:r) / 2, half.solve(:x), 1e-9
+    assert_in_delta half.solve(:R) / 2, half.solve(:x), 1e-9
     assert_in_delta half.solve(:h), half.solve(:y), 1e-9
     assert_in_delta 0.0, half.solve(:v_y), 1e-9
   end
@@ -63,7 +63,7 @@ class ProjectileTest < Minitest::Test
     done = thrown(u: 20.0, theta_0: 40.deg, k: 1.0)
 
     assert_in_delta 0.0, done.solve(:y), 1e-9
-    assert_in_delta done.solve(:r), done.solve(:x), 1e-9
+    assert_in_delta done.solve(:R), done.solve(:x), 1e-9
     assert_in_delta(-20.0 * Math.sin(40.deg), done.solve(:v_y), 1e-9)
   end
 
@@ -107,6 +107,6 @@ class ProjectileTest < Minitest::Test
   def test_gravity_is_something_the_scenario_is_given
     moon = THROW.new(g: 1.62, u: 20.0, theta_0: 45.deg)
 
-    assert_in_delta EARTH / 1.62, moon.solve(:r) / thrown(u: 20.0, theta_0: 45.deg).solve(:r), 1e-9
+    assert_in_delta EARTH / 1.62, moon.solve(:R) / thrown(u: 20.0, theta_0: 45.deg).solve(:R), 1e-9
   end
 end

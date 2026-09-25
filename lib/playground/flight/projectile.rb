@@ -20,7 +20,7 @@ play_with Projectile do
     input :world, GRAVITY, default: "earth"
     input :in_view, IN_VIEW
 
-    output :r,   in: :m
+    output :R,   in: :m
     output :h,   in: :m
     output :t_f, in: :s
   end
@@ -40,7 +40,7 @@ play_with Projectile do
     ground
     flight leaving_at: :theta_0
     now
-    reach "range", :r
+    reach "range", :R
     apex "peak", :h
   end
 end
