@@ -139,22 +139,32 @@ module Flight
                      [ at, GROUND - 37, "middle" ], [ at, GROUND + 15, "middle" ] ])
     end
 
-    # The top of the arc, marked across to the edge it is measured from — and
-    # not marked at all when the top is above the picture.
+    # How high it got, measured where it got there: straight up off the ground
+    # to the top of the arc, which is half way along it. A height is a measure
+    # up, and was being drawn as a line across — the same shape as the range,
+    # which is a measure along. Nothing is marked when the top of the arc is
+    # outside the picture, because the measure would have no end in it.
     def apex(called, name)
       metres = value(name)
-      return if metres.nil? || up(metres) < 6
+      reached = value(:x)
+      return if metres.nil? || reached.nil?
 
-      @shapes.push(levelled(up(metres)))
+      top = up(metres)
+      at = along(reached / 2)
+      return if top < 8 || at > WIDTH - 8
 
-      # It can be read anywhere along the line it names, so it asks for the
-      # near end first and works out along it only if something is there.
-      want(called, [ [ START - 4, up(metres) - 4, "start" ],
-                     [ START - 4, up(metres) + 12, "start" ],
-                     [ WIDTH - 14, up(metres) - 4, "end" ],
-                     [ WIDTH - 14, up(metres) + 12, "end" ],
-                     [ WIDTH / 2, up(metres) - 4, "middle" ],
-                     [ WIDTH / 2, up(metres) + 12, "middle" ] ])
+      @shapes.push(risen(at, top))
+      middle = (top + GROUND) / 2 - 2
+      want(called, [ [ at + 7, middle, "start" ], [ at - 7, middle, "end" ],
+                     [ at + 7, top + 14, "start" ], [ at - 7, top + 14, "end" ],
+                     [ at + 7, GROUND - 10, "start" ], [ at - 7, GROUND - 10, "end" ],
+                     [ at, top - 7, "middle" ], [ at, top - 19, "middle" ],
+                     [ at + 20, middle, "start" ], [ at - 20, middle, "end" ],
+                     [ at + 20, top - 7, "start" ], [ at - 20, top - 7, "end" ],
+                     [ at + 34, middle, "start" ], [ at - 34, middle, "end" ],
+                     [ at, top - 31, "middle" ], [ at, top - 43, "middle" ],
+                     [ at + 34, top - 19, "start" ], [ at - 34, top - 19, "end" ],
+                     [ at + 52, middle, "start" ], [ at - 52, middle, "end" ] ])
     end
 
     def note(text, when: nil)
@@ -292,22 +302,30 @@ module Flight
       %(<circle cx="#{START}" cy="#{GROUND}" r="3" fill="var(--light)"/>)
     end
 
+    FAINT = %(stroke="var(--ink-soft)" stroke-width="1").freeze
+    DASHED = %(#{FAINT} stroke-dasharray="2 2").freeze
+
     def dropped(at)
-      %(<line x1="#{at.round(2)}" y1="#{GROUND}" x2="#{at.round(2)}" y2="#{GROUND - 6}" ) +
-        %(stroke="var(--ink-soft)" stroke-width="1"/>)
+      %(<line x1="#{at.round(2)}" y1="#{GROUND}" x2="#{at.round(2)}" y2="#{GROUND - 6}" #{FAINT}/>)
     end
 
-    # How much ground the throw covered, laid just above the line it covered
-    # it along — meeting the drop mark at the landing. Under the line is the
-    # ruler's, and the two were reading as one thing down there.
+    # How much ground the throw covered, laid just above the line it covered it
+    # along, with an end mark at each end of it. Under the ground line is the
+    # ruler's, and down there the two were reading as one thing.
     def tick(at)
       %(<line x1="#{START}" y1="#{GROUND - 6}" x2="#{at.round(2)}" y2="#{GROUND - 6}" ) +
-        %(stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="2 2"/>)
+        %(#{DASHED}/>) + [ START, at ].map { |x| capped(x, GROUND - 6, 0, 3) }.join
     end
 
-    def levelled(at)
-      %(<line x1="#{START}" y1="#{at.round(2)}" x2="#{WIDTH - 10}" y2="#{at.round(2)}" ) +
-        %(stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="2 2" opacity="0.7"/>)
+    # And how high it got, the same measure turned upright.
+    def risen(at, top)
+      %(<line x1="#{at.round(2)}" y1="#{GROUND}" x2="#{at.round(2)}" y2="#{top.round(2)}" ) +
+        %(#{DASHED}/>) + [ GROUND, top ].map { |y| capped(at, y, 3, 0) }.join
+    end
+
+    def capped(x, y, across, along)
+      %(<line x1="#{(x - across).round(2)}" y1="#{(y - along).round(2)}" ) +
+        %(x2="#{(x + across).round(2)}" y2="#{(y + along).round(2)}" #{FAINT}/>)
     end
 
     # Out past the top of the arc, and off to either side of it if something
