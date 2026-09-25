@@ -33,21 +33,26 @@ module Flight
     # against this one number.
     def ground(called: nil)
       @shapes.unshift(turf)
-      # Up in the corner, out of the way: it is a caption about the whole
-      # frame rather than a mark on the ground, and everything that is a mark
-      # on the ground wants the room under the line.
-      want(called || format("%g m of ground", span.round), [ [ 294, 14, "end" ] ], fixed: true)
+      # Written on the ground, because that is what it measures. Nothing else
+      # is down here: a mark on the ground can be read from just above the
+      # line, and this cannot be read anywhere else at all.
+      want(called || format("%g m of ground", span.round), [ [ 294, GROUND + 20, "end" ] ],
+           fixed: true)
     end
 
     # The whole throw: the arc it flies, the angle it left at, and the hand
     # it left from. A throw whose angle a control sets can be swung by hand.
-    def flight(called, leaving_at:)
+    #
+    # It goes unnamed unless a chapter asks. A picture of light has to tell
+    # three rays apart; this one has a single curve in it, and a label on the
+    # only thing there says nothing the picture did not.
+    def flight(called = nil, leaving_at:)
       turned = value(leaving_at)
       return if turned.nil?
 
       @dragged = leaving_at if draggable?(leaving_at)
       @shapes.push(arc(turned), swept(turned), launched(turned), thrown)
-      want(called, aloft(turned), colour: "var(--light)")
+      want(called, aloft(turned), colour: "var(--light)") if called
     end
 
     PUSH = 76
@@ -100,12 +105,11 @@ module Flight
       at = along(metres)
       @shapes.push(dropped(at), tick(at))
 
-      # Under the landing if there is room, and above the ground line if the
-      # ruler has the bottom — which it has whenever the throw is short.
-      want(called, [ [ at, GROUND + 15, "middle" ], [ at + 9, GROUND + 15, "start" ],
-                     [ at - 9, GROUND + 15, "end" ], [ at, GROUND - 9, "middle" ],
-                     [ at + 11, GROUND - 9, "start" ], [ at - 11, GROUND - 9, "end" ],
-                     [ at, GROUND - 21, "middle" ] ])
+      # Just above the line it marks, and off to the side of the arrowhead
+      # coming down on it. The room under the line is the ruler's.
+      want(called, [ [ at + 11, GROUND - 9, "start" ], [ at - 11, GROUND - 9, "end" ],
+                     [ at + 11, GROUND - 21, "start" ], [ at - 11, GROUND - 21, "end" ],
+                     [ at, GROUND - 32, "middle" ], [ at, GROUND + 15, "middle" ] ])
     end
 
     # The top of the arc, marked across to the edge it is measured from — and

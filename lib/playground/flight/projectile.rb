@@ -20,7 +20,7 @@ play_with Projectile do
 
   draw Flight::Picture, across: 65 do
     ground
-    flight "thrown", leaving_at: :theta
+    flight leaving_at: :theta
     reach "range", :x
     apex "peak", :h
   end

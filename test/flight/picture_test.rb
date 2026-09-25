@@ -173,8 +173,14 @@ class FlightPictureTest < Minitest::Test
                     seconds.call(moon) / seconds.call(earth), 1e-3
   end
 
+  # There is one curve in the picture, so naming it says nothing the picture
+  # did not. What gets named is what is measured off it.
+  def test_it_does_not_name_the_only_curve_in_the_picture
+    refute_includes drawn, ">thrown<"
+  end
+
   def test_it_names_what_it_drew
-    [ "thrown", "range", "peak" ].each { |called| assert_includes drawn, ">#{called}<" }
+    [ "range", "peak" ].each { |called| assert_includes drawn, ">#{called}<" }
     assert_match(/>\d+ m of ground</, drawn)
   end
 end
