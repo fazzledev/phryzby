@@ -12,11 +12,11 @@ module Projectile
 
   quantity :range,          variable: :r
   quantity :peak,           variable: :h
-  quantity :time_of_flight, variable: :tf
+  quantity :time_of_flight, variable: :t_f
 
-  equation(:how_far)  { r == u**2 * sin(2 * theta) / g }
-  equation(:how_high) { h == (u * sin(theta))**2 / (2 * g) }
-  equation(:how_long) { tf == 2 * u * sin(theta) / g }
+  equation(:horizontal_range) { r == u**2 * sin(2 * theta) / g }
+  equation(:maximum_height)   { h == (u * sin(theta))**2 / (2 * g) }
+  equation(:time_of_flight)   { t_f == 2 * u * sin(theta) / g }
 
   # And where it is part way through. A moment cannot be slid from nought to
   # the end of the flight, because how long the flight lasts is itself
@@ -26,14 +26,14 @@ module Projectile
 
   quantity :distance_out,    variable: :x
   quantity :height,          variable: :y
-  quantity :velocity_across, variable: :vx
-  quantity :velocity_up,     variable: :vy
+  quantity :velocity_across, variable: :v_x
+  quantity :velocity_up,     variable: :v_y
 
-  equation(:the_moment) { t == k * tf }
+  equation(:elapsed_time) { t == k * t_f }
 
-  equation(:carried) { x == u * cos(theta) * t }
-  equation(:lifted)  { y == u * sin(theta) * t - g * t**2 / 2 }
+  equation(:horizontal_displacement) { x == u * cos(theta) * t }
+  equation(:vertical_displacement)   { y == u * sin(theta) * t - g * t**2 / 2 }
 
-  equation(:steady)  { vx == u * cos(theta) }
-  equation(:slowing) { vy == u * sin(theta) - g * t }
+  equation(:horizontal_velocity) { v_x == u * cos(theta) }
+  equation(:vertical_velocity)   { v_y == u * sin(theta) - g * t }
 end

@@ -174,8 +174,8 @@ module Flight
     def now(called = nil)
       out = value(:x)
       up_to = value(:y)
-      across = value(:vx)
-      rising = value(:vy)
+      across = value(:v_x)
+      rising = value(:v_y)
       return if [ out, up_to, across, rising ].any?(&:nil?)
 
       at = [ along(out), up(up_to) ]
@@ -283,7 +283,7 @@ module Flight
     # evenly, because the vertices are even in time — and how far along the
     # arc that is, which is not even at all.
     def flying
-      seconds = value(:tf)
+      seconds = value(:t_f)
       return "" if seconds.nil? || seconds < 1e-6 || @walked.nil?
 
       steps = @walked.each_cons(2).map { |(from, to)| Math.hypot(to[0] - from[0], to[1] - from[1]) }

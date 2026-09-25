@@ -35,20 +35,20 @@ play_with Reflection, RelativeIndex do
   description "Every quantity the picture can be told about, on a control."
 
   input :i, default: 30.deg
-  input :mu1, 1.0..4.0, default: 1.33, marks: REFRACTIVE_MEDIA
-  input :mu2, 1.0..4.0, default: 1.0, marks: REFRACTIVE_MEDIA
+  input :mu_1, 1.0..4.0, default: 1.33, marks: REFRACTIVE_MEDIA
+  input :mu_2, 1.0..4.0, default: 1.0, marks: REFRACTIVE_MEDIA
 
-  output :mu21
-  output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
-  output :rr
+  output :mu_21
+  output("critical", in: :degrees) { asking(:i, r_r: 90.deg) }
+  output :r_r
   output :no_refracted_ray, alarm: true
 
   draw Light::Picture do
-    media :mu1, :mu2
+    media :mu_1, :mu_2
     ray "incident",  arriving_at: :i, angle: true
-    ray "reflected", leaving_at:  :rl
-    ray "refracted", crossing_at: :rr, angle: true, unless: :no_refracted_ray
-    mark "critical", arriving_at: -> { asking(:i, rr: 90.deg) }
+    ray "reflected", leaving_at:  :r_l
+    ray "refracted", crossing_at: :r_r, angle: true, unless: :no_refracted_ray
+    mark "critical", arriving_at: -> { asking(:i, r_r: 90.deg) }
     note "all of it turns back", when: :no_refracted_ray
   end
 end

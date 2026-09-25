@@ -23,13 +23,13 @@ play_with Projectile do
 
   output :r, in: :metres
   output :h, in: :metres
-  output :tf, in: :seconds
+  output :t_f, in: :seconds
 
   output :t,  in: :seconds
   output :x,  in: :metres
   output :y,  in: :metres
-  output :vx, in: :speed
-  output :vy, in: :speed
+  output :v_x, in: :speed
+  output :v_y, in: :speed
 
   draw Flight::Picture do
     ground

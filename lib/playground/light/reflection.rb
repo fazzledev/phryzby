@@ -8,11 +8,11 @@ play_with Reflection do
 
   input :i, default: 30.deg
 
-  output :rl
+  output :r_l
 
   draw Light::Picture do
     mirror
     ray "incident",  arriving_at: :i, angle: true
-    ray "reflected", leaving_at:  :rl, angle: true
+    ray "reflected", leaving_at:  :r_l, angle: true
   end
 end

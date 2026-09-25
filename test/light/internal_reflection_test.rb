@@ -16,8 +16,8 @@ class InternalReflectionTest < Minitest::Test
   def test_it_opens_on_the_ray_that_is_all_that_is_left
     assert_equal 2, rays(drawn)
     assert_includes drawn, "all of it turns back"
-    assert_includes reads, "angle of reflection  rl  60.00°"
-    assert_includes reads, "angle of refraction  rr  —"
+    assert_includes reads, "angle of reflection  r_l  60.00°"
+    assert_includes reads, "angle of refraction  r_r  —"
   end
 
   # Slide back down and the crossing one is there again beside it, because
@@ -32,7 +32,7 @@ class InternalReflectionTest < Minitest::Test
     [ 10, 30, 60, 80 ].each do |degrees|
       here = playing.posing(**playing.opening.merge(i: degrees.deg))
 
-      assert_in_delta degrees, here.solve(:rl).in_degrees, 1e-9
+      assert_in_delta degrees, here.solve(:r_l).in_degrees, 1e-9
     end
   end
 

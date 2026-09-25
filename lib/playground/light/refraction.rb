@@ -8,14 +8,14 @@ play_with Refraction do
   description "It goes through, and bends toward the normal doing so. The two angles are neither equal nor proportional: what each medium does to the sine of its own angle, the other undoes."
 
   input :i, default: 60.deg
-  input(:mu1) { REFRACTIVE_MEDIA.fetch("air") }
-  input(:mu2) { REFRACTIVE_MEDIA.fetch("water") }
+  input(:mu_1) { REFRACTIVE_MEDIA.fetch("air") }
+  input(:mu_2) { REFRACTIVE_MEDIA.fetch("water") }
 
-  output :rr
+  output :r_r
 
   draw Light::Picture do
     media "air", "water"
     ray "incident",  arriving_at: :i,  angle: true, extended: true
-    ray "refracted", crossing_at: :rr, angle: true
+    ray "refracted", crossing_at: :r_r, angle: true
   end
 end

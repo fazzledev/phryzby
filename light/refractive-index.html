@@ -76,12 +76,12 @@ await chapter({
     { key: "lib/light/refraction.rb", tab: 1 },
   ],
   playground: "lib/playground/light/refractive_index.rb",
-  opening: [ "surface.solve(:rr).in_degrees" ],
+  opening: [ "surface.solve(:r_r).in_degrees" ],
   examples: [
-    "surface.solve(:rr).in_degrees",
+    "surface.solve(:r_r).in_degrees",
     "surface.satisfies?(:no_refracted_ray)",
-    "Physics::Scenario.including(Refraction).new(mu1: 1.5, mu2: 1.0, rr: 90.deg).solve(:i).in_degrees",
-    "surface.solve(:mu2) / surface.solve(:mu1)",
+    "Physics::Scenario.including(Refraction).new(mu_1: 1.5, mu_2: 1.0, r_r: 90.deg).solve(:i).in_degrees",
+    "surface.solve(:mu_2) / surface.solve(:mu_1)",
   ],
 });
 </script>

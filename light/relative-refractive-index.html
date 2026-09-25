@@ -77,12 +77,12 @@ await chapter({
     { key: "lib/light/relative_index.rb", tab: 1 },
   ],
   playground: "lib/playground/light/relative_refractive_index.rb",
-  opening: [ "surface.solve(:mu21)" ],
+  opening: [ "surface.solve(:mu_21)" ],
   examples: [
-    "surface.solve(:mu21)",
-    "surface.asking(:i, rr: 90.deg).in_degrees",
+    "surface.solve(:mu_21)",
+    "surface.asking(:i, r_r: 90.deg).in_degrees",
     "RelativeIndex.equations",
-    "Physics::Scenario.including(RelativeIndex).new(i: 30.deg, mu1: 1.0, mu21: 1.5).solve(:rr).in_degrees",
+    "Physics::Scenario.including(RelativeIndex).new(i: 30.deg, mu_1: 1.0, mu_21: 1.5).solve(:r_r).in_degrees",
   ],
 });
 </script>

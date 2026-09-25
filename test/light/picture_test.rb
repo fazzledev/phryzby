@@ -20,7 +20,7 @@ class PictureTest < Minitest::Test
   end
 
   def test_a_ray_that_does_not_exist_is_not_drawn
-    trapped = drawn(mu1: 1.5, mu2: 1.0, i: 60.deg)
+    trapped = drawn(mu_1: 1.5, mu_2: 1.0, i: 60.deg)
 
     assert_equal 2, rays(trapped)
     assert_includes trapped, "all of it turns back"
@@ -29,12 +29,12 @@ class PictureTest < Minitest::Test
   # Set the first medium denser and there is an angle past which nothing gets
   # out; set it the other way and there is no such angle to mark.
   def test_the_critical_angle_is_marked_wherever_there_is_one
-    assert_includes drawn(mu1: 1.5, mu2: 1.0), "critical 41.81°"
-    refute_includes drawn(mu1: 1.0, mu2: 1.5), "critical"
+    assert_includes drawn(mu_1: 1.5, mu_2: 1.0), "critical 41.81°"
+    refute_includes drawn(mu_1: 1.0, mu_2: 1.5), "critical"
   end
 
   def test_and_it_moves_with_the_media
-    assert_includes drawn(mu1: 2.42, mu2: 1.0), "critical 24.41°"
+    assert_includes drawn(mu_1: 2.42, mu_2: 1.0), "critical 24.41°"
   end
 
   def test_the_note_stays_away_while_its_condition_is_false
@@ -100,7 +100,7 @@ class PictureTest < Minitest::Test
   def test_a_label_pushed_aside_stays_put_rather_than_hunting
     playing = DRAWING
     seen = (1..179).map do |half|
-      svg = playing.picture(playing.opening.merge(mu1: 1.5, mu2: 1.0, i: (half / 2.0).deg))
+      svg = playing.picture(playing.opening.merge(mu_1: 1.5, mu_2: 1.0, i: (half / 2.0).deg))
       svg.scan(%r{<text x="([-\d.]+)" y="([-\d.]+)"[^>]*>(critical[^<]*)</text>}).first&.first(2)
     end.compact.map { |x, y| [ x.to_f, y.to_f ] }
 
@@ -136,26 +136,26 @@ class PictureTest < Minitest::Test
   def shades(svg) = svg.scan(/<rect[^>]*opacity="([\d.]+)"/).flatten.map(&:to_f)
 
   def test_the_denser_medium_is_the_more_shaded
-    upper, lower = shades(drawn(mu1: 1.0, mu2: 1.5))
+    upper, lower = shades(drawn(mu_1: 1.0, mu_2: 1.5))
 
     assert_operator lower, :>, upper
   end
 
   def test_and_it_follows_the_media_round
-    upper, lower = shades(drawn(mu1: 1.5, mu2: 1.0))
+    upper, lower = shades(drawn(mu_1: 1.5, mu_2: 1.0))
 
     assert_operator upper, :>, lower
   end
 
   def test_the_shade_rises_with_the_index
-    thin, = shades(drawn(mu1: 1.0, mu2: 1.5))
-    thick, = shades(drawn(mu1: 2.4, mu2: 1.5))
+    thin, = shades(drawn(mu_1: 1.0, mu_2: 1.5))
+    thick, = shades(drawn(mu_1: 2.4, mu_2: 1.5))
 
     assert_operator thick, :>, thin
   end
 
   def test_no_two_media_anybody_has_a_name_for_are_shaded_alike
-    seen = REFRACTIVE_MEDIA.values.map { |index| shades(drawn(mu1: index, mu2: 1.0)).first }
+    seen = REFRACTIVE_MEDIA.values.map { |index| shades(drawn(mu_1: index, mu_2: 1.0)).first }
 
     assert_equal seen, seen.uniq
   end
@@ -163,14 +163,14 @@ class PictureTest < Minitest::Test
   # A straight line had to stop somewhere, and everything past there was the
   # same shade as everything else past there.
   def test_and_the_shade_keeps_rising_past_where_a_straight_line_would_stop
-    seen = [ 3.2, 3.9, 6.0, 10.0 ].map { |index| shades(drawn(mu1: index, mu2: 1.0)).first }
+    seen = [ 3.2, 3.9, 6.0, 10.0 ].map { |index| shades(drawn(mu_1: index, mu_2: 1.0)).first }
 
     assert_equal seen.sort, seen
     assert_equal seen, seen.uniq
   end
 
   def test_two_media_alike_are_shaded_alike
-    upper, lower = shades(drawn(mu1: 1.4, mu2: 1.4))
+    upper, lower = shades(drawn(mu_1: 1.4, mu_2: 1.4))
 
     assert_in_delta upper, lower, 1e-9
   end
@@ -184,7 +184,7 @@ class PictureTest < Minitest::Test
   end
 
   def test_an_angle_that_has_no_ray_is_not_marked
-    assert_equal 1, arcs(drawn(mu1: 1.5, mu2: 1.0, i: 60.deg))
+    assert_equal 1, arcs(drawn(mu_1: 1.5, mu_2: 1.0, i: 60.deg))
   end
 
   # Notation, drawn without a scenario behind it: none of it asks the laws
@@ -239,10 +239,10 @@ class PictureTest < Minitest::Test
   def bands(svg) = svg.scan(%r{>(\u03bc[^<]*)</text>}).flatten
 
   def test_a_band_is_named_when_its_index_is_one_anybody_knows
-    assert_equal [ "\u03bc\u2081 water", "\u03bc\u2082 diamond" ], bands(drawn(mu1: 1.33, mu2: 2.42))
+    assert_equal [ "\u03bc\u2081 water", "\u03bc\u2082 diamond" ], bands(drawn(mu_1: 1.33, mu_2: 2.42))
   end
 
   def test_and_is_only_its_symbol_between_them
-    assert_equal [ "\u03bc\u2081 air", "\u03bc\u2082" ], bands(drawn(mu1: 1.0, mu2: 2.0))
+    assert_equal [ "\u03bc\u2081 air", "\u03bc\u2082" ], bands(drawn(mu_1: 1.0, mu_2: 2.0))
   end
 end

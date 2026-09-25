@@ -11,48 +11,48 @@ class RefractionTest < Minitest::Test
   GLASS = 1.5
 
   def test_air_into_glass_refracts_toward_the_normal
-    assert_in_delta 19.4712, solved(:rr, from: AIR, into: GLASS, i: 30), 1e-3
+    assert_in_delta 19.4712, solved(:r_r, from: AIR, into: GLASS, i: 30), 1e-3
   end
 
   def test_air_into_water
-    assert_in_delta 32.1173, solved(:rr, from: AIR, into: WATER, i: 45), 1e-3
+    assert_in_delta 32.1173, solved(:r_r, from: AIR, into: WATER, i: 45), 1e-3
   end
 
   def test_solves_backwards_from_the_refracted_ray
-    assert_in_delta 30.0, solved(:i, from: AIR, into: GLASS, rr: 19.4712), 1e-3
+    assert_in_delta 30.0, solved(:i, from: AIR, into: GLASS, r_r: 19.4712), 1e-3
   end
 
   def test_the_ratio_is_a_quantity_of_its_own_worked_out_from_the_two_media
     ray = ray(from: AIR, into: GLASS, i: 30)
 
-    assert_in_delta 1.5, ray.solve(:mu21), 1e-9
+    assert_in_delta 1.5, ray.solve(:mu_21), 1e-9
   end
 
   # Snell as it is written down: what one medium does to the sine, the other
   # undoes. Neither number is privileged, and nothing is divided by anything.
   def test_snells_law_is_written_the_way_it_is_written_down
-    assert_equal "(mu1 * sin(i)) == (mu2 * sin(rr))",
+    assert_equal "(mu_1 * sin(i)) == (mu_2 * sin(r_r))",
                  Refraction.equations.fetch(:snells_law).to_s
   end
 
   def test_the_ratio_can_be_asked_for_directly_from_two_angles
-    ray = ray(from: AIR, into: GLASS, i: 30, rr: 19.4712)
+    ray = ray(from: AIR, into: GLASS, i: 30, r_r: 19.4712)
 
-    assert_in_delta 1.5, ray.solve(:mu21), 1e-4
+    assert_in_delta 1.5, ray.solve(:mu_21), 1e-4
   end
 
   # The condition asks after the second medium, which nobody gave: it is the
   # ratio and the first medium, and it is worked out before the question is
   # answered.
   def test_a_condition_works_out_the_quantities_it_mentions
-    ray = SURFACE.new(i: 50.deg, mu1: GLASS, mu21: AIR / GLASS)
+    ray = SURFACE.new(i: 50.deg, mu_1: GLASS, mu_21: AIR / GLASS)
 
     assert ray.satisfies?(:no_refracted_ray)
-    assert_in_delta AIR, ray[:mu2], 1e-9
+    assert_in_delta AIR, ray[:mu_2], 1e-9
   end
 
   def test_checking_a_law_never_makes_it_true
-    wrong = ray(from: AIR, into: GLASS, i: 30, rr: 25)
+    wrong = ray(from: AIR, into: GLASS, i: 30, r_r: 25)
 
     refute wrong.holds?(:snells_law)
   end
@@ -63,23 +63,23 @@ class RefractionTest < Minitest::Test
   end
 
   def test_reflection_still_holds
-    assert_in_delta 37.0, solved(:rl, from: AIR, into: GLASS, i: 37), 1e-6
+    assert_in_delta 37.0, solved(:r_l, from: AIR, into: GLASS, i: 37), 1e-6
   end
 
   def test_a_solved_ray_satisfies_the_law_it_was_solved_from
     ray = ray(from: AIR, into: GLASS, i: 30)
-    ray.solve(:rr)
+    ray.solve(:r_r)
 
     assert ray.holds?(:snells_law)
   end
 
   def test_a_wrong_angle_does_not_satisfy_snell
-    refute ray(from: AIR, into: GLASS, i: 30, rr: 25).holds?(:snells_law)
+    refute ray(from: AIR, into: GLASS, i: 30, r_r: 25).holds?(:snells_law)
   end
 
   def test_shallow_angles_stay_on_the_physical_branch
     { 3 => 1.9990, 10 => 6.6478, 30 => 19.4712 }.each do |degrees, expected|
-      assert_in_delta expected, solved(:rr, from: AIR, into: GLASS, i: degrees), 1e-3
+      assert_in_delta expected, solved(:r_r, from: AIR, into: GLASS, i: degrees), 1e-3
     end
   end
 
@@ -97,7 +97,7 @@ class RefractionTest < Minitest::Test
   end
 
   def test_the_critical_angle_is_snell_with_the_refracted_ray_lying_flat
-    found = SURFACE.new(mu1: GLASS, mu2: AIR, rr: FLAT_ALONG_THE_SURFACE).solve(:i)
+    found = SURFACE.new(mu_1: GLASS, mu_2: AIR, r_r: FLAT_ALONG_THE_SURFACE).solve(:i)
 
     assert_in_delta CRITICAL, found.in_degrees, 1e-6
   end
@@ -108,23 +108,23 @@ class RefractionTest < Minitest::Test
     end
   end
 
-  # Written as a ratio this had no answer — mu21 == 0 / sin(rr) is mu21 for
-  # every rr there is. Written out, the residual is mu2 * sin(rr), and it
+  # Written as a ratio this had no answer — mu_21 == 0 / sin(r_r) is mu_21 for
+  # every r_r there is. Written out, the residual is mu_2 * sin(r_r), and it
   # goes to nothing exactly where the ray goes straight on.
   def test_a_ray_arriving_square_on_goes_straight_on
-    assert_in_delta 0.0, solved(:rr, from: AIR, into: GLASS, i: 0), 1e-9
+    assert_in_delta 0.0, solved(:r_r, from: AIR, into: GLASS, i: 0), 1e-9
   end
 
   def test_refuses_to_solve_what_is_not_determined
-    ray = SURFACE.new(i: 30.deg, mu1: AIR)
+    ray = SURFACE.new(i: 30.deg, mu_1: AIR)
 
-    assert_raises(RuntimeError) { ray.solve(:rr) }
+    assert_raises(RuntimeError) { ray.solve(:r_r) }
   end
 
   def test_an_index_far_beyond_any_real_material_still_solves
-    steep = SURFACE.new(i: 45.deg, mu1: AIR, mu2: 1_000.0)
+    steep = SURFACE.new(i: 45.deg, mu_1: AIR, mu_2: 1_000.0)
 
-    assert_in_delta 0.0405, steep.solve(:rr).in_degrees, 1e-4
+    assert_in_delta 0.0405, steep.solve(:r_r).in_degrees, 1e-4
   end
 
   private
@@ -132,7 +132,7 @@ class RefractionTest < Minitest::Test
   CRITICAL = Math.asin(AIR / GLASS).in_degrees
 
   def ray(from:, into:, **angles)
-    SURFACE.new(mu1: from, mu2: into, **angles.transform_values(&:deg))
+    SURFACE.new(mu_1: from, mu_2: into, **angles.transform_values(&:deg))
   end
 
   def solved(target, from:, into:, **angles)
@@ -142,7 +142,7 @@ class RefractionTest < Minitest::Test
   end
 
   def identified(into:, from_air_at:)
-    SURFACE.new(i: from_air_at.deg, rr: into.deg, mu1: AIR).solve(:mu2)
+    SURFACE.new(i: from_air_at.deg, r_r: into.deg, mu_1: AIR).solve(:mu_2)
   end
 
   def traps?(from:, into:, at:)

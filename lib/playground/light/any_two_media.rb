@@ -11,11 +11,11 @@ play_with Refraction do
   input :into, REFRACTIVE_MEDIA, default: "glass"
 
   input(:i)    { 20.deg }
-  input(:mu1) { from }
-  input(:mu2) { into }
+  input(:mu_1) { from }
+  input(:mu_2) { into }
 
   output("bends") do
-    turned = solve(:rr) - solve(:i)
+    turned = solve(:r_r) - solve(:i)
     next "not at all" if turned.abs < 1e-6
 
     turned.negative? ? "toward the normal" : "away from the normal"
@@ -25,7 +25,7 @@ play_with Refraction do
   draw Light::Picture do
     media :from, :into
     ray "incident",  arriving_at: :i, extended: true
-    ray "refracted", crossing_at: :rr, unless: :no_refracted_ray
+    ray "refracted", crossing_at: :r_r, unless: :no_refracted_ray
     note "no refracted ray", when: :no_refracted_ray
   end
 end

@@ -5,7 +5,7 @@ module RelativeIndex
 
   include Refraction
 
-  quantity :relative_refractive_index, variable: :mu21
+  quantity :relative_refractive_index, variable: :mu_21
 
-  equation(:relative_index) { mu21 == mu2 / mu1 }
+  equation(:relative_index) { mu_21 == mu_2 / mu_1 }
 end

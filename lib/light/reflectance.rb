@@ -5,17 +5,17 @@ module Reflectance
 
   include Refraction
 
-  quantity :reflectance_s_polarised, variable: :rs
-  quantity :reflectance_p_polarised, variable: :rp
+  quantity :reflectance_s_polarised, variable: :r_s
+  quantity :reflectance_p_polarised, variable: :r_p
   quantity :reflectance,             variable: :r
 
   equation(:s_polarised) do
-    rs == ((mu1 * cos(i) - mu2 * cos(rr)) / (mu1 * cos(i) + mu2 * cos(rr))) ** 2
+    r_s == ((mu_1 * cos(i) - mu_2 * cos(r_r)) / (mu_1 * cos(i) + mu_2 * cos(r_r))) ** 2
   end
 
   equation(:p_polarised) do
-    rp == ((mu1 * cos(rr) - mu2 * cos(i)) / (mu1 * cos(rr) + mu2 * cos(i))) ** 2
+    r_p == ((mu_1 * cos(r_r) - mu_2 * cos(i)) / (mu_1 * cos(r_r) + mu_2 * cos(i))) ** 2
   end
 
-  equation(:unpolarised) { r == (rs + rp) / 2 }
+  equation(:unpolarised) { r == (r_s + r_p) / 2 }
 end

@@ -4,28 +4,33 @@ module Physics
              "lambda" => "λ", "mu" => "μ", "nu" => "ν", "pi" => "π", "rho" => "ρ",
              "sigma" => "σ", "phi" => "φ", "omega" => "ω" }.freeze
 
-  # A written name splits into a letter and what trails it: mu21 is a mu with
-  # 21 under it, rr an r with an r under it, i just an i.
-  def self.notation(written)
-    text = written.to_s
-    stem = GREEK.find { |greek| text.start_with?(greek) } || text[0]
-    base = LETTER.fetch(stem, stem)
-    trail = text[stem.length..]
+  # A written name says where its subscript starts, and only an underscore
+  # says so: mu_21 is a mu with 21 under it and v_x a v with an x, while i is
+  # just an i. Nothing is guessed from the spelling — a name that wants no
+  # subscript has only to leave the underscore out.
+  def self.written_as(written) = written.to_s.split("_", 2)
 
-    trail.empty? ? "<mi>#{base}</mi>" : "<msub><mi>#{base}</mi><mi>#{trail}</mi></msub>"
+  def self.notation(written)
+    stem, under = written_as(written)
+    base = LETTER.fetch(stem, stem)
+
+    under ? "<msub><mi>#{base}</mi><mi>#{under}</mi></msub>" : "<mi>#{base}</mi>"
   end
 
   UNDER = { "0" => "₀", "1" => "₁", "2" => "₂", "3" => "₃", "4" => "₄",
             "5" => "₅", "6" => "₆", "7" => "₇", "8" => "₈", "9" => "₉" }.freeze
 
-  # The same split set in plain text rather than MathML, for the places a page
-  # has no room for a formula.
+  # The same, in plain text rather than MathML, for the places a page has no
+  # room for a formula. Plain text can only set a subscript where there is a
+  # character for one — digits have them, letters do not — so a subscript it
+  # cannot set it leaves written the way the law wrote it.
   def self.symbol(written)
-    text = written.to_s
-    stem = GREEK.find { |greek| text.start_with?(greek) } || text[0]
+    stem, under = written_as(written)
+    base = LETTER.fetch(stem, stem)
+    return base unless under
 
-    LETTER.fetch(stem, stem) +
-      text[stem.length..].chars.map { |mark| UNDER.fetch(mark, mark) }.join
+    base + (under.chars.all? { |mark| UNDER.key?(mark) } ? under.chars.map { |mark| UNDER.fetch(mark) }.join
+                                                         : "_#{under}")
   end
 
   PRECEDENCE = { :+ => 1, :- => 1, :* => 2, :/ => 3, :** => 4 }.freeze

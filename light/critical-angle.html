@@ -76,12 +76,12 @@ await chapter({
     { key: "lib/light/refraction.rb", tab: 1 },
   ],
   playground: "lib/playground/light/critical_angle.rb",
-  opening: [ "surface.asking(:i, rr: 90.deg).in_degrees" ],
+  opening: [ "surface.asking(:i, r_r: 90.deg).in_degrees" ],
   examples: [
-    "surface.asking(:i, rr: 90.deg).in_degrees",
+    "surface.asking(:i, r_r: 90.deg).in_degrees",
     "surface.satisfies?(:no_refracted_ray)",
     "Refraction.equations.keys",
-    "Physics::Scenario.including(Refraction).new(rr: 90.deg, mu21: 1.0 / 2.42).solve(:i).in_degrees",
+    "Physics::Scenario.including(Refraction).new(r_r: 90.deg, mu_21: 1.0 / 2.42).solve(:i).in_degrees",
   ],
 });
 </script>

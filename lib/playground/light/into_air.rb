@@ -11,19 +11,19 @@ play_with Reflection, Refraction do
   input :from, REFRACTIVE_MEDIA, default: "water"
 
   input(:i)    { 30.deg }
-  input(:mu1) { from }
-  input(:mu2) { REFRACTIVE_MEDIA.fetch("air") }
+  input(:mu_1) { from }
+  input(:mu_2) { REFRACTIVE_MEDIA.fetch("air") }
 
-  output("critical", in: :degrees) { asking(:i, rr: 90.deg) }
-  output :rr
+  output("critical", in: :degrees) { asking(:i, r_r: 90.deg) }
+  output :r_r
   output :no_refracted_ray, alarm: true
 
   draw Light::Picture, rising: true do
     media :from, "air"
     ray "incident",  arriving_at: :i, angle: true
-    ray "reflected", leaving_at:  :rl
-    ray "refracted", crossing_at: :rr, angle: true, unless: :no_refracted_ray
-    mark "critical", arriving_at: -> { asking(:i, rr: 90.deg) }
+    ray "reflected", leaving_at:  :r_l
+    ray "refracted", crossing_at: :r_r, angle: true, unless: :no_refracted_ray
+    mark "critical", arriving_at: -> { asking(:i, r_r: 90.deg) }
     note "all of it turns back", when: :no_refracted_ray
   end
 end

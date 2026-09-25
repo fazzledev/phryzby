@@ -24,7 +24,7 @@ class ProjectileTest < Minitest::Test
   def test_it_stays_up_twice_as_long_as_it_takes_to_stop_climbing
     one = thrown(u: 20.0, theta: 90.deg)
 
-    assert_in_delta 2 * 20.0 / EARTH, one.solve(:tf), 1e-9
+    assert_in_delta 2 * 20.0 / EARTH, one.solve(:t_f), 1e-9
   end
 
   # Forty-five degrees is not written anywhere in the law. It is where the
@@ -56,7 +56,7 @@ class ProjectileTest < Minitest::Test
 
     assert_in_delta half.solve(:r) / 2, half.solve(:x), 1e-9
     assert_in_delta half.solve(:h), half.solve(:y), 1e-9
-    assert_in_delta 0.0, half.solve(:vy), 1e-9
+    assert_in_delta 0.0, half.solve(:v_y), 1e-9
   end
 
   def test_at_the_end_it_is_back_on_the_ground_going_down_as_fast_as_it_went_up
@@ -64,12 +64,12 @@ class ProjectileTest < Minitest::Test
 
     assert_in_delta 0.0, done.solve(:y), 1e-9
     assert_in_delta done.solve(:r), done.solve(:x), 1e-9
-    assert_in_delta(-20.0 * Math.sin(40.deg), done.solve(:vy), 1e-9)
+    assert_in_delta(-20.0 * Math.sin(40.deg), done.solve(:v_y), 1e-9)
   end
 
   # Nothing pushes it sideways, so nothing about sideways changes.
   def test_it_crosses_the_ground_at_one_speed_the_whole_way
-    (0..10).map { |n| thrown(u: 20.0, theta: 40.deg, k: n / 10.0).solve(:vx) }
+    (0..10).map { |n| thrown(u: 20.0, theta: 40.deg, k: n / 10.0).solve(:v_x) }
            .each { |across| assert_in_delta 20.0 * Math.cos(40.deg), across, 1e-9 }
   end
 
@@ -78,7 +78,7 @@ class ProjectileTest < Minitest::Test
   def test_the_moment_follows_from_the_part_of_the_flight
     one = thrown(u: 20.0, theta: 40.deg, k: 0.25)
 
-    assert_in_delta one.solve(:tf) / 4, one.solve(:t), 1e-9
+    assert_in_delta one.solve(:t_f) / 4, one.solve(:t), 1e-9
   end
 
   # A throw on the Moon goes six times as far, and the law is not told that

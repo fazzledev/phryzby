@@ -35,7 +35,7 @@ class TotalInternalReflectionTest < Minitest::Test
 
   def test_a_denser_second_medium_never_traps_the_ray
     (1..89).each do |degrees|
-      refute SURFACE.new(i: degrees.deg, mu1: AIR, mu2: GLASS)
+      refute SURFACE.new(i: degrees.deg, mu_1: AIR, mu_2: GLASS)
                     .satisfies?(:no_refracted_ray), "trapped at #{degrees} deg"
     end
   end
@@ -47,6 +47,6 @@ class TotalInternalReflectionTest < Minitest::Test
 
   private
 
-  def surface(at:) = SURFACE.new(i: at.deg, mu1: GLASS, mu2: AIR)
+  def surface(at:) = SURFACE.new(i: at.deg, mu_1: GLASS, mu_2: AIR)
   def share(at:) = surface(at: at).solve(:r)
 end

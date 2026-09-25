@@ -75,10 +75,10 @@ await chapter({
     { key: "lib/light/reflection.rb", tab: 1 },
   ],
   playground: "lib/playground/light/reflection.rb",
-  opening: [ "surface.solve(:rl).in_degrees" ],
+  opening: [ "surface.solve(:r_l).in_degrees" ],
   examples: [
-    "surface.solve(:rl).in_degrees",
-    "Physics::Scenario.including(Reflection).new(rl: 55.deg).solve(:i).in_degrees",
+    "surface.solve(:r_l).in_degrees",
+    "Physics::Scenario.including(Reflection).new(r_l: 55.deg).solve(:i).in_degrees",
     "Reflection.equations[:law_of_reflection].to_s",
     "Reflection.quantities.values.uniq",
   ],

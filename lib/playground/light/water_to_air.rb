@@ -8,16 +8,16 @@ play_with Refraction do
   description "It bends away from the normal instead, and far enough round there is no way across at all."
 
   input :i, default: 45.deg
-  input(:mu1) { REFRACTIVE_MEDIA.fetch("water") }
-  input(:mu2) { REFRACTIVE_MEDIA.fetch("air") }
+  input(:mu_1) { REFRACTIVE_MEDIA.fetch("water") }
+  input(:mu_2) { REFRACTIVE_MEDIA.fetch("air") }
 
-  output :rr
+  output :r_r
   output :no_refracted_ray, alarm: true
 
   draw Light::Picture, rising: true do
     media "water", "air"
     ray "incident",  arriving_at: :i,  angle: true, extended: true
-    ray "refracted", crossing_at: :rr, angle: true, unless: :no_refracted_ray
+    ray "refracted", crossing_at: :r_r, angle: true, unless: :no_refracted_ray
     note "no refracted ray", when: :no_refracted_ray
   end
 end

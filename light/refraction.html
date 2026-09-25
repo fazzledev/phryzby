@@ -75,12 +75,12 @@ await chapter({
     { key: "lib/light/refraction.rb", tab: 1 },
   ],
   playground: "lib/playground/light/refraction.rb",
-  opening: [ "surface.solve(:rr).in_degrees" ],
+  opening: [ "surface.solve(:r_r).in_degrees" ],
   examples: [
-    "surface.solve(:rr).in_degrees",
+    "surface.solve(:r_r).in_degrees",
     "surface.solve(:i).in_degrees",
     "surface.as_posed",
-    "Physics::Scenario.including(Refraction).new(i: 30.deg, mu21: 1.33).solve(:rr).in_degrees",
+    "Physics::Scenario.including(Refraction).new(i: 30.deg, mu_21: 1.33).solve(:r_r).in_degrees",
   ],
 });
 </script>

@@ -5,11 +5,11 @@ class ReflectionTest < Minitest::Test
   SURFACE = Physics::Scenario.including(Reflection)
 
   def test_reflection_equals_incidence
-    assert_in_delta 37.0, solved(:rl, i: 37), 1e-6
+    assert_in_delta 37.0, solved(:r_l, i: 37), 1e-6
   end
 
   def test_it_solves_the_other_way_round_too
-    assert_in_delta 37.0, solved(:i, rl: 37), 1e-6
+    assert_in_delta 37.0, solved(:i, r_l: 37), 1e-6
   end
 
   def test_the_equation_block_builds_an_equation_rather_than_a_boolean
@@ -22,13 +22,13 @@ class ReflectionTest < Minitest::Test
 
   def test_a_solved_ray_satisfies_the_law_it_was_solved_from
     ray = SURFACE.new(i: 37.deg)
-    ray.solve(:rl)
+    ray.solve(:r_l)
 
     assert ray.holds?(:law_of_reflection)
   end
 
   def test_a_wrong_angle_does_not_satisfy_it
-    refute SURFACE.new(i: 37.deg, rl: 25.deg).holds?(:law_of_reflection)
+    refute SURFACE.new(i: 37.deg, r_l: 25.deg).holds?(:law_of_reflection)
   end
 
   def test_aliases_and_full_names_are_the_same_variable
@@ -40,11 +40,11 @@ class ReflectionTest < Minitest::Test
   def test_asking_twice_gives_back_what_was_already_found
     ray = SURFACE.new(i: 37.deg)
 
-    assert_equal ray.solve(:rl), ray.solve(:rl)
+    assert_equal ray.solve(:r_l), ray.solve(:r_l)
   end
 
   def test_refuses_to_solve_what_is_not_determined
-    assert_raises(RuntimeError) { SURFACE.new.solve(:rl) }
+    assert_raises(RuntimeError) { SURFACE.new.solve(:r_l) }
   end
 
   private

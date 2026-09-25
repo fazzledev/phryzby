@@ -26,9 +26,9 @@ class ChoosingTest < Minitest::Test
   def test_what_was_chosen_reaches_the_law_as_a_number
     posed = playing.posing(**opening)
 
-    assert_in_delta 1.0, posed.solve(:mu1), 1e-9
-    assert_in_delta 1.5, posed.solve(:mu2), 1e-9
-    assert_in_delta 13.1801, posed.solve(:rr).in_degrees, 1e-3
+    assert_in_delta 1.0, posed.solve(:mu_1), 1e-9
+    assert_in_delta 1.5, posed.solve(:mu_2), 1e-9
+    assert_in_delta 13.1801, posed.solve(:r_r).in_degrees, 1e-3
   end
 
   # A name is the reader's handle on a medium and means nothing to the law,

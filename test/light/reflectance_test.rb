@@ -14,31 +14,31 @@ class ReflectanceTest < Minitest::Test
   end
 
   def test_the_two_polarisations_agree_head_on
-    rs, rp, = share(at: 1, from: AIR, into: GLASS)
+    r_s, r_p, = share(at: 1, from: AIR, into: GLASS)
 
-    assert_in_delta rs, rp, 1e-3
+    assert_in_delta r_s, r_p, 1e-3
   end
 
   def test_asking_for_the_reflectance_alone_finds_everything_it_needs
-    surface = SURFACE.new(i: 40.deg, mu1: AIR, mu2: GLASS)
+    surface = SURFACE.new(i: 40.deg, mu_1: AIR, mu_2: GLASS)
     surface.solve(:r)
 
-    assert_in_delta 25.3739, surface[:rr].in_degrees, 1e-3
-    assert_operator surface[:rs], :>, 0
-    assert_operator surface[:rp], :>, 0
+    assert_in_delta 25.3739, surface[:r_r].in_degrees, 1e-3
+    assert_operator surface[:r_s], :>, 0
+    assert_operator surface[:r_p], :>, 0
   end
 
   def test_p_polarised_light_vanishes_at_brewsters_angle
-    _, rp, = share(at: BREWSTER, from: AIR, into: GLASS)
+    _, r_p, = share(at: BREWSTER, from: AIR, into: GLASS)
 
-    assert_in_delta 0.0, rp, 1e-6
+    assert_in_delta 0.0, r_p, 1e-6
     assert_in_delta 56.31, BREWSTER, 1e-2
   end
 
   def test_s_polarised_light_does_not_vanish_there
-    rs, = share(at: BREWSTER, from: AIR, into: GLASS)
+    r_s, = share(at: BREWSTER, from: AIR, into: GLASS)
 
-    assert_operator rs, :>, 0.1
+    assert_operator r_s, :>, 0.1
   end
 
   def test_everything_reflects_at_the_critical_angle
@@ -60,20 +60,20 @@ class ReflectanceTest < Minitest::Test
 
   def test_s_polarised_always_reflects_at_least_as_much
     (1..89).each do |degrees|
-      rs, rp, = share(at: degrees, from: AIR, into: GLASS)
+      r_s, r_p, = share(at: degrees, from: AIR, into: GLASS)
 
-      assert_operator rs, :>=, rp - 1e-9, "failed at #{degrees} deg"
+      assert_operator r_s, :>=, r_p - 1e-9, "failed at #{degrees} deg"
     end
   end
 
   def test_unpolarised_is_the_mean_of_the_two
-    rs, rp, r = share(at: 40, from: AIR, into: GLASS)
+    r_s, r_p, r = share(at: 40, from: AIR, into: GLASS)
 
-    assert_in_delta (rs + rp) / 2, r, 1e-9
+    assert_in_delta (r_s + r_p) / 2, r, 1e-9
   end
 
   def test_the_two_shares_account_for_all_of_the_light
-    reflected = SURFACE.new(i: 40.deg, mu1: AIR, mu2: GLASS).solve(:r)
+    reflected = SURFACE.new(i: 40.deg, mu_1: AIR, mu_2: GLASS).solve(:r)
 
     assert_in_delta 1.0, reflected + (1.0 - reflected), 1e-12
   end
@@ -83,8 +83,8 @@ class ReflectanceTest < Minitest::Test
   BREWSTER = Math.atan(GLASS / AIR).in_degrees
 
   def share(at:, from:, into:)
-    surface = SURFACE.new(i: at.deg, mu1: from, mu2: into)
+    surface = SURFACE.new(i: at.deg, mu_1: from, mu_2: into)
 
-    [ surface.solve(:rs), surface.solve(:rp), surface.solve(:r) ]
+    [ surface.solve(:r_s), surface.solve(:r_p), surface.solve(:r) ]
   end
 end

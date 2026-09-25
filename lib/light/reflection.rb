@@ -5,7 +5,7 @@ module Reflection
 
   include Incidence
 
-  quantity :angle_of_reflection, variable: :rl, within: Physics::A_RIGHT_ANGLE
+  quantity :angle_of_reflection, variable: :r_l, within: Physics::A_RIGHT_ANGLE
 
-  equation(:law_of_reflection) { i == rl }
+  equation(:law_of_reflection) { i == r_l }
 end

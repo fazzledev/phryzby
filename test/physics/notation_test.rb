@@ -6,8 +6,8 @@ require_relative "../../lib/light/reflection"
 class NotationTest < Minitest::Test
   def test_a_written_name_splits_into_a_letter_and_what_trails_it
     assert_equal "<mi>i</mi>", Physics.notation(:i)
-    assert_equal "<msub><mi>r</mi><mi>r</mi></msub>", Physics.notation(:rr)
-    assert_equal "<msub><mi>μ</mi><mi>21</mi></msub>", Physics.notation(:mu21)
+    assert_equal "<msub><mi>r</mi><mi>r</mi></msub>", Physics.notation(:r_r)
+    assert_equal "<msub><mi>μ</mi><mi>21</mi></msub>", Physics.notation(:mu_21)
   end
 
   def test_a_division_becomes_a_fraction
@@ -25,7 +25,7 @@ class NotationTest < Minitest::Test
   def test_it_walks_the_tree_rather_than_the_source
     written = Refraction.equations.fetch(:snells_law)
 
-    assert_equal "(mu1 * sin(i)) == (mu2 * sin(rr))", written.to_s
+    assert_equal "(mu_1 * sin(i)) == (mu_2 * sin(r_r))", written.to_s
     assert_includes written.to_mathml, "<msub><mi>μ</mi><mi>1</mi></msub>"
   end
 
@@ -89,7 +89,7 @@ class NotationTest < Minitest::Test
 
   def test_a_quantity_is_written_as_the_first_short_name_given_for_it
     assert_equal :i, Refraction.written(:angle_of_incidence)
-    assert_equal :mu21, RelativeIndex.written(:relative_refractive_index)
+    assert_equal :mu_21, RelativeIndex.written(:relative_refractive_index)
   end
 
   def test_a_quantity_appears_once_however_many_names_reach_it

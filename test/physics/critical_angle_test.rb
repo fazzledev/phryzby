@@ -14,8 +14,8 @@ class CriticalAngleTest < Minitest::Test
     assert_equal({ i: 30.deg }, opening)
     posed = playing.posing(**opening)
 
-    assert_in_delta 1.33, posed.solve(:mu1), 1e-9
-    assert_in_delta 1.0, posed.solve(:mu2), 1e-9
+    assert_in_delta 1.33, posed.solve(:mu_1), 1e-9
+    assert_in_delta 1.0, posed.solve(:mu_2), 1e-9
   end
 
   def test_nothing_states_the_critical_angle
@@ -26,7 +26,7 @@ class CriticalAngleTest < Minitest::Test
   end
 
   def test_and_it_is_asked_rather_than_stated
-    asked = playing.posing(**opening).asking(:i, rr: 90.deg)
+    asked = playing.posing(**opening).asking(:i, r_r: 90.deg)
 
     assert_in_delta Math.asin(1.0 / 1.33), asked, 1e-9
     assert_in_delta 48.7535, asked.in_degrees, 1e-3
