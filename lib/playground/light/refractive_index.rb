@@ -15,7 +15,7 @@ play_with Reflection, Refraction do
 
   input(:i) { 30.deg }
 
-  output("critical", in: :degrees) { asking(:i, r_r: 90.deg) }
+  output("critical", in: :deg) { asking(:i, r_r: 90.deg) }
   output :r_r
   output :no_refracted_ray, alarm: true
 

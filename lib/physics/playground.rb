@@ -3,19 +3,19 @@ module Physics
     HANDLE = "0.85rem".freeze
     HALF_HANDLE = "0.425rem".freeze
 
-    # How a reading is written out. For anything with units that is the units,
-    # spelled as the units and not as the kind of thing they measure — a
-    # velocity is in metres per second, the same way an angle is in degrees.
-    # The last two are what is left: a pure number has no units, and a
-    # condition is not a quantity and does not have any to have.
+    # How a reading is written out, under the unit it is written in — spelled
+    # the way it is printed, so a chapter asking for one is asking for what
+    # the reader will see. The last two are what is left when there are no
+    # units: a pure number has none, and a condition is not a quantity and
+    # does not have any to have.
     READS = {
-      degrees:           ->(value) { format("%.2f°", value.in_degrees) },
-      percent:           ->(value) { format("%.1f%%", value * 100) },
-      metres:            ->(value) { format("%.2f m", value) },
-      seconds:           ->(value) { format("%.2f s", value) },
-      metres_per_second: ->(value) { format("%.1f m/s", value) },
-      none:              ->(value) { format("%.4g", value) },
-      yes_or_no:         ->(value) { value ? "yes" : "no" },
+      deg:    ->(value) { format("%.2f°", value.in_degrees) },
+      "%":    ->(value) { format("%.1f%%", value * 100) },
+      m:      ->(value) { format("%.2f m", value) },
+      s:      ->(value) { format("%.2f s", value) },
+      "m/s":  ->(value) { format("%.1f m/s", value) },
+      none:   ->(value) { format("%.4g", value) },
+      yes_no: ->(value) { value ? "yes" : "no" },
     }.freeze
 
     def initialize(scenario)
@@ -103,7 +103,7 @@ module Physics
 
     # How finely a control moves is a property of what it carries, not of the
     # chapter: a tenth of a degree, a hundredth of an index.
-    FINELY = { degrees: 0.1.deg, none: 0.01, metres_per_second: 0.1, metres: 0.1 }.freeze
+    FINELY = { deg: 0.1.deg, none: 0.01, "m/s": 0.1, m: 0.1 }.freeze
 
     # One verb for everything a chapter hands the laws. A range to slide
     # through, a few named things to pick between, or, given a block, a value
@@ -145,8 +145,8 @@ module Physics
     # no law names — a worked-out block, a fraction, anything whose units the
     # domain cannot give away — has to say so itself.
     def read_as(name)
-      return :yes_or_no if @scenario.conditions.key?(name)
-      return :degrees if @scenario.domains[@scenario.quantities[name]] == A_RIGHT_ANGLE
+      return :yes_no if @scenario.conditions.key?(name)
+      return :deg if @scenario.domains[@scenario.quantities[name]] == A_RIGHT_ANGLE
 
       :none
     end

@@ -39,7 +39,7 @@ play_with Reflection, RelativeIndex do
   input :mu_2, 1.0..4.0, default: 1.0, marks: REFRACTIVE_MEDIA
 
   output :mu_21
-  output("critical", in: :degrees) { asking(:i, r_r: 90.deg) }
+  output("critical", in: :deg) { asking(:i, r_r: 90.deg) }
   output :r_r
   output :no_refracted_ray, alarm: true
 

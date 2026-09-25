@@ -15,7 +15,7 @@ play_with Reflection, TotalInternalReflection do
   input :mu_2, INDEX, default: 1.0, marks: REFRACTIVE_MEDIA
 
   output :no_refracted_ray, alarm: true
-  output :r, in: :percent
+  output :r, in: :"%"
   output("solved from") { satisfies?(:no_refracted_ray) ? ":everything_reflects" : ":unpolarised" }
 
   draw Light::Picture, rising: true do

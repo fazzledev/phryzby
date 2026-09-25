@@ -16,10 +16,10 @@ play_with Reflection, Reflectance do
 
   output :r_r
   output :no_refracted_ray, alarm: true
-  output :r_s, in: :percent
-  output :r_p, in: :percent
-  output :r,  in: :percent
-  output("refracted", in: :percent) { 1.0 - solve(:r) }
+  output :r_s, in: :"%"
+  output :r_p, in: :"%"
+  output :r,  in: :"%"
+  output("refracted", in: :"%") { 1.0 - solve(:r) }
 
   draw Light::Picture do
     media :mu_1, :mu_2

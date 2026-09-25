@@ -12,7 +12,7 @@ play_with Reflection, Refraction do
   input(:mu_1) { REFRACTIVE_MEDIA.fetch("water") }
   input(:mu_2) { REFRACTIVE_MEDIA.fetch("air") }
 
-  output("critical", in: :degrees) { asking(:i, r_r: 90.deg) }
+  output("critical", in: :deg) { asking(:i, r_r: 90.deg) }
   output :r_r
   output :no_refracted_ray, alarm: true
 
