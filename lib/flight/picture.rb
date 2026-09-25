@@ -283,7 +283,7 @@ module Flight
     # evenly, because the vertices are even in time — and how far along the
     # arc that is, which is not even at all.
     def flying
-      seconds = value(:t)
+      seconds = value(:tf)
       return "" if seconds.nil? || seconds < 1e-6 || @walked.nil?
 
       steps = @walked.each_cons(2).map { |(from, to)| Math.hypot(to[0] - from[0], to[1] - from[1]) }

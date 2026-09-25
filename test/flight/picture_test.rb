@@ -52,7 +52,7 @@ class FlightPictureTest < Minitest::Test
   # The ball is in the air for exactly as long as the law says it is, so the
   # picture asks rather than picks.
   def test_the_ball_flies_for_the_time_of_flight
-    seconds = THROWN.posing(**THROWN.opening).solve(:t)
+    seconds = THROWN.posing(**THROWN.opening).solve(:tf)
 
     assert_includes drawn, %(dur="#{seconds.round(3)}s")
   end
@@ -94,7 +94,7 @@ class FlightPictureTest < Minitest::Test
   def test_the_height_it_is_drawn_at_falls_under_the_gravity_it_was_given
     THROWN.picture(THROWN.opening, settled: {}).then do |svg|
       posed = THROWN.posing(**THROWN.opening)
-      flight = posed.solve(:t)
+      flight = posed.solve(:tf)
       up = flown(svg)
 
       # A second difference of the height, over a span the chord error is
@@ -115,7 +115,7 @@ class FlightPictureTest < Minitest::Test
                .split(" L ").map { |pair| pair.split(",").map(&:to_f) }
     clock = svg[/keyTimes="([^"]+)"/, 1].split(";").map(&:to_f)
     reached = svg[/keyPoints="([^"]+)"/, 1].split(";").map(&:to_f)
-    flight = THROWN.posing(**THROWN.opening).solve(:t)
+    flight = THROWN.posing(**THROWN.opening).solve(:tf)
 
     runs = walked.each_cons(2).map { |(from, to)| Math.hypot(to[0] - from[0], to[1] - from[1]) }
     gone = runs.each_with_object([ 0.0 ]) { |step, kept| kept << kept.last + step }

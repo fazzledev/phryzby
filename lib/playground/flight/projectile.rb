@@ -23,8 +23,9 @@ play_with Projectile do
 
   output :r, in: :metres
   output :h, in: :metres
-  output :t, in: :seconds
+  output :tf, in: :seconds
 
+  output :t,  in: :seconds
   output :x,  in: :metres
   output :y,  in: :metres
   output :vx, in: :speed

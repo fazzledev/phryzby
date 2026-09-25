@@ -24,7 +24,7 @@ class ProjectileTest < Minitest::Test
   def test_it_stays_up_twice_as_long_as_it_takes_to_stop_climbing
     one = thrown(u: 20.0, theta: 90.deg)
 
-    assert_in_delta 2 * 20.0 / EARTH, one.solve(:t), 1e-9
+    assert_in_delta 2 * 20.0 / EARTH, one.solve(:tf), 1e-9
   end
 
   # Forty-five degrees is not written anywhere in the law. It is where the
@@ -78,7 +78,7 @@ class ProjectileTest < Minitest::Test
   def test_the_moment_follows_from_the_part_of_the_flight
     one = thrown(u: 20.0, theta: 40.deg, k: 0.25)
 
-    assert_in_delta one.solve(:t) / 4, one.solve(:tau), 1e-9
+    assert_in_delta one.solve(:tf) / 4, one.solve(:t), 1e-9
   end
 
   # A throw on the Moon goes six times as far, and the law is not told that
