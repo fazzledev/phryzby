@@ -56,17 +56,17 @@ module Flight
       want(called, aloft(turned), colour: "var(--light)") if called
     end
 
-    PUSH = 76
+    SECOND = 1.0
 
     # What it left the hand with, as an arrow: the way it was going and how
-    # fast. A speed is not a distance and cannot be laid on the ground's
-    # scale, so it is drawn against the fastest the chapter allows — which is
-    # the one thing on the page it can honestly be compared with.
+    # fast. A speed is not a length, but the ground it covers in a second is,
+    # and that is what is drawn — so the arrow is on the same scale as
+    # everything else in the picture, and stands back with it.
     def launched(turned)
       speed = value(:u)
       return "" if speed.nil? || speed <= 0
 
-      long = PUSH * speed / fastest
+      long = speed * SECOND * scale
       tip = [ (START + Math.cos(turned) * long).round(2),
               (GROUND - Math.sin(turned) * long).round(2) ]
       wing = lambda do |swing|
@@ -84,10 +84,15 @@ module Flight
     # of it — the same way a ray's name keeps near the ray without standing
     # on whatever else is there.
     def quickly(speed, tip)
+      # The arrow may run clean off the picture; the words naming it may not,
+      # so they follow it only as far as there is room for them to be read.
+      tip = [ tip[0].clamp(24.0, WIDTH - 88.0), tip[1].clamp(20.0, GROUND - 6.0) ]
+
       want(format("%.1f m/s", speed),
            [ [ tip[0] + 7, tip[1] - 5, "start" ], [ tip[0] + 7, tip[1] + 13, "start" ],
              [ tip[0] - 7, tip[1] - 7, "end" ],   [ tip[0] - 7, tip[1] + 15, "end" ],
-             [ tip[0] + 7, tip[1] - 19, "start" ], [ tip[0] - 7, tip[1] - 21, "end" ] ],
+             [ tip[0] + 7, tip[1] - 19, "start" ], [ tip[0] - 7, tip[1] - 21, "end" ],
+             [ tip[0] + 7, tip[1] + 27, "start" ], [ tip[0] - 7, tip[1] - 33, "end" ] ],
            colour: "var(--ink-mid)")
     end
 
@@ -99,8 +104,11 @@ module Flight
       return if metres.nil?
 
       if along(metres) > WIDTH - 4
-        return want("#{called} \u2192", [ [ WIDTH - 6, GROUND - 7, "end" ],
-                                        [ WIDTH - 6, GROUND - 19, "end" ] ], colour: "var(--light)")
+        return want("#{called} \u2192",
+                    [ [ WIDTH - 6, GROUND - 7, "end" ], [ WIDTH - 6, GROUND - 19, "end" ],
+                      [ WIDTH - 6, GROUND + 15, "end" ], [ WIDTH - 6, GROUND - 31, "end" ],
+                      [ WIDTH - 6, GROUND - 43, "end" ], [ WIDTH - 6, GROUND - 55, "end" ] ],
+                    colour: "var(--light)")
       end
 
       at = along(metres)
@@ -312,10 +320,13 @@ module Flight
       %( data-drags="#{@dragged}" data-at="#{START} #{GROUND}") + pulled
     end
 
+    # A second of flight per arrow, so a second of flight per drag: how far
+    # the hand goes is how far it would have gone in that second, which is
+    # how fast it was thrown.
     def pulled
       return "" unless @scenario.class.playground.inputs.key?(:u)
 
-      %( data-pulls="u" data-per="#{(fastest / PUSH.to_f).round(6)}")
+      %( data-pulls="u" data-per="#{(1.0 / (scale * SECOND)).round(6)}")
     end
 
     # Everything above the ground answers to the hand.
