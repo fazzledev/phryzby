@@ -12,7 +12,7 @@ play_with Projectile do
   description "Wherever the throw sent it. Nothing touches it after it leaves the hand, so the angle it left at, the speed it left at, and how hard the world pulls decide the whole flight."
 
   input :theta, default: 45.deg
-  input :u, 5.0..100.0, in: :speed, default: 18.0
+  input :u, 5.0..100.0, in: :metres_per_second, default: 18.0
 
   input :world, GRAVITY, default: "earth"
   input :in_view, IN_VIEW
@@ -28,8 +28,8 @@ play_with Projectile do
   output :t,  in: :seconds
   output :x,  in: :metres
   output :y,  in: :metres
-  output :v_x, in: :speed
-  output :v_y, in: :speed
+  output :v_x, in: :metres_per_second
+  output :v_y, in: :metres_per_second
 
   draw Flight::Picture do
     ground

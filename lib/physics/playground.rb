@@ -3,14 +3,19 @@ module Physics
     HANDLE = "0.85rem".freeze
     HALF_HANDLE = "0.425rem".freeze
 
-    UNITS = {
-      degrees: ->(value) { format("%.2f°", value.in_degrees) },
-      percent: ->(value) { format("%.1f%%", value * 100) },
-      number:  ->(value) { format("%.4g", value) },
-      metres:  ->(value) { format("%.2f m", value) },
-      seconds: ->(value) { format("%.2f s", value) },
-      speed:   ->(value) { format("%.1f m/s", value) },
-      plain:   ->(value) { value ? "yes" : "no" },
+    # How a reading is written out. For anything with units that is the units,
+    # spelled as the units and not as the kind of thing they measure — a
+    # velocity is in metres per second, the same way an angle is in degrees.
+    # The last two are what is left: a pure number has no units, and a
+    # condition is not a quantity and does not have any to have.
+    READS = {
+      degrees:           ->(value) { format("%.2f°", value.in_degrees) },
+      percent:           ->(value) { format("%.1f%%", value * 100) },
+      metres:            ->(value) { format("%.2f m", value) },
+      seconds:           ->(value) { format("%.2f s", value) },
+      metres_per_second: ->(value) { format("%.1f m/s", value) },
+      none:              ->(value) { format("%.4g", value) },
+      yes_or_no:         ->(value) { value ? "yes" : "no" },
     }.freeze
 
     def initialize(scenario)
@@ -98,7 +103,7 @@ module Physics
 
     # How finely a control moves is a property of what it carries, not of the
     # chapter: a tenth of a degree, a hundredth of an index.
-    FINELY = { degrees: 0.1.deg, number: 0.01, speed: 0.1, metres: 0.1 }.freeze
+    FINELY = { degrees: 0.1.deg, none: 0.01, metres_per_second: 0.1, metres: 0.1 }.freeze
 
     # One verb for everything a chapter hands the laws. A range to slide
     # through, a few named things to pick between, or, given a block, a value
@@ -107,10 +112,10 @@ module Physics
       return @given[name] = worked_out if worked_out
       return @inputs[name] = picking(name, offered, default, as) if offered.is_a?(Hash)
 
-      units = binding.local_variable_get(:in) || read_as(name)
+      reads = binding.local_variable_get(:in) || read_as(name)
 
-      @inputs[name] = { range: offered || as_far_as(name), units: units,
-                        step: FINELY.fetch(units, 0.01), default: default,
+      @inputs[name] = { range: offered || as_far_as(name), reads: reads,
+                        step: FINELY.fetch(reads, 0.01), default: default,
                         as: as, marks: marks }
     end
 
@@ -125,24 +130,25 @@ module Physics
     def picking(name, table, default, as)
       @chosen[name] = table
 
-      { range: 0..(table.size - 1), step: 1, as: as, units: nil, table: table,
+      { range: 0..(table.size - 1), step: 1, as: as, reads: nil, table: table,
         default: table.keys.index(default || table.keys.first),
         marks: table.keys.each_with_index.to_h }
     end
 
     def output(name, in: nil, as: nil, alarm: false, &worked_out)
-      @outputs << { name: name, units: binding.local_variable_get(:in) || read_as(name),
+      @outputs << { name: name, reads: binding.local_variable_get(:in) || read_as(name),
                   as: as, alarm: alarm, from: worked_out }
     end
 
     # How a quantity reads is something the laws have already said. One held
-    # to a right angle is an angle; a condition is a yes or a no. Only what no
-    # law names — a worked-out block, a fraction — has to say so itself.
+    # to a right angle is in degrees; a condition is a yes or a no. Only what
+    # no law names — a worked-out block, a fraction, anything whose units the
+    # domain cannot give away — has to say so itself.
     def read_as(name)
-      return :plain if @scenario.conditions.key?(name)
+      return :yes_or_no if @scenario.conditions.key?(name)
       return :degrees if @scenario.domains[@scenario.quantities[name]] == A_RIGHT_ANGLE
 
-      :number
+      :none
     end
 
     def read(scenario, name)
@@ -158,9 +164,9 @@ module Physics
         found = begin
           if entry[:from]
             answer = scenario.instance_exec(&entry[:from])
-            answer.is_a?(Numeric) ? UNITS.fetch(entry[:units]).call(answer) : answer.to_s
+            answer.is_a?(Numeric) ? READS.fetch(entry[:reads]).call(answer) : answer.to_s
           else
-            UNITS.fetch(entry[:units]).call(read(scenario, entry[:name]))
+            READS.fetch(entry[:reads]).call(read(scenario, entry[:name]))
           end
         rescue StandardError
           "—"
@@ -239,7 +245,7 @@ module Physics
     def reading(set, value)
       return set[:table].keys[value.to_i].to_s if set[:table]
 
-      shown = UNITS.fetch(set[:units]).call(value)
+      shown = READS.fetch(set[:reads]).call(value)
       near = set[:marks].find { |_, mark| (mark - value).abs < set[:step] / 2 + 1e-9 }
 
       near ? "#{shown}<small>#{near.first}</small>" : shown
@@ -274,12 +280,15 @@ module Physics
 
     def called(name) = (@scenario.quantities[name] || name).to_s.tr("_", " ")
 
-    # What the equation writes it as. A condition is not a quantity and has no
-    # letter of its own.
+    # What the equation writes it as, set the way the equation sets it: a
+    # control and a readout name the same quantity the law above them does,
+    # so mu_21 is a mu with 21 under it in all three places and not only in
+    # the one with room for a formula. A condition is not a quantity and has
+    # no letter of its own.
     def written(name)
       return nil unless @scenario.quantities.key?(name)
 
-      Physics.symbol(written_for(name))
+      "<math><mrow>#{Physics.notation(written_for(name))}</mrow></math>"
     end
   end
 

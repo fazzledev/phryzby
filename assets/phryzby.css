@@ -175,6 +175,8 @@ svg[data-drags]:active .grab{cursor:grabbing;}
 .field > label,.out span:first-child{font-size:.8rem;color:var(--ink-mid);
   padding-right:.5rem;}
 .field > .var,.out .var{font-family:var(--mono);font-size:.9rem;color:var(--ink-mid);}
+/* The letter a control carries is the one the law writes, set the same way. */
+.field > .var math,.out .var math{font-size:1.02rem;color:var(--ink-mid);}
 .field output,.out .val{font-family:var(--mono);font-size:.8rem;text-align:right;
   line-height:1.25;}
 .field input[type=range]{width:100%;accent-color:var(--ray);display:block;}

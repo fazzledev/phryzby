@@ -4,8 +4,14 @@ require_relative "../chapters"
 # The chapter that draws the ray that does not cross.
 class InternalReflectionTest < Minitest::Test
   def playing = INTERNAL
+  # The letter beside each reading is set as maths now, so a subscript is two
+  # elements rather than two characters. Put it back the way the law spells
+  # it before flattening the rest.
   def reads(**changes)
-    playing.readouts(playing.opening.merge(**changes)).gsub(%r{</?[^>]+>}, " ")
+    playing.readouts(playing.opening.merge(**changes))
+           .gsub(%r{<msub><mi>([^<]*)</mi><mi>([^<]*)</mi></msub>}, '\1_\2')
+           .gsub(%r{</?(?:math|mrow|mi)>}, "")
+           .gsub(%r{</?[^>]+>}, " ")
   end
 
   def drawn(**changes) = playing.picture(playing.opening.merge(**changes), settled: {})
