@@ -800,7 +800,12 @@ const moved = (vm) => {
     vm.eval(`Physics.playground.moved(${reading()})`).toString().split("\u0000");
 
   $("picture").innerHTML = picture;
-  $("readouts").innerHTML = readouts;
+
+  // A chapter that asks two things at once has a block of readings under
+  // each, in the order Ruby laid them out.
+  const said = readouts.split("\u0003");
+  document.querySelectorAll("#demo [data-readouts]")
+          .forEach((where, n) => { where.innerHTML = said[n] ?? ""; });
   labels.split("\u0002").forEach((pair) => {
     const [ name, text ] = pair.split("\u0001");
     // Ruby wrote this, and it may carry a caption under the number.

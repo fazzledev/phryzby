@@ -94,31 +94,39 @@ module Physics
     # A chapter that works nothing out says nothing under Outputs, and the
     # heading goes with it.
     def to_html(values)
-      [ "<div id=\"picture\">#{picture(values)}</div>",
-        head("Inputs"), controls,
-        @outputs.empty? ? "" : head("Outputs"),
-        "<div id=\"readouts\">#{readouts(values)}</div>" ].join
+      "<div id=\"picture\">#{picture(values)}</div>" + parts.each_with_index.map { |part, n|
+        [ part ? head(part) : "",
+          head("Inputs", under: part), controls(part),
+          outputs_of(part).empty? ? "" : head("Outputs", under: part),
+          "<div#{n.zero? ? ' id="readouts"' : ""} data-readouts=\"#{n}\">" \
+            "#{readouts(values, part)}</div>" ].join
+      }.join
     end
+
+    # The groups a chapter opened, in the order it opened them, and a single
+    # nameless one for a chapter that opened none.
+    def parts
+      named = (@inputs.values.map { |set| set[:about] } + @outputs.map { |entry| entry[:about] })
+              .uniq
+      named.empty? ? [ nil ] : named
+    end
+
+    def outputs_of(part) = @outputs.select { |entry| entry[:about] == part }
 
     # Each heading names the verb that made what is under it, so the page and
     # the playground file beside it can be read straight across.
     def head(text, under: false) = "<div class=\"head#{under ? " under" : ""}\">#{text}</div>"
 
-    # Each group under the heading it was declared with, and whatever was
-    # declared before any group was opened under none.
-    def grouped(rows, &shown)
-      rows.chunk_while { |one, other| one.first == other.first }
-          .map { |chunk| (chunk.first.first ? head(chunk.first.first, under: true) : "") +
-                         shown.call(chunk.map(&:last)) }
-          .join
-    end
-
     # What changes when a control moves: the picture, the numbers, and the
     # reading beside each control.
+    # A chapter with two groups has two places to write its readings into, so
+    # they travel in the order the groups were opened and the page puts each
+    # where it belongs.
     def moved(values)
       labels = @inputs.map { |name, set| "#{name}\u0001#{reading(set, values[name])}" }
+      said = parts.map { |part| readouts(values, part) }.join("\u0003")
 
-      [ picture(values), readouts(values), labels.join("\u0002") ].join("\u0000")
+      [ picture(values), said, labels.join("\u0002") ].join("\u0000")
     end
 
     # How finely a control moves is a property of what it carries, not of the
@@ -178,10 +186,10 @@ module Physics
       scenario.solve(name)
     end
 
-    def readouts(values)
+    def readouts(values, part = nil)
       scenario = posing(**values)
 
-      rows = @outputs.map do |entry|
+      rows = outputs_of(part).map do |entry|
         found = begin
           if entry[:from]
             answer = scenario.instance_exec(&entry[:from])
@@ -194,19 +202,17 @@ module Physics
         end
         label = entry[:as] || (entry[:from] ? entry[:name].to_s : called(entry[:name]))
 
-        [ entry[:about],
-          "<div#{entry[:alarm] ? ' class="alarm"' : ""}><span>#{label}</span>" \
-            "<span class=\"var\">#{written(entry[:name])}</span>" \
-            "<span class=\"val\">#{found}</span></div>" ]
+        "<div#{entry[:alarm] ? ' class="alarm"' : ""}><span>#{label}</span>" \
+          "<span class=\"var\">#{written(entry[:name])}</span>" \
+          "<span class=\"val\">#{found}</span></div>"
       end
 
-      grouped(rows) { |shown| "<div class=\"out\">#{shown.join}</div>" }
+      "<div class=\"out\">#{rows.join}</div>"
     end
 
-    def controls
-      grouped(@inputs.map { |name, set|
-        [ set[:about], set[:table] ? picked(name, set) : slid(name, set) ]
-      }) { |shown| shown.join }
+    def controls(part = nil)
+      @inputs.select { |_, set| set[:about] == part }
+             .map { |name, set| set[:table] ? picked(name, set) : slid(name, set) }.join
     end
 
     def slid(name, set)

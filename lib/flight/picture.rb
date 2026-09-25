@@ -269,7 +269,7 @@ module Flight
       drawn = @walked.map { |point| point.join(",") }
 
       %(<path id="flight" d="M #{drawn.join(' L ')}" fill="none" stroke="var(--light)" ) +
-        %(stroke-width="2.5" stroke-linecap="round"/>) + landing(turned) + flying
+        %(stroke-width="2.5" stroke-linecap="round"/>) + flying
     end
 
     # The arc is where it went; this is it going. Nothing here chooses how
@@ -298,20 +298,6 @@ module Flight
         %(<animateMotion dur="#{seconds.round(3)}s" repeatCount="indefinite" ) +
         %(calcMode="linear" keyTimes="#{clock.join(';')}" keyPoints="#{reached.join(';')}">) +
         %(<mpath href="#flight"/></animateMotion></circle>)
-    end
-
-    # The arrowhead, laid along the way it is going as it comes down — which
-    # is the angle it left at, mirrored.
-    def landing(turned)
-      tip = [ along(value(:r)), GROUND ]
-      wing = ->(swing) do
-        angle = Math::PI + turned + swing
-        [ (tip[0] + Math.cos(angle) * HEAD).round(2),
-          (tip[1] - Math.sin(angle) * HEAD).round(2) ].join(",")
-      end
-
-      %(<path class="head" d="M #{tip.join(',')} L #{wing.call(0.42)} L #{wing.call(-0.42)} z" ) +
-        %(fill="var(--light)"/>)
     end
 
     ARC = 26
