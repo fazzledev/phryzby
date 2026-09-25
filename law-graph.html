@@ -7,6 +7,8 @@
     font:13px ui-monospace,"SF Mono",Menlo,Consolas,monospace;}
   header{padding:.8rem 1rem;border-bottom:1px solid #2C2C30;display:flex;gap:.5rem;
     align-items:center;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:.4rem;color:#ECECEC;text-decoration:none;
+    font-weight:650;margin-right:.6rem}
   button{font:inherit;font-size:.78rem;background:#191919;color:#8C8C8C;border:1px solid #2C2C30;
     border-radius:99px;padding:.25rem .7rem;cursor:pointer}
   button[aria-pressed=true]{color:#131315;background:#6BA8FF;border-color:#6BA8FF}
@@ -21,6 +23,7 @@
   g.node{cursor:grab}
 </style>
 <header>
+  <a class="brand" href="./"><img src="assets/favicon.svg" alt="" width="17" height="17">phryzby</a>
   <span style="color:#8C8C8C">law</span>
   <span id="picker"></span>
   <span class="note">drag a node · scroll to zoom · boxes are quantities, pills are equations ·
