@@ -32,9 +32,12 @@ module LawGraph
                base, under = letter(law, q)
                { id: "q:#{q}", kind: "quantity", base: base, under: under,
                  called: q.to_s.tr("_", " ") }
-             } + (law.equations.keys + law.conditions.keys).map { |name|
+             } + (law.equations.to_a + law.conditions.to_a).map { |name, holds|
+               # What it says, set the way the law pane sets it. These have no
+               # names in any book — they are results, labelled by their
+               # subject — so the statement is the only honest identity.
                { id: "e:#{name}", kind: law.conditions.key?(name) ? "condition" : "equation",
-                 said: name.to_s.tr("_", " ") }
+                 said: name.to_s.tr("_", " "), maths: holds.to_mathml }
              },
       links: (law.equations.to_a + law.conditions.to_a).flat_map { |name, holds|
                holds.variables.map { |q| { source: "e:#{name}", target: "q:#{q}" } }

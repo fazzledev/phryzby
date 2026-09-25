@@ -96,47 +96,56 @@
       {
         "id": "e:horizontal_range",
         "kind": "equation",
-        "said": "horizontal range"
+        "said": "horizontal range",
+        "maths": "<mi>R</mi><mo>=</mo><mfrac><mrow><msup><mrow><mi>u</mi></mrow><mrow><mn>2</mn></mrow></msup><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mo class=\"fence\" stretchy=\"false\">(</mo><mn>2</mn><mo>&#x22c5;</mo><msub><mi>θ</mi><mi>0</mi></msub><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mi>g</mi></mrow></mfrac>"
       },
       {
         "id": "e:maximum_height",
         "kind": "equation",
-        "said": "maximum height"
+        "said": "maximum height",
+        "maths": "<mi>H</mi><mo>=</mo><mfrac><mrow><msup><mrow><mo class=\"fence\" stretchy=\"false\">(</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mn>2</mn></mrow></msup></mrow><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>g</mi></mrow></mfrac>"
       },
       {
         "id": "e:time_of_flight",
         "kind": "equation",
-        "said": "time of flight"
+        "said": "time of flight",
+        "maths": "<mi>T</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
       },
       {
         "id": "e:elapsed_time",
         "kind": "equation",
-        "said": "elapsed time"
+        "said": "elapsed time",
+        "maths": "<mi>t</mi><mo>=</mo><mi>k</mi><mo>&#x22c5;</mo><mi>T</mi>"
       },
       {
         "id": "e:horizontal_displacement",
         "kind": "equation",
-        "said": "horizontal displacement"
+        "said": "horizontal displacement",
+        "maths": "<mi>x</mi><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo>&#x22c5;</mo><mi>t</mi>"
       },
       {
         "id": "e:vertical_displacement",
         "kind": "equation",
-        "said": "vertical displacement"
+        "said": "vertical displacement",
+        "maths": "<mi>y</mi><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo>&#x22c5;</mo><mi>t</mi><mo>-</mo><mfrac><mrow><mi>g</mi><mo>&#x22c5;</mo><msup><mrow><mi>t</mi></mrow><mrow><mn>2</mn></mrow></msup></mrow><mrow><mn>2</mn></mrow></mfrac>"
       },
       {
         "id": "e:horizontal_velocity",
         "kind": "equation",
-        "said": "horizontal velocity"
+        "said": "horizontal velocity",
+        "maths": "<msub><mi>v</mi><mi>x</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
       },
       {
         "id": "e:vertical_velocity",
         "kind": "equation",
-        "said": "vertical velocity"
+        "said": "vertical velocity",
+        "maths": "<msub><mi>v</mi><mi>y</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo>-</mo><mi>g</mi><mo>&#x22c5;</mo><mi>t</mi>"
       },
       {
         "id": "e:direction_of_travel",
         "kind": "equation",
-        "said": "direction of travel"
+        "said": "direction of travel",
+        "maths": "<mi>θ</mi><mo>=</mo><mi>atan</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mo class=\"fence\" stretchy=\"false\">(</mo><mfrac><mrow><msub><mi>v</mi><mi>y</mi></msub></mrow><mrow><msub><mi>v</mi><mi>x</mi></msub></mrow></mfrac><mo class=\"fence\" stretchy=\"false\">)</mo>"
       }
     ],
     "links": [
@@ -330,17 +339,20 @@
       {
         "id": "e:horizontal_range",
         "kind": "equation",
-        "said": "horizontal range"
+        "said": "horizontal range",
+        "maths": "<mi>R</mi><mo>=</mo><mfrac><mrow><msup><mrow><mi>u</mi></mrow><mrow><mn>2</mn></mrow></msup><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mo class=\"fence\" stretchy=\"false\">(</mo><mn>2</mn><mo>&#x22c5;</mo><msub><mi>θ</mi><mi>0</mi></msub><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mi>g</mi></mrow></mfrac>"
       },
       {
         "id": "e:maximum_height",
         "kind": "equation",
-        "said": "maximum height"
+        "said": "maximum height",
+        "maths": "<mi>H</mi><mo>=</mo><mfrac><mrow><msup><mrow><mo class=\"fence\" stretchy=\"false\">(</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mn>2</mn></mrow></msup></mrow><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>g</mi></mrow></mfrac>"
       },
       {
         "id": "e:time_of_flight",
         "kind": "equation",
-        "said": "time of flight"
+        "said": "time of flight",
+        "maths": "<mi>T</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
       }
     ],
     "links": [
@@ -428,12 +440,14 @@
       {
         "id": "e:snells_law",
         "kind": "equation",
-        "said": "snells law"
+        "said": "snells law",
+        "maths": "<msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>=</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub>"
       },
       {
         "id": "e:no_refracted_ray",
         "kind": "condition",
-        "said": "no refracted ray"
+        "said": "no refracted ray",
+        "maths": "<mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>2</mi></msub></mrow></mfrac><mo>&gt;</mo><mn>1</mn>"
       }
     ],
     "links": [
@@ -508,17 +522,20 @@
       {
         "id": "e:law_of_reflection",
         "kind": "equation",
-        "said": "law of reflection"
+        "said": "law of reflection",
+        "maths": "<mi>i</mi><mo>=</mo><msub><mi>r</mi><mi>l</mi></msub>"
       },
       {
         "id": "e:snells_law",
         "kind": "equation",
-        "said": "snells law"
+        "said": "snells law",
+        "maths": "<msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>=</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub>"
       },
       {
         "id": "e:no_refracted_ray",
         "kind": "condition",
-        "said": "no refracted ray"
+        "said": "no refracted ray",
+        "maths": "<mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>2</mi></msub></mrow></mfrac><mo>&gt;</mo><mn>1</mn>"
       }
     ],
     "links": [
@@ -614,17 +631,20 @@
       {
         "id": "e:law_of_reflection",
         "kind": "equation",
-        "said": "law of reflection"
+        "said": "law of reflection",
+        "maths": "<mi>i</mi><mo>=</mo><msub><mi>r</mi><mi>l</mi></msub>"
       },
       {
         "id": "e:snells_law",
         "kind": "equation",
-        "said": "snells law"
+        "said": "snells law",
+        "maths": "<msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>=</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub>"
       },
       {
         "id": "e:no_refracted_ray",
         "kind": "condition",
-        "said": "no refracted ray"
+        "said": "no refracted ray",
+        "maths": "<mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>2</mi></msub></mrow></mfrac><mo>&gt;</mo><mn>1</mn>"
       }
     ],
     "links": [
@@ -707,17 +727,20 @@
       {
         "id": "e:law_of_reflection",
         "kind": "equation",
-        "said": "law of reflection"
+        "said": "law of reflection",
+        "maths": "<mi>i</mi><mo>=</mo><msub><mi>r</mi><mi>l</mi></msub>"
       },
       {
         "id": "e:snells_law",
         "kind": "equation",
-        "said": "snells law"
+        "said": "snells law",
+        "maths": "<msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>=</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub>"
       },
       {
         "id": "e:no_refracted_ray",
         "kind": "condition",
-        "said": "no refracted ray"
+        "said": "no refracted ray",
+        "maths": "<mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>2</mi></msub></mrow></mfrac><mo>&gt;</mo><mn>1</mn>"
       }
     ],
     "links": [
@@ -821,32 +844,38 @@
       {
         "id": "e:law_of_reflection",
         "kind": "equation",
-        "said": "law of reflection"
+        "said": "law of reflection",
+        "maths": "<mi>i</mi><mo>=</mo><msub><mi>r</mi><mi>l</mi></msub>"
       },
       {
         "id": "e:snells_law",
         "kind": "equation",
-        "said": "snells law"
+        "said": "snells law",
+        "maths": "<msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>=</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub>"
       },
       {
         "id": "e:s_polarised",
         "kind": "equation",
-        "said": "s polarised"
+        "said": "s polarised",
+        "maths": "<msub><mi>r</mi><mi>s</mi></msub><mo>=</mo><msup><mrow><mo class=\"fence\" stretchy=\"false\">(</mo><mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>-</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub></mrow><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>+</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub></mrow></mfrac><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mn>2</mn></mrow></msup>"
       },
       {
         "id": "e:p_polarised",
         "kind": "equation",
-        "said": "p polarised"
+        "said": "p polarised",
+        "maths": "<msub><mi>r</mi><mi>p</mi></msub><mo>=</mo><msup><mrow><mo class=\"fence\" stretchy=\"false\">(</mo><mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub><mo>-</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub><mo>+</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow></mfrac><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mn>2</mn></mrow></msup>"
       },
       {
         "id": "e:unpolarised",
         "kind": "equation",
-        "said": "unpolarised"
+        "said": "unpolarised",
+        "maths": "<mi>r</mi><mo>=</mo><mfrac><mrow><msub><mi>r</mi><mi>s</mi></msub><mo>+</mo><msub><mi>r</mi><mi>p</mi></msub></mrow><mrow><mn>2</mn></mrow></mfrac>"
       },
       {
         "id": "e:no_refracted_ray",
         "kind": "condition",
-        "said": "no refracted ray"
+        "said": "no refracted ray",
+        "maths": "<mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>2</mi></msub></mrow></mfrac><mo>&gt;</mo><mn>1</mn>"
       }
     ],
     "links": [
@@ -960,7 +989,8 @@
       {
         "id": "e:law_of_reflection",
         "kind": "equation",
-        "said": "law of reflection"
+        "said": "law of reflection",
+        "maths": "<mi>i</mi><mo>=</mo><msub><mi>r</mi><mi>l</mi></msub>"
       }
     ],
     "links": [
@@ -1008,12 +1038,14 @@
       {
         "id": "e:snells_law",
         "kind": "equation",
-        "said": "snells law"
+        "said": "snells law",
+        "maths": "<msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>=</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub>"
       },
       {
         "id": "e:no_refracted_ray",
         "kind": "condition",
-        "said": "no refracted ray"
+        "said": "no refracted ray",
+        "maths": "<mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>2</mi></msub></mrow></mfrac><mo>&gt;</mo><mn>1</mn>"
       }
     ],
     "links": [
@@ -1088,17 +1120,20 @@
       {
         "id": "e:law_of_reflection",
         "kind": "equation",
-        "said": "law of reflection"
+        "said": "law of reflection",
+        "maths": "<mi>i</mi><mo>=</mo><msub><mi>r</mi><mi>l</mi></msub>"
       },
       {
         "id": "e:snells_law",
         "kind": "equation",
-        "said": "snells law"
+        "said": "snells law",
+        "maths": "<msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>=</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub>"
       },
       {
         "id": "e:no_refracted_ray",
         "kind": "condition",
-        "said": "no refracted ray"
+        "said": "no refracted ray",
+        "maths": "<mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>2</mi></msub></mrow></mfrac><mo>&gt;</mo><mn>1</mn>"
       }
     ],
     "links": [
@@ -1188,22 +1223,26 @@
       {
         "id": "e:law_of_reflection",
         "kind": "equation",
-        "said": "law of reflection"
+        "said": "law of reflection",
+        "maths": "<mi>i</mi><mo>=</mo><msub><mi>r</mi><mi>l</mi></msub>"
       },
       {
         "id": "e:snells_law",
         "kind": "equation",
-        "said": "snells law"
+        "said": "snells law",
+        "maths": "<msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>=</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub>"
       },
       {
         "id": "e:relative_index",
         "kind": "equation",
-        "said": "relative index"
+        "said": "relative index",
+        "maths": "<msub><mi>μ</mi><mi>21</mi></msub><mo>=</mo><mfrac><mrow><msub><mi>μ</mi><mi>2</mi></msub></mrow><mrow><msub><mi>μ</mi><mi>1</mi></msub></mrow></mfrac>"
       },
       {
         "id": "e:no_refracted_ray",
         "kind": "condition",
-        "said": "no refracted ray"
+        "said": "no refracted ray",
+        "maths": "<mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>2</mi></msub></mrow></mfrac><mo>&gt;</mo><mn>1</mn>"
       }
     ],
     "links": [
@@ -1319,37 +1358,44 @@
       {
         "id": "e:law_of_reflection",
         "kind": "equation",
-        "said": "law of reflection"
+        "said": "law of reflection",
+        "maths": "<mi>i</mi><mo>=</mo><msub><mi>r</mi><mi>l</mi></msub>"
       },
       {
         "id": "e:snells_law",
         "kind": "equation",
-        "said": "snells law"
+        "said": "snells law",
+        "maths": "<msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>=</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub>"
       },
       {
         "id": "e:s_polarised",
         "kind": "equation",
-        "said": "s polarised"
+        "said": "s polarised",
+        "maths": "<msub><mi>r</mi><mi>s</mi></msub><mo>=</mo><msup><mrow><mo class=\"fence\" stretchy=\"false\">(</mo><mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>-</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub></mrow><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>+</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub></mrow></mfrac><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mn>2</mn></mrow></msup>"
       },
       {
         "id": "e:p_polarised",
         "kind": "equation",
-        "said": "p polarised"
+        "said": "p polarised",
+        "maths": "<msub><mi>r</mi><mi>p</mi></msub><mo>=</mo><msup><mrow><mo class=\"fence\" stretchy=\"false\">(</mo><mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub><mo>-</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub><mo>+</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow></mfrac><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mn>2</mn></mrow></msup>"
       },
       {
         "id": "e:unpolarised",
         "kind": "equation",
-        "said": "unpolarised"
+        "said": "unpolarised",
+        "maths": "<mi>r</mi><mo>=</mo><mfrac><mrow><msub><mi>r</mi><mi>s</mi></msub><mo>+</mo><msub><mi>r</mi><mi>p</mi></msub></mrow><mrow><mn>2</mn></mrow></mfrac>"
       },
       {
         "id": "e:everything_reflects",
         "kind": "equation",
-        "said": "everything reflects"
+        "said": "everything reflects",
+        "maths": "<mi>r</mi><mo>=</mo><mn>1</mn>"
       },
       {
         "id": "e:no_refracted_ray",
         "kind": "condition",
-        "said": "no refracted ray"
+        "said": "no refracted ray",
+        "maths": "<mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>2</mi></msub></mrow></mfrac><mo>&gt;</mo><mn>1</mn>"
       }
     ],
     "links": [
@@ -1481,12 +1527,14 @@
       {
         "id": "e:snells_law",
         "kind": "equation",
-        "said": "snells law"
+        "said": "snells law",
+        "maths": "<msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi><mo>=</mo><msub><mi>μ</mi><mi>2</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>r</mi><mi>r</mi></msub>"
       },
       {
         "id": "e:no_refracted_ray",
         "kind": "condition",
-        "said": "no refracted ray"
+        "said": "no refracted ray",
+        "maths": "<mfrac><mrow><msub><mi>μ</mi><mi>1</mi></msub><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mi>i</mi></mrow><mrow><msub><mi>μ</mi><mi>2</mi></msub></mrow></mfrac><mo>&gt;</mo><mn>1</mn>"
       }
     ],
     "links": [
