@@ -149,6 +149,11 @@ h1 small{font-weight:400;color:var(--ink-soft);font-size:.74em;letter-spacing:0;
 /* The question the chapter before this one left hanging. It is asked first
    and in the chapter's own voice, so the lede under it reads as the answer. */
 .asked{color:var(--ink);margin:0 0 .5rem;font-size:.95rem;font-style:italic;}
+/* The demonstration is a thing to take hold of, not a thing to read off the
+   screen by dragging across it: a hand on the ray should swing the ray, and
+   a hand that misses it should do nothing at all. */
+#demo{user-select:none;-webkit-user-select:none;}
+
 .head{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);
   margin:1.4rem 0 .6rem;font-weight:600;}
 .head:first-child{margin-top:0;}
