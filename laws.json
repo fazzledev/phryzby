@@ -108,6 +108,12 @@
         "called": "angle of travel"
       },
       {
+        "id": "e:double_angle",
+        "kind": "identity",
+        "said": "double angle",
+        "maths": "<mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mo class=\"fence\" stretchy=\"false\">(</mo><mn>2</mn><mo>&#x22c5;</mo><msub><mi>θ</mi><mi>0</mi></msub><mo class=\"fence\" stretchy=\"false\">)</mo><mo>=</mo><mn>2</mn><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
+      },
+      {
         "id": "e:initial_velocity_across",
         "kind": "equation",
         "said": "initial velocity across",
@@ -124,6 +130,18 @@
         "kind": "equation",
         "said": "horizontal range",
         "maths": "<mi>R</mi><mo>=</mo><msub><mi>u</mi><mi>x</mi></msub><mo>&#x22c5;</mo><mi>T</mi>"
+      },
+      {
+        "id": "e:range_by_the_components",
+        "kind": "equation",
+        "said": "range by the components",
+        "maths": "<mi>R</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><msub><mi>u</mi><mi>x</mi></msub><mo>&#x22c5;</mo><msub><mi>u</mi><mi>y</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
+      },
+      {
+        "id": "e:range_written_out",
+        "kind": "equation",
+        "said": "range written out",
+        "maths": "<mi>R</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo>&#x22c5;</mo><mi>u</mi><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
       },
       {
         "id": "e:range_by_the_double_angle",
@@ -216,6 +234,38 @@
       {
         "source": "e:horizontal_range",
         "target": "q:time_of_flight"
+      },
+      {
+        "source": "e:range_by_the_components",
+        "target": "q:range"
+      },
+      {
+        "source": "e:range_by_the_components",
+        "target": "q:initial_velocity_across"
+      },
+      {
+        "source": "e:range_by_the_components",
+        "target": "q:initial_velocity_up"
+      },
+      {
+        "source": "e:range_by_the_components",
+        "target": "q:gravity"
+      },
+      {
+        "source": "e:range_written_out",
+        "target": "q:range"
+      },
+      {
+        "source": "e:range_written_out",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:range_written_out",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:range_written_out",
+        "target": "q:gravity"
       },
       {
         "source": "e:range_by_the_double_angle",
@@ -332,6 +382,14 @@
       {
         "source": "e:direction_of_travel",
         "target": "q:velocity_across"
+      },
+      {
+        "source": "e:double_angle",
+        "target": "e:range_written_out"
+      },
+      {
+        "source": "e:double_angle",
+        "target": "e:range_by_the_double_angle"
       }
     ]
   },
@@ -395,6 +453,12 @@
         "called": "time of flight"
       },
       {
+        "id": "e:double_angle",
+        "kind": "identity",
+        "said": "double angle",
+        "maths": "<mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mo class=\"fence\" stretchy=\"false\">(</mo><mn>2</mn><mo>&#x22c5;</mo><msub><mi>θ</mi><mi>0</mi></msub><mo class=\"fence\" stretchy=\"false\">)</mo><mo>=</mo><mn>2</mn><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
+      },
+      {
         "id": "e:initial_velocity_across",
         "kind": "equation",
         "said": "initial velocity across",
@@ -411,6 +475,18 @@
         "kind": "equation",
         "said": "horizontal range",
         "maths": "<mi>R</mi><mo>=</mo><msub><mi>u</mi><mi>x</mi></msub><mo>&#x22c5;</mo><mi>T</mi>"
+      },
+      {
+        "id": "e:range_by_the_components",
+        "kind": "equation",
+        "said": "range by the components",
+        "maths": "<mi>R</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><msub><mi>u</mi><mi>x</mi></msub><mo>&#x22c5;</mo><msub><mi>u</mi><mi>y</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
+      },
+      {
+        "id": "e:range_written_out",
+        "kind": "equation",
+        "said": "range written out",
+        "maths": "<mi>R</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub><mo>&#x22c5;</mo><mi>u</mi><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
       },
       {
         "id": "e:range_by_the_double_angle",
@@ -469,6 +545,38 @@
         "target": "q:time_of_flight"
       },
       {
+        "source": "e:range_by_the_components",
+        "target": "q:range"
+      },
+      {
+        "source": "e:range_by_the_components",
+        "target": "q:initial_velocity_across"
+      },
+      {
+        "source": "e:range_by_the_components",
+        "target": "q:initial_velocity_up"
+      },
+      {
+        "source": "e:range_by_the_components",
+        "target": "q:gravity"
+      },
+      {
+        "source": "e:range_written_out",
+        "target": "q:range"
+      },
+      {
+        "source": "e:range_written_out",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:range_written_out",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:range_written_out",
+        "target": "q:gravity"
+      },
+      {
         "source": "e:range_by_the_double_angle",
         "target": "q:range"
       },
@@ -507,6 +615,14 @@
       {
         "source": "e:time_of_flight",
         "target": "q:gravity"
+      },
+      {
+        "source": "e:double_angle",
+        "target": "e:range_written_out"
+      },
+      {
+        "source": "e:double_angle",
+        "target": "e:range_by_the_double_angle"
       }
     ]
   },

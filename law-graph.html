@@ -43,6 +43,12 @@
   .joins rect{stroke-width:2.4;stroke:#ECECEC}
   .joins text{fill:#ECECEC}
   .link.between{stroke:#6BA8FF;stroke-opacity:1;stroke-width:1.9}
+  /* A statement about two other statements rather than about a quantity. Set
+     the same way as an equation, in its own colour — it is there to be found
+     when it is wanted, not to be the first thing seen. */
+  .identity rect{fill:#131315;stroke:#5E6B78;stroke-width:1.3;rx:14}
+  .identity math{color:#7F8C99}
+  .identity .kind,.identity .named{fill:#5E6B78}
   .node,.link{transition:opacity .15s}
 </style>
 <header>
@@ -128,6 +134,7 @@ function show(called) {
   document.getElementById("called").textContent = laws[called].called;
   history.replaceState(null, "", `?at=${encodeURIComponent(called)}`);
   const link = root.append("g").selectAll("line").data(links).join("line").attr("class", "link");
+
   const node = root.append("g").selectAll("g").data(nodes).join("g")
                    .attr("class", d => `node ${d.kind}`);
 

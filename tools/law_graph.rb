@@ -32,6 +32,9 @@ module LawGraph
                base, under = letter(law, q)
                { id: "q:#{q}", kind: "quantity", base: base, under: under,
                  called: q.to_s.tr("_", " ") }
+             } + law.identities.map { |name, said|
+               { id: "e:#{name}", kind: "identity", said: name.to_s.tr("_", " "),
+                 maths: said[:holds].to_mathml }
              } + (law.equations.to_a + law.conditions.to_a).map { |name, holds|
                # What it says, set the way the law pane sets it. These have no
                # names in any book — they are results, labelled by their
@@ -41,6 +44,12 @@ module LawGraph
              },
       links: (law.equations.to_a + law.conditions.to_a).flat_map { |name, holds|
                holds.variables.map { |q| { source: "e:#{name}", target: "q:#{q}" } }
+             } +
+             # An identity touches statements rather than quantities: it is
+             # what stands between two that say the same thing.
+             law.identities.flat_map { |name, said|
+               said[:reconciles].select { |one| law.equations.key?(one) }
+                                .map { |one| { source: "e:#{name}", target: "e:#{one}" } }
              } }
   end
 
