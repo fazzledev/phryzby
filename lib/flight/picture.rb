@@ -56,17 +56,18 @@ module Flight
       want(called, aloft(turned), colour: "var(--light)") if called
     end
 
-    SECOND = 1.0
+    PUSH = 160
 
     # What it left the hand with, as an arrow: the way it was going and how
-    # fast. A speed is not a length, but the ground it covers in a second is,
-    # and that is what is drawn — so the arrow is on the same scale as
-    # everything else in the picture, and stands back with it.
+    # fast. It is drawn against the picture rather than against the ground —
+    # the fastest the chapter allows reaches PUSH across, whatever the view —
+    # so standing back does not shrink it away to nothing along with the
+    # throw. It says how hard, not how far.
     def launched(turned)
       speed = value(:u)
       return "" if speed.nil? || speed <= 0
 
-      long = speed * SECOND * scale
+      long = PUSH * speed / fastest
       tip = [ (START + Math.cos(turned) * long).round(2),
               (GROUND - Math.sin(turned) * long).round(2) ]
       wing = lambda do |swing|
@@ -77,23 +78,40 @@ module Flight
       %(<line x1="#{START}" y1="#{GROUND}" x2="#{tip[0]}" y2="#{tip[1]}" ) +
         %(stroke="var(--ink)" stroke-width="1.6"/>) +
         %(<path class="head" d="M #{tip.join(',')} L #{wing.call(0.42)} L #{wing.call(-0.42)} z" ) +
-        %(fill="var(--ink)"/>).tap { quickly(speed, tip) }
+        %(fill="var(--ink)"/>).tap { quickly(speed, turned, long) }
     end
 
-    # How fast it left, out past the point of the arrow and off to either side
-    # of it — the same way a ray's name keeps near the ray without standing
-    # on whatever else is there.
-    def quickly(speed, tip)
-      # The arrow may run clean off the picture; the words naming it may not,
-      # so they follow it only as far as there is room for them to be read.
-      tip = [ tip[0].clamp(24.0, WIDTH - 88.0), tip[1].clamp(20.0, GROUND - 6.0) ]
+    # How fast it left, written alongside the arrow on its outer side — the
+    # side the throw curves away from, so the words are never over the arc
+    # they belong to the start of.
+    #
+    # The arrow itself may run clean off the picture; the words naming it may
+    # not, so each spot is brought back inside far enough to be read.
+    def quickly(speed, turned, long)
+      # Outside first, and if the picture has no room out there, inside —
+      # each anchored so the words grow away from the arrow rather than back
+      # across it.
+      outside = [ [ 0.55, 12 ], [ 0.8, 12 ], [ 0.3, 12 ], [ 0.55, 22 ], [ 1.0, 14 ],
+                  [ 0.55, 32 ] ].flat_map { |part, aside| [ [ part, aside, "end" ],
+                                                            [ part, aside, "middle" ] ] }
+      inside = [ [ 0.55, -14 ], [ 0.85, -14 ], [ 0.3, -14 ], [ 1.05, -18 ] ]
+               .map { |part, aside| [ part, aside, "start" ] }
 
       want(format("%.1f m/s", speed),
-           [ [ tip[0] + 7, tip[1] - 5, "start" ], [ tip[0] + 7, tip[1] + 13, "start" ],
-             [ tip[0] - 7, tip[1] - 7, "end" ],   [ tip[0] - 7, tip[1] + 15, "end" ],
-             [ tip[0] + 7, tip[1] - 19, "start" ], [ tip[0] - 7, tip[1] - 21, "end" ],
-             [ tip[0] + 7, tip[1] + 27, "start" ], [ tip[0] - 7, tip[1] - 33, "end" ] ],
+           (outside + inside).map { |part, aside, anchor| beside(turned, long, part, aside, anchor) },
            colour: "var(--ink-mid)")
+    end
+
+    # A spot a little way along the arrow and a little way off it, on whichever
+    # side was asked for. How far along is capped, because the arrow may be
+    # longer than the picture and the words have to stay in it.
+    def beside(turned, long, part, aside, anchor)
+      out = turned + Math::PI / 2
+      along = long * part
+
+      [ START + Math.cos(turned) * along + Math.cos(out) * aside,
+        (GROUND - Math.sin(turned) * along - Math.sin(out) * aside).clamp(20.0, GROUND - 6.0),
+        anchor ]
     end
 
     # How far it got, marked on the ground it got there along — unless it got
@@ -323,13 +341,12 @@ module Flight
       %( data-drags="#{@dragged}" data-at="#{START} #{GROUND}") + pulled
     end
 
-    # A second of flight per arrow, so a second of flight per drag: how far
-    # the hand goes is how far it would have gone in that second, which is
-    # how fast it was thrown.
+    # The arrow is the handle, so the hand runs on the arrow's scale: out to
+    # where the arrow would reach is the speed that would draw it there.
     def pulled
       return "" unless @scenario.class.playground.inputs.key?(:u)
 
-      %( data-pulls="u" data-per="#{(1.0 / (scale * SECOND)).round(6)}")
+      %( data-pulls="u" data-per="#{(fastest / PUSH.to_f).round(6)}")
     end
 
     # Everything above the ground answers to the hand.
