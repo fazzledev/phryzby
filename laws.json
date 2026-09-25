@@ -1,0 +1,634 @@
+{
+  "Projectile": {
+    "nodes": [
+      {
+        "id": "q:speed",
+        "kind": "quantity",
+        "base": "u",
+        "under": null,
+        "called": "speed"
+      },
+      {
+        "id": "q:angle_of_throw",
+        "kind": "quantity",
+        "base": "θ",
+        "under": "0",
+        "called": "angle of throw"
+      },
+      {
+        "id": "q:gravity",
+        "kind": "quantity",
+        "base": "g",
+        "under": null,
+        "called": "gravity"
+      },
+      {
+        "id": "q:range",
+        "kind": "quantity",
+        "base": "R",
+        "under": null,
+        "called": "range"
+      },
+      {
+        "id": "q:peak",
+        "kind": "quantity",
+        "base": "H",
+        "under": null,
+        "called": "peak"
+      },
+      {
+        "id": "q:time_of_flight",
+        "kind": "quantity",
+        "base": "T",
+        "under": null,
+        "called": "time of flight"
+      },
+      {
+        "id": "q:part_of_the_flight",
+        "kind": "quantity",
+        "base": "k",
+        "under": null,
+        "called": "part of the flight"
+      },
+      {
+        "id": "q:elapsed",
+        "kind": "quantity",
+        "base": "t",
+        "under": null,
+        "called": "elapsed"
+      },
+      {
+        "id": "q:distance_out",
+        "kind": "quantity",
+        "base": "x",
+        "under": null,
+        "called": "distance out"
+      },
+      {
+        "id": "q:height",
+        "kind": "quantity",
+        "base": "y",
+        "under": null,
+        "called": "height"
+      },
+      {
+        "id": "q:velocity_across",
+        "kind": "quantity",
+        "base": "v",
+        "under": "x",
+        "called": "velocity across"
+      },
+      {
+        "id": "q:velocity_up",
+        "kind": "quantity",
+        "base": "v",
+        "under": "y",
+        "called": "velocity up"
+      },
+      {
+        "id": "q:angle_of_travel",
+        "kind": "quantity",
+        "base": "θ",
+        "under": null,
+        "called": "angle of travel"
+      },
+      {
+        "id": "e:horizontal_range",
+        "kind": "equation",
+        "said": "horizontal range"
+      },
+      {
+        "id": "e:maximum_height",
+        "kind": "equation",
+        "said": "maximum height"
+      },
+      {
+        "id": "e:time_of_flight",
+        "kind": "equation",
+        "said": "time of flight"
+      },
+      {
+        "id": "e:elapsed_time",
+        "kind": "equation",
+        "said": "elapsed time"
+      },
+      {
+        "id": "e:horizontal_displacement",
+        "kind": "equation",
+        "said": "horizontal displacement"
+      },
+      {
+        "id": "e:vertical_displacement",
+        "kind": "equation",
+        "said": "vertical displacement"
+      },
+      {
+        "id": "e:horizontal_velocity",
+        "kind": "equation",
+        "said": "horizontal velocity"
+      },
+      {
+        "id": "e:vertical_velocity",
+        "kind": "equation",
+        "said": "vertical velocity"
+      },
+      {
+        "id": "e:direction_of_travel",
+        "kind": "equation",
+        "said": "direction of travel"
+      }
+    ],
+    "links": [
+      {
+        "source": "e:horizontal_range",
+        "target": "q:range"
+      },
+      {
+        "source": "e:horizontal_range",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:horizontal_range",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:horizontal_range",
+        "target": "q:gravity"
+      },
+      {
+        "source": "e:maximum_height",
+        "target": "q:peak"
+      },
+      {
+        "source": "e:maximum_height",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:maximum_height",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:maximum_height",
+        "target": "q:gravity"
+      },
+      {
+        "source": "e:time_of_flight",
+        "target": "q:time_of_flight"
+      },
+      {
+        "source": "e:time_of_flight",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:time_of_flight",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:time_of_flight",
+        "target": "q:gravity"
+      },
+      {
+        "source": "e:elapsed_time",
+        "target": "q:elapsed"
+      },
+      {
+        "source": "e:elapsed_time",
+        "target": "q:part_of_the_flight"
+      },
+      {
+        "source": "e:elapsed_time",
+        "target": "q:time_of_flight"
+      },
+      {
+        "source": "e:horizontal_displacement",
+        "target": "q:distance_out"
+      },
+      {
+        "source": "e:horizontal_displacement",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:horizontal_displacement",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:horizontal_displacement",
+        "target": "q:elapsed"
+      },
+      {
+        "source": "e:vertical_displacement",
+        "target": "q:height"
+      },
+      {
+        "source": "e:vertical_displacement",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:vertical_displacement",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:vertical_displacement",
+        "target": "q:elapsed"
+      },
+      {
+        "source": "e:vertical_displacement",
+        "target": "q:gravity"
+      },
+      {
+        "source": "e:horizontal_velocity",
+        "target": "q:velocity_across"
+      },
+      {
+        "source": "e:horizontal_velocity",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:horizontal_velocity",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:vertical_velocity",
+        "target": "q:velocity_up"
+      },
+      {
+        "source": "e:vertical_velocity",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:vertical_velocity",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:vertical_velocity",
+        "target": "q:gravity"
+      },
+      {
+        "source": "e:vertical_velocity",
+        "target": "q:elapsed"
+      },
+      {
+        "source": "e:direction_of_travel",
+        "target": "q:angle_of_travel"
+      },
+      {
+        "source": "e:direction_of_travel",
+        "target": "q:velocity_up"
+      },
+      {
+        "source": "e:direction_of_travel",
+        "target": "q:velocity_across"
+      }
+    ]
+  },
+  "Refraction": {
+    "nodes": [
+      {
+        "id": "q:angle_of_incidence",
+        "kind": "quantity",
+        "base": "i",
+        "under": null,
+        "called": "angle of incidence"
+      },
+      {
+        "id": "q:angle_of_refraction",
+        "kind": "quantity",
+        "base": "r",
+        "under": "r",
+        "called": "angle of refraction"
+      },
+      {
+        "id": "q:refractive_index_of_first_medium",
+        "kind": "quantity",
+        "base": "μ",
+        "under": "1",
+        "called": "refractive index of first medium"
+      },
+      {
+        "id": "q:refractive_index_of_second_medium",
+        "kind": "quantity",
+        "base": "μ",
+        "under": "2",
+        "called": "refractive index of second medium"
+      },
+      {
+        "id": "e:snells_law",
+        "kind": "equation",
+        "said": "snells law"
+      }
+    ],
+    "links": [
+      {
+        "source": "e:snells_law",
+        "target": "q:refractive_index_of_first_medium"
+      },
+      {
+        "source": "e:snells_law",
+        "target": "q:angle_of_incidence"
+      },
+      {
+        "source": "e:snells_law",
+        "target": "q:refractive_index_of_second_medium"
+      },
+      {
+        "source": "e:snells_law",
+        "target": "q:angle_of_refraction"
+      }
+    ]
+  },
+  "Reflectance": {
+    "nodes": [
+      {
+        "id": "q:angle_of_incidence",
+        "kind": "quantity",
+        "base": "i",
+        "under": null,
+        "called": "angle of incidence"
+      },
+      {
+        "id": "q:angle_of_refraction",
+        "kind": "quantity",
+        "base": "r",
+        "under": "r",
+        "called": "angle of refraction"
+      },
+      {
+        "id": "q:refractive_index_of_first_medium",
+        "kind": "quantity",
+        "base": "μ",
+        "under": "1",
+        "called": "refractive index of first medium"
+      },
+      {
+        "id": "q:refractive_index_of_second_medium",
+        "kind": "quantity",
+        "base": "μ",
+        "under": "2",
+        "called": "refractive index of second medium"
+      },
+      {
+        "id": "q:reflectance_s_polarised",
+        "kind": "quantity",
+        "base": "r",
+        "under": "s",
+        "called": "reflectance s polarised"
+      },
+      {
+        "id": "q:reflectance_p_polarised",
+        "kind": "quantity",
+        "base": "r",
+        "under": "p",
+        "called": "reflectance p polarised"
+      },
+      {
+        "id": "q:reflectance",
+        "kind": "quantity",
+        "base": "r",
+        "under": null,
+        "called": "reflectance"
+      },
+      {
+        "id": "e:snells_law",
+        "kind": "equation",
+        "said": "snells law"
+      },
+      {
+        "id": "e:s_polarised",
+        "kind": "equation",
+        "said": "s polarised"
+      },
+      {
+        "id": "e:p_polarised",
+        "kind": "equation",
+        "said": "p polarised"
+      },
+      {
+        "id": "e:unpolarised",
+        "kind": "equation",
+        "said": "unpolarised"
+      }
+    ],
+    "links": [
+      {
+        "source": "e:snells_law",
+        "target": "q:refractive_index_of_first_medium"
+      },
+      {
+        "source": "e:snells_law",
+        "target": "q:angle_of_incidence"
+      },
+      {
+        "source": "e:snells_law",
+        "target": "q:refractive_index_of_second_medium"
+      },
+      {
+        "source": "e:snells_law",
+        "target": "q:angle_of_refraction"
+      },
+      {
+        "source": "e:s_polarised",
+        "target": "q:reflectance_s_polarised"
+      },
+      {
+        "source": "e:s_polarised",
+        "target": "q:refractive_index_of_first_medium"
+      },
+      {
+        "source": "e:s_polarised",
+        "target": "q:angle_of_incidence"
+      },
+      {
+        "source": "e:s_polarised",
+        "target": "q:refractive_index_of_second_medium"
+      },
+      {
+        "source": "e:s_polarised",
+        "target": "q:angle_of_refraction"
+      },
+      {
+        "source": "e:p_polarised",
+        "target": "q:reflectance_p_polarised"
+      },
+      {
+        "source": "e:p_polarised",
+        "target": "q:refractive_index_of_first_medium"
+      },
+      {
+        "source": "e:p_polarised",
+        "target": "q:angle_of_refraction"
+      },
+      {
+        "source": "e:p_polarised",
+        "target": "q:refractive_index_of_second_medium"
+      },
+      {
+        "source": "e:p_polarised",
+        "target": "q:angle_of_incidence"
+      },
+      {
+        "source": "e:unpolarised",
+        "target": "q:reflectance"
+      },
+      {
+        "source": "e:unpolarised",
+        "target": "q:reflectance_s_polarised"
+      },
+      {
+        "source": "e:unpolarised",
+        "target": "q:reflectance_p_polarised"
+      }
+    ]
+  },
+  "TotalInternalReflection": {
+    "nodes": [
+      {
+        "id": "q:angle_of_incidence",
+        "kind": "quantity",
+        "base": "i",
+        "under": null,
+        "called": "angle of incidence"
+      },
+      {
+        "id": "q:angle_of_refraction",
+        "kind": "quantity",
+        "base": "r",
+        "under": "r",
+        "called": "angle of refraction"
+      },
+      {
+        "id": "q:refractive_index_of_first_medium",
+        "kind": "quantity",
+        "base": "μ",
+        "under": "1",
+        "called": "refractive index of first medium"
+      },
+      {
+        "id": "q:refractive_index_of_second_medium",
+        "kind": "quantity",
+        "base": "μ",
+        "under": "2",
+        "called": "refractive index of second medium"
+      },
+      {
+        "id": "q:reflectance_s_polarised",
+        "kind": "quantity",
+        "base": "r",
+        "under": "s",
+        "called": "reflectance s polarised"
+      },
+      {
+        "id": "q:reflectance_p_polarised",
+        "kind": "quantity",
+        "base": "r",
+        "under": "p",
+        "called": "reflectance p polarised"
+      },
+      {
+        "id": "q:reflectance",
+        "kind": "quantity",
+        "base": "r",
+        "under": null,
+        "called": "reflectance"
+      },
+      {
+        "id": "e:snells_law",
+        "kind": "equation",
+        "said": "snells law"
+      },
+      {
+        "id": "e:s_polarised",
+        "kind": "equation",
+        "said": "s polarised"
+      },
+      {
+        "id": "e:p_polarised",
+        "kind": "equation",
+        "said": "p polarised"
+      },
+      {
+        "id": "e:unpolarised",
+        "kind": "equation",
+        "said": "unpolarised"
+      },
+      {
+        "id": "e:everything_reflects",
+        "kind": "equation",
+        "said": "everything reflects"
+      }
+    ],
+    "links": [
+      {
+        "source": "e:snells_law",
+        "target": "q:refractive_index_of_first_medium"
+      },
+      {
+        "source": "e:snells_law",
+        "target": "q:angle_of_incidence"
+      },
+      {
+        "source": "e:snells_law",
+        "target": "q:refractive_index_of_second_medium"
+      },
+      {
+        "source": "e:snells_law",
+        "target": "q:angle_of_refraction"
+      },
+      {
+        "source": "e:s_polarised",
+        "target": "q:reflectance_s_polarised"
+      },
+      {
+        "source": "e:s_polarised",
+        "target": "q:refractive_index_of_first_medium"
+      },
+      {
+        "source": "e:s_polarised",
+        "target": "q:angle_of_incidence"
+      },
+      {
+        "source": "e:s_polarised",
+        "target": "q:refractive_index_of_second_medium"
+      },
+      {
+        "source": "e:s_polarised",
+        "target": "q:angle_of_refraction"
+      },
+      {
+        "source": "e:p_polarised",
+        "target": "q:reflectance_p_polarised"
+      },
+      {
+        "source": "e:p_polarised",
+        "target": "q:refractive_index_of_first_medium"
+      },
+      {
+        "source": "e:p_polarised",
+        "target": "q:angle_of_refraction"
+      },
+      {
+        "source": "e:p_polarised",
+        "target": "q:refractive_index_of_second_medium"
+      },
+      {
+        "source": "e:p_polarised",
+        "target": "q:angle_of_incidence"
+      },
+      {
+        "source": "e:unpolarised",
+        "target": "q:reflectance"
+      },
+      {
+        "source": "e:unpolarised",
+        "target": "q:reflectance_s_polarised"
+      },
+      {
+        "source": "e:unpolarised",
+        "target": "q:reflectance_p_polarised"
+      },
+      {
+        "source": "e:everything_reflects",
+        "target": "q:reflectance"
+      }
+    ]
+  }
+}
