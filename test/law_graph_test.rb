@@ -34,8 +34,8 @@ class LawGraphTest < Minitest::Test
     webs = LawGraph.chapters
     pills = ->(page) { webs.fetch(page)[:nodes].count { |node| node[:kind] != "quantity" } }
 
-    assert_equal 5, pills.call("flight/projectile.html")
-    assert_equal 11, pills.call("flight/motion.html")
+    assert_equal 6, pills.call("flight/projectile.html")
+    assert_equal 12, pills.call("flight/motion.html")
     assert_operator pills.call("light/total-internal-reflection.html"), :>,
                     pills.call("light/reflectance.html")
   end

@@ -153,7 +153,17 @@ module Physics
       end
 
       special, general = applicable.partition { |name, _| self.class.guards.key?(name) }
-      (special + general).map(&:last)
+      (nearest(special, key) + nearest(general, key)).map(&:last)
+    end
+
+    # The one that asks for least first. Where two equations both reach what
+    # is wanted, the one with fewer things still to work out is the more
+    # direct statement of it — and the longer way round is often the worse
+    # arithmetic as well: the time of flight is in the range equation, but
+    # thrown straight up the range and the speed along the ground have both
+    # gone to nothing and that equation can say nothing about anything.
+    def nearest(equations, key)
+      equations.sort_by { |_, equation| (equation.variables - @env.keys - [ key ]).size }
     end
 
     # A guard may work out what it needs — its condition can mention a quantity

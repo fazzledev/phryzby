@@ -24,9 +24,13 @@ module Projectile
   quantity :time_of_flight,  variable: :T
 
   # How far it got is how fast it was going along the ground times how long it
-  # was off it. The closed form a book prints — u squared sin two theta over g
-  # — is this with the components written out and a double angle collected up.
-  equation(:horizontal_range) { R == u_x * T }
+  # was off it — and it is also the one a book prints, which is that with the
+  # components written out and a double angle collected up. Both are true and
+  # both are here, because which way round a law can be asked depends on how
+  # it was written, and a reader should be able to see the two routes rather
+  # than be handed whichever one happened to be chosen.
+  equation(:horizontal_range)          { R == u_x * T }
+  equation(:range_by_the_double_angle) { R == u**2 * sin(2 * theta_0) / g }
   equation(:maximum_height)   { H == u_y**2 / (2 * g) }
   equation(:time_of_flight)   { T == 2 * u_y / g }
 end
