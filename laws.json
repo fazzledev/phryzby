@@ -24,18 +24,18 @@
         "called": "gravity"
       },
       {
-        "id": "q:speed_across",
+        "id": "q:initial_velocity_across",
         "kind": "quantity",
         "base": "u",
         "under": "x",
-        "called": "speed across"
+        "called": "initial velocity across"
       },
       {
-        "id": "q:speed_up",
+        "id": "q:initial_velocity_up",
         "kind": "quantity",
         "base": "u",
         "under": "y",
-        "called": "speed up"
+        "called": "initial velocity up"
       },
       {
         "id": "q:range",
@@ -108,15 +108,15 @@
         "called": "angle of travel"
       },
       {
-        "id": "e:horizontal_component",
+        "id": "e:initial_velocity_across",
         "kind": "equation",
-        "said": "horizontal component",
+        "said": "initial velocity across",
         "maths": "<msub><mi>u</mi><mi>x</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
       },
       {
-        "id": "e:vertical_component",
+        "id": "e:initial_velocity_up",
         "kind": "equation",
-        "said": "vertical component",
+        "said": "initial velocity up",
         "maths": "<msub><mi>u</mi><mi>y</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
       },
       {
@@ -176,27 +176,27 @@
     ],
     "links": [
       {
-        "source": "e:horizontal_component",
-        "target": "q:speed_across"
+        "source": "e:initial_velocity_across",
+        "target": "q:initial_velocity_across"
       },
       {
-        "source": "e:horizontal_component",
+        "source": "e:initial_velocity_across",
         "target": "q:speed"
       },
       {
-        "source": "e:horizontal_component",
+        "source": "e:initial_velocity_across",
         "target": "q:angle_of_throw"
       },
       {
-        "source": "e:vertical_component",
-        "target": "q:speed_up"
+        "source": "e:initial_velocity_up",
+        "target": "q:initial_velocity_up"
       },
       {
-        "source": "e:vertical_component",
+        "source": "e:initial_velocity_up",
         "target": "q:speed"
       },
       {
-        "source": "e:vertical_component",
+        "source": "e:initial_velocity_up",
         "target": "q:angle_of_throw"
       },
       {
@@ -205,7 +205,7 @@
       },
       {
         "source": "e:horizontal_range",
-        "target": "q:speed_across"
+        "target": "q:initial_velocity_across"
       },
       {
         "source": "e:horizontal_range",
@@ -217,7 +217,7 @@
       },
       {
         "source": "e:maximum_height",
-        "target": "q:speed_up"
+        "target": "q:initial_velocity_up"
       },
       {
         "source": "e:maximum_height",
@@ -229,7 +229,7 @@
       },
       {
         "source": "e:time_of_flight",
-        "target": "q:speed_up"
+        "target": "q:initial_velocity_up"
       },
       {
         "source": "e:time_of_flight",
@@ -253,7 +253,7 @@
       },
       {
         "source": "e:horizontal_displacement",
-        "target": "q:speed_across"
+        "target": "q:initial_velocity_across"
       },
       {
         "source": "e:horizontal_displacement",
@@ -265,7 +265,7 @@
       },
       {
         "source": "e:vertical_displacement",
-        "target": "q:speed_up"
+        "target": "q:initial_velocity_up"
       },
       {
         "source": "e:vertical_displacement",
@@ -281,7 +281,7 @@
       },
       {
         "source": "e:horizontal_velocity",
-        "target": "q:speed_across"
+        "target": "q:initial_velocity_across"
       },
       {
         "source": "e:vertical_velocity",
@@ -289,7 +289,7 @@
       },
       {
         "source": "e:vertical_velocity",
-        "target": "q:speed_up"
+        "target": "q:initial_velocity_up"
       },
       {
         "source": "e:vertical_velocity",
@@ -338,18 +338,18 @@
         "called": "gravity"
       },
       {
-        "id": "q:speed_across",
+        "id": "q:initial_velocity_across",
         "kind": "quantity",
         "base": "u",
         "under": "x",
-        "called": "speed across"
+        "called": "initial velocity across"
       },
       {
-        "id": "q:speed_up",
+        "id": "q:initial_velocity_up",
         "kind": "quantity",
         "base": "u",
         "under": "y",
-        "called": "speed up"
+        "called": "initial velocity up"
       },
       {
         "id": "q:range",
@@ -373,15 +373,15 @@
         "called": "time of flight"
       },
       {
-        "id": "e:horizontal_component",
+        "id": "e:initial_velocity_across",
         "kind": "equation",
-        "said": "horizontal component",
+        "said": "initial velocity across",
         "maths": "<msub><mi>u</mi><mi>x</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>cos</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
       },
       {
-        "id": "e:vertical_component",
+        "id": "e:initial_velocity_up",
         "kind": "equation",
-        "said": "vertical component",
+        "said": "initial velocity up",
         "maths": "<msub><mi>u</mi><mi>y</mi></msub><mo>=</mo><mi>u</mi><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><msub><mi>θ</mi><mi>0</mi></msub>"
       },
       {
@@ -405,27 +405,27 @@
     ],
     "links": [
       {
-        "source": "e:horizontal_component",
-        "target": "q:speed_across"
+        "source": "e:initial_velocity_across",
+        "target": "q:initial_velocity_across"
       },
       {
-        "source": "e:horizontal_component",
+        "source": "e:initial_velocity_across",
         "target": "q:speed"
       },
       {
-        "source": "e:horizontal_component",
+        "source": "e:initial_velocity_across",
         "target": "q:angle_of_throw"
       },
       {
-        "source": "e:vertical_component",
-        "target": "q:speed_up"
+        "source": "e:initial_velocity_up",
+        "target": "q:initial_velocity_up"
       },
       {
-        "source": "e:vertical_component",
+        "source": "e:initial_velocity_up",
         "target": "q:speed"
       },
       {
-        "source": "e:vertical_component",
+        "source": "e:initial_velocity_up",
         "target": "q:angle_of_throw"
       },
       {
@@ -434,7 +434,7 @@
       },
       {
         "source": "e:horizontal_range",
-        "target": "q:speed_across"
+        "target": "q:initial_velocity_across"
       },
       {
         "source": "e:horizontal_range",
@@ -446,7 +446,7 @@
       },
       {
         "source": "e:maximum_height",
-        "target": "q:speed_up"
+        "target": "q:initial_velocity_up"
       },
       {
         "source": "e:maximum_height",
@@ -458,7 +458,7 @@
       },
       {
         "source": "e:time_of_flight",
-        "target": "q:speed_up"
+        "target": "q:initial_velocity_up"
       },
       {
         "source": "e:time_of_flight",

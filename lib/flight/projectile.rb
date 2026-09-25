@@ -13,11 +13,11 @@ module Projectile
   # A throw at an angle is two throws at once: one along the ground, which
   # nothing interferes with, and one straight up, which gravity spends. Every
   # question below is really about one or the other.
-  quantity :speed_across,    variable: :u_x
-  quantity :speed_up,        variable: :u_y
+  quantity :initial_velocity_across, variable: :u_x
+  quantity :initial_velocity_up,     variable: :u_y
 
-  equation(:horizontal_component) { u_x == u * cos(theta_0) }
-  equation(:vertical_component)   { u_y == u * sin(theta_0) }
+  equation(:initial_velocity_across) { u_x == u * cos(theta_0) }
+  equation(:initial_velocity_up)     { u_y == u * sin(theta_0) }
 
   quantity :range,           variable: :R
   quantity :peak,            variable: :H
