@@ -176,7 +176,7 @@ class FlightPictureTest < Minitest::Test
     IN_VIEW.keys.each_index do |view|
       svg = drawn(in_view: view)
       reached = svg[/<path id="flight" d="M ([^"]+)"/, 1].split(" L ").last.split(",").first.to_f
-      metres = THROWN.posing(**THROWN.opening).solve(:x)
+      metres = THROWN.posing(**THROWN.opening).solve(:r)
 
       assert_in_delta Flight::Picture::REACH / IN_VIEW.values[view].to_f,
                       (reached - Flight::Picture::START) / metres, 1e-3

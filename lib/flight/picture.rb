@@ -146,7 +146,7 @@ module Flight
     # outside the picture, because the measure would have no end in it.
     def apex(called, name)
       metres = value(name)
-      reached = value(:x)
+      reached = value(:r)
       return if metres.nil? || reached.nil?
 
       top = up(metres)
@@ -165,6 +165,54 @@ module Flight
                      [ at, top - 31, "middle" ], [ at, top - 43, "middle" ],
                      [ at + 34, top - 19, "start" ], [ at - 34, top - 19, "end" ],
                      [ at + 52, middle, "start" ], [ at - 52, middle, "end" ] ])
+    end
+
+    # Where it is part way through, and how it is going: a ring on the arc at
+    # that moment, with the arrow it would be carrying there. The arrow is on
+    # the throw's own scale, so it can be read against the one at the hand —
+    # the same length when it has lost nothing, shorter when it has.
+    def now(called = nil)
+      out = value(:x)
+      up_to = value(:y)
+      across = value(:sx)
+      rising = value(:sy)
+      return if [ out, up_to, across, rising ].any?(&:nil?)
+
+      at = [ along(out), up(up_to) ]
+      return if at[0] > WIDTH - 4 || at[1] < 4
+
+      @shapes.push(carrying(at, across, rising), ringed(at))
+      want(called, beside_the_ring(at), colour: "var(--ink-mid)") if called
+    end
+
+    def ringed((x, y))
+      %(<circle cx="#{x.round(2)}" cy="#{y.round(2)}" r="3.6" fill="none" ) +
+        %(stroke="var(--ink)" stroke-width="1.6"/>)
+    end
+
+    # The same scale the throw's own arrow is drawn at, so the two compare.
+    def carrying((x, y), across, rising)
+      speed = Math.hypot(across, rising)
+      return "" if speed <= 0
+
+      long = PUSH * speed / fastest
+      tip = [ (x + across / speed * long).round(2), (y - rising / speed * long).round(2) ]
+      turned = Math.atan2(rising, across)
+      wing = lambda do |swing|
+        [ (tip[0] - Math.cos(turned + swing) * HEAD).round(2),
+          (tip[1] + Math.sin(turned + swing) * HEAD).round(2) ].join(",")
+      end
+
+      %(<line x1="#{x.round(2)}" y1="#{y.round(2)}" x2="#{tip[0]}" y2="#{tip[1]}" ) +
+        %(stroke="var(--ink-mid)" stroke-width="1.4"/>) +
+        %(<path class="head" d="M #{tip.join(',')} L #{wing.call(0.42)} L #{wing.call(-0.42)} z" ) +
+        %(fill="var(--ink-mid)"/>)
+    end
+
+    def beside_the_ring((x, y))
+      [ [ x + 8, y - 6, "start" ], [ x - 8, y - 6, "end" ],
+        [ x + 8, y + 16, "start" ], [ x - 8, y + 16, "end" ],
+        [ x, y - 18, "middle" ], [ x, y + 26, "middle" ] ]
     end
 
     def note(text, when: nil)
@@ -205,7 +253,7 @@ module Flight
     # y = x tan θ − g x² ⁄ 2u² cos²θ, walked from the hand to the ground.
     def arc(turned)
       speed = value(:u)
-      reached = value(:x)
+      reached = value(:r)
       return "" if speed.nil? || reached.nil? || reached.zero?
 
       # Nothing pushes it sideways, so it covers the ground at a steady rate:
@@ -255,7 +303,7 @@ module Flight
     # The arrowhead, laid along the way it is going as it comes down — which
     # is the angle it left at, mirrored.
     def landing(turned)
-      tip = [ along(value(:x)), GROUND ]
+      tip = [ along(value(:r)), GROUND ]
       wing = ->(swing) do
         angle = Math::PI + turned + swing
         [ (tip[0] + Math.cos(angle) * HEAD).round(2),
@@ -333,7 +381,7 @@ module Flight
     # named where it leaves it instead, since that is the last of it anyone
     # can see.
     def aloft(_turned)
-      top = [ along(value(:x) / 2).clamp(30.0, WIDTH - 30.0),
+      top = [ along(value(:r) / 2).clamp(30.0, WIDTH - 30.0),
               up(value(:h)).clamp(16.0, GROUND - 10.0) ]
 
       [ [ top[0], top[1] - 8, "middle" ], [ top[0] + 10, top[1] - 8, "start" ],

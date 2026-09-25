@@ -19,14 +19,22 @@ play_with Projectile do
 
   input(:g) { world }
 
-  output :x, in: :metres
+  input :k, 0.0..1.0, default: 0.5
+
+  output :r, in: :metres
   output :h, in: :metres
   output :t, in: :seconds
+
+  output :x,  in: :metres
+  output :y,  in: :metres
+  output :sx, in: :speed
+  output :sy, in: :speed
 
   draw Flight::Picture do
     ground
     flight leaving_at: :theta
-    reach "range", :x
+    now
+    reach "range", :r
     apex "peak", :h
   end
 end

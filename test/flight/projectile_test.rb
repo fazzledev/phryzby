@@ -12,7 +12,7 @@ class ProjectileTest < Minitest::Test
   def test_it_carries_a_throw_as_far_as_the_range_formula_does
     one = thrown(u: 20.0, theta: 45.deg)
 
-    assert_in_delta 400.0 / EARTH, one.solve(:x), 1e-9
+    assert_in_delta 400.0 / EARTH, one.solve(:r), 1e-9
   end
 
   def test_it_reaches_the_height_the_vertical_speed_buys
@@ -30,22 +30,55 @@ class ProjectileTest < Minitest::Test
   # Forty-five degrees is not written anywhere in the law. It is where the
   # range happens to peak, and the law is asked rather than told.
   def test_no_angle_throws_it_further_than_forty_five_degrees
-    furthest = (1..89).max_by { |degrees| thrown(u: 20.0, theta: degrees.deg).solve(:x) }
+    furthest = (1..89).max_by { |degrees| thrown(u: 20.0, theta: degrees.deg).solve(:r) }
 
     assert_equal 45, furthest
   end
 
   # The sideways question: not where it lands, but how to land it there.
   def test_it_answers_for_the_angle_that_reaches_a_mark
-    asked = thrown(u: 20.0, theta: 45.deg).asking(:theta, x: 30.0)
+    asked = thrown(u: 20.0, theta: 45.deg).asking(:theta, r: 30.0)
 
-    assert_in_delta 30.0, thrown(u: 20.0, theta: asked).solve(:x), 1e-6
+    assert_in_delta 30.0, thrown(u: 20.0, theta: asked).solve(:r), 1e-6
   end
 
   def test_it_answers_for_the_speed_a_range_needs
-    one = THROW.new(g: EARTH, theta: 45.deg, x: 400.0 / EARTH)
+    one = THROW.new(g: EARTH, theta: 45.deg, r: 400.0 / EARTH)
 
     assert_in_delta 20.0, one.solve(:u), 1e-6
+  end
+
+  # Where it is part way through, against where the whole-flight formulas say
+  # it ends up: two routes to the same place, and the law was told neither
+  # that they should agree nor that half way is the top.
+  def test_half_way_through_is_half_the_range_and_all_of_the_peak
+    half = thrown(u: 20.0, theta: 40.deg, k: 0.5)
+
+    assert_in_delta half.solve(:r) / 2, half.solve(:x), 1e-9
+    assert_in_delta half.solve(:h), half.solve(:y), 1e-9
+    assert_in_delta 0.0, half.solve(:sy), 1e-9
+  end
+
+  def test_at_the_end_it_is_back_on_the_ground_going_down_as_fast_as_it_went_up
+    done = thrown(u: 20.0, theta: 40.deg, k: 1.0)
+
+    assert_in_delta 0.0, done.solve(:y), 1e-9
+    assert_in_delta done.solve(:r), done.solve(:x), 1e-9
+    assert_in_delta(-20.0 * Math.sin(40.deg), done.solve(:sy), 1e-9)
+  end
+
+  # Nothing pushes it sideways, so nothing about sideways changes.
+  def test_it_crosses_the_ground_at_one_speed_the_whole_way
+    (0..10).map { |n| thrown(u: 20.0, theta: 40.deg, k: n / 10.0).solve(:sx) }
+           .each { |across| assert_in_delta 20.0 * Math.cos(40.deg), across, 1e-9 }
+  end
+
+  # The moment cannot be slid straight, because how long the flight lasts is
+  # itself something the law works out. A part of it can be.
+  def test_the_moment_follows_from_the_part_of_the_flight
+    one = thrown(u: 20.0, theta: 40.deg, k: 0.25)
+
+    assert_in_delta one.solve(:t) / 4, one.solve(:tau), 1e-9
   end
 
   # A throw on the Moon goes six times as far, and the law is not told that
@@ -53,6 +86,6 @@ class ProjectileTest < Minitest::Test
   def test_gravity_is_something_the_scenario_is_given
     moon = THROW.new(g: 1.62, u: 20.0, theta: 45.deg)
 
-    assert_in_delta EARTH / 1.62, moon.solve(:x) / thrown(u: 20.0, theta: 45.deg).solve(:x), 1e-9
+    assert_in_delta EARTH / 1.62, moon.solve(:r) / thrown(u: 20.0, theta: 45.deg).solve(:r), 1e-9
   end
 end
