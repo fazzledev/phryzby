@@ -26,14 +26,14 @@ module Projectile
 
   quantity :distance_out, variable: :x
   quantity :height,       variable: :y
-  quantity :speed_out,    variable: :sx
-  quantity :speed_up,     variable: :sy
+  quantity :velocity_across, variable: :vx
+  quantity :velocity_up,     variable: :vy
 
   equation(:the_moment) { tau == k * t }
 
   equation(:carried) { x == u * cos(theta) * tau }
   equation(:lifted)  { y == u * sin(theta) * tau - g * tau**2 / 2 }
 
-  equation(:steady)  { sx == u * cos(theta) }
-  equation(:slowing) { sy == u * sin(theta) - g * tau }
+  equation(:steady)  { vx == u * cos(theta) }
+  equation(:slowing) { vy == u * sin(theta) - g * tau }
 end

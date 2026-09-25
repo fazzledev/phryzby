@@ -56,7 +56,7 @@ class ProjectileTest < Minitest::Test
 
     assert_in_delta half.solve(:r) / 2, half.solve(:x), 1e-9
     assert_in_delta half.solve(:h), half.solve(:y), 1e-9
-    assert_in_delta 0.0, half.solve(:sy), 1e-9
+    assert_in_delta 0.0, half.solve(:vy), 1e-9
   end
 
   def test_at_the_end_it_is_back_on_the_ground_going_down_as_fast_as_it_went_up
@@ -64,12 +64,12 @@ class ProjectileTest < Minitest::Test
 
     assert_in_delta 0.0, done.solve(:y), 1e-9
     assert_in_delta done.solve(:r), done.solve(:x), 1e-9
-    assert_in_delta(-20.0 * Math.sin(40.deg), done.solve(:sy), 1e-9)
+    assert_in_delta(-20.0 * Math.sin(40.deg), done.solve(:vy), 1e-9)
   end
 
   # Nothing pushes it sideways, so nothing about sideways changes.
   def test_it_crosses_the_ground_at_one_speed_the_whole_way
-    (0..10).map { |n| thrown(u: 20.0, theta: 40.deg, k: n / 10.0).solve(:sx) }
+    (0..10).map { |n| thrown(u: 20.0, theta: 40.deg, k: n / 10.0).solve(:vx) }
            .each { |across| assert_in_delta 20.0 * Math.cos(40.deg), across, 1e-9 }
   end
 

@@ -27,8 +27,8 @@ play_with Projectile do
 
   output :x,  in: :metres
   output :y,  in: :metres
-  output :sx, in: :speed
-  output :sy, in: :speed
+  output :vx, in: :speed
+  output :vy, in: :speed
 
   draw Flight::Picture do
     ground

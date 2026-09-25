@@ -174,8 +174,8 @@ module Flight
     def now(called = nil)
       out = value(:x)
       up_to = value(:y)
-      across = value(:sx)
-      rising = value(:sy)
+      across = value(:vx)
+      rising = value(:vy)
       return if [ out, up_to, across, rising ].any?(&:nil?)
 
       at = [ along(out), up(up_to) ]
