@@ -86,6 +86,54 @@ class FlightPictureTest < Minitest::Test
     svg[/keyPoints="([^"]+)"/, 1].split(";").map(&:to_f).each_cons(2).map { |a, b| b - a }
   end
 
+  # keyTimes and keyPoints together say where the ball is at every moment, so
+  # they can be walked back the way a browser walks them: linearly along the
+  # arc between one pair and the next. Drop the height that gives, twice
+  # differenced, and what falls out is the gravity the scenario was handed —
+  # which is the whole claim the animation is making.
+  def test_the_height_it_is_drawn_at_falls_under_the_gravity_it_was_given
+    THROWN.picture(THROWN.opening, settled: {}).then do |svg|
+      posed = THROWN.posing(**THROWN.opening)
+      flight = posed.solve(:t)
+      up = flown(svg)
+
+      # A second difference of the height, over a span the chord error is
+      # small against: the acceleration, in metres, downward.
+      inner = (1..3).map { |n| flight * n / 4 }
+      found = inner.map do |tau|
+        step = flight / 8
+        (up.call(tau + step) - 2 * up.call(tau) + up.call(tau - step)) / step**2
+      end
+
+      found.each { |fell| assert_in_delta(-posed.solve(:g), fell, 0.1) }
+    end
+  end
+
+  # The height the browser will put it at, read off the attributes alone.
+  def flown(svg)
+    walked = svg[/<path id="flight" d="M ([^"]+)"/, 1]
+               .split(" L ").map { |pair| pair.split(",").map(&:to_f) }
+    clock = svg[/keyTimes="([^"]+)"/, 1].split(";").map(&:to_f)
+    reached = svg[/keyPoints="([^"]+)"/, 1].split(";").map(&:to_f)
+    flight = THROWN.posing(**THROWN.opening).solve(:t)
+
+    runs = walked.each_cons(2).map { |(from, to)| Math.hypot(to[0] - from[0], to[1] - from[1]) }
+    gone = runs.each_with_object([ 0.0 ]) { |step, kept| kept << kept.last + step }
+    scale = Flight::Picture::REACH / (THROWN.inputs[:u][:range].end**2 / 9.81)
+
+    lambda do |tau|
+      at = (tau / flight).clamp(0.0, 1.0)
+      n = clock.each_cons(2).find_index { |one, other| at.between?(one, other) } || clock.size - 2
+      part = (at - clock[n]) / (clock[n + 1] - clock[n])
+      want = (reached[n] + part * (reached[n + 1] - reached[n])) * gone.last
+
+      m = gone.each_cons(2).find_index { |one, other| want.between?(one, other) } || walked.size - 2
+      part = (want - gone[m]) / (gone[m + 1] - gone[m])
+
+      (Flight::Picture::GROUND - (walked[m][1] + part * (walked[m + 1][1] - walked[m][1]))) / scale
+    end
+  end
+
   def test_a_throw_that_never_leaves_the_ground_has_no_ball_to_fly
     refute_includes drawn(theta: 0.0), "animateMotion"
   end
