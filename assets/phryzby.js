@@ -130,7 +130,7 @@ export const BOOK = [
 const TITLES = {
   "engine.html": "0 · The Engine",
   "flight/projectile.html": "1.1 · Projectile",
-  "flight/motion.html": "1.2 · Equations of Motion",
+  "flight/motion.html": "1.2 · Instants of a Projectile",
   "light/incidence.html": "2.1 · Incidence",
   "light/reflection.html": "2.2 · Reflection",
   "light/refraction.html": "2.3 · Refraction: Air to Water",

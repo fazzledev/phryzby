@@ -1,6 +1,6 @@
 {
   "flight/motion.html": {
-    "called": "Equations of Motion",
+    "called": "Instants of a Projectile",
     "nodes": [
       {
         "id": "q:speed",

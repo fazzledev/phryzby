@@ -4,7 +4,7 @@ require_relative "../../flight/in_view"
 require_relative "../../flight/picture"
 
 play_with Motion do
-  title "Equations of Motion"
+  title "Instants of a Projectile"
   question "And where is it while it is still going?"
   description "Somewhere along the same arc, at a moment you can name. Ask at half way and the answers are the range halved and the peak exactly — which is where the three the chapter before worked out came from."
 
