@@ -14,8 +14,8 @@ play_with Projectile do
   input(:g) { world }
 
   about "the throw, all of it" do
-    input :theta_0, default: 45.deg
-    input :u, 5.0..100.0, in: :"m/s", default: 18.0
+    input :theta_0, default: 45.deg, step: 5.deg
+    input :u, 10.0..100.0, in: :"m/s", step: 10.0, default: 20.0
 
     input :world, GRAVITY, default: "earth"
     input :in_view, IN_VIEW

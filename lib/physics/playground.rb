@@ -129,21 +129,23 @@ module Physics
       [ picture(values), said, labels.join("\u0002") ].join("\u0000")
     end
 
-    # How finely a control moves is a property of what it carries, not of the
-    # chapter: a tenth of a degree, a hundredth of an index.
+    # How finely a control moves is a property of what it carries — a tenth of
+    # a degree, a hundredth of an index — unless the chapter is about
+    # something the fine steps get in the way of, and says so.
     FINELY = { deg: 0.1.deg, none: 0.01, "m/s": 0.1, m: 0.1 }.freeze
 
     # One verb for everything a chapter hands the laws. A range to slide
     # through, a few named things to pick between, or, given a block, a value
     # worked out from what was picked and never shown at all.
-    def input(name, offered = nil, default: nil, in: nil, as: nil, marks: {}, &worked_out)
+    def input(name, offered = nil, default: nil, in: nil, as: nil, step: nil, marks: {},
+              &worked_out)
       return @given[name] = worked_out if worked_out
       return @inputs[name] = picking(name, offered, default, as) if offered.is_a?(Hash)
 
       reads = binding.local_variable_get(:in) || read_as(name)
 
       @inputs[name] = { range: offered || as_far_as(name), reads: reads,
-                        step: FINELY.fetch(reads, 0.01), default: default,
+                        step: step || FINELY.fetch(reads, 0.01), default: default,
                         as: as, marks: marks, about: @about }
     end
 
