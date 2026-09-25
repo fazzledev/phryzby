@@ -158,6 +158,9 @@ svg{display:block;width:100%;height:auto;border:1px solid var(--rule);border-rad
 svg[data-drags]{touch-action:none;}
 svg .grab{cursor:grab;}
 svg[data-drags]:active .grab{cursor:grabbing;}
+/* The arc says where it went; a reader who would rather not have motion
+   still has that. */
+@media (prefers-reduced-motion: reduce){svg .ball{display:none;}}
 /* A control and a reading are the same row: what the number is, the letter
    the law writes it as, the control, the reading. A reading has nothing to
    put in the third column, and that is the whole difference. */

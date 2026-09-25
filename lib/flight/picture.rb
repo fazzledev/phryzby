@@ -101,8 +101,20 @@ module Flight
         "#{along(across).round(2)},#{up(high).round(2)}"
       end
 
-      %(<polyline points="#{points.join(' ')}" fill="none" stroke="var(--light)" ) +
-        %(stroke-width="2.5" stroke-linecap="round"/>) + landing(turned)
+      %(<path id="flight" d="M #{points.join(' L ')}" fill="none" stroke="var(--light)" ) +
+        %(stroke-width="2.5" stroke-linecap="round"/>) + landing(turned) + flying
+    end
+
+    # The arc is where it went; this is it going. Nothing here chooses how
+    # long that takes — the law was asked, and the ball is in the air for the
+    # time of flight it answered with. Pull harder and it hurries.
+    def flying
+      seconds = value(:t)
+      return "" if seconds.nil? || seconds < 1e-6
+
+      %(<circle class="ball" r="3.5" fill="var(--light)">) +
+        %(<animateMotion dur="#{seconds.round(3)}s" repeatCount="indefinite">) +
+        %(<mpath href="#flight"/></animateMotion></circle>)
     end
 
     # The arrowhead, laid along the way it is going as it comes down — which

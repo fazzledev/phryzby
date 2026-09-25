@@ -7,8 +7,8 @@ require_relative "../chapters"
 class FlightPictureTest < Minitest::Test
   def drawn(**values) = THROWN.picture(THROWN.opening.merge(values), settled: {})
 
-  def points(svg) = svg[/<polyline points="([^"]+)" fill="none" stroke="var\(--light\)/, 1]
-                       .split.map { |pair| pair.split(",").map(&:to_f) }
+  def points(svg) = svg[/<path id="flight" d="M ([^"]+)"/, 1]
+                       .split(" L ").map { |pair| pair.split(",").map(&:to_f) }
 
   def test_it_draws_an_arc_that_starts_and_ends_on_the_ground
     walked = points(drawn)
@@ -47,6 +47,18 @@ class FlightPictureTest < Minitest::Test
   # is not how an optics picture measures one — so the picture says which.
   def test_it_tells_the_page_where_its_angle_is_measured_from
     assert_includes drawn, %(data-drags="theta" data-at="20 172")
+  end
+
+  # The ball is in the air for exactly as long as the law says it is, so the
+  # picture asks rather than picks.
+  def test_the_ball_flies_for_the_time_of_flight
+    seconds = THROWN.posing(**THROWN.opening).solve(:t)
+
+    assert_includes drawn, %(dur="#{seconds.round(3)}s")
+  end
+
+  def test_a_throw_that_never_leaves_the_ground_has_no_ball_to_fly
+    refute_includes drawn(theta: 0.0), "animateMotion"
   end
 
   def test_it_names_what_it_drew
