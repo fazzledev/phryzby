@@ -134,35 +134,9 @@ module Physics
   end
 
   module Declarations
-    def to_html = super + laws + holding
+    def to_html = super + laws
 
     private
-
-    # The same declarations a third way. The table says what the quantities
-    # are and the formulas say what each equation asserts; neither says which
-    # equations reach which quantities, and that is what decides whether a
-    # question can be answered at all. A mark where one holds the other.
-    def holding
-      held = quantities.values.uniq
-      return "" if held.size < 2 || equations.size < 2
-
-      rows = equations.map { |name, holds| touching(name, holds, held, "equation") } +
-             conditions.map { |name, holds| touching(name, holds, held, "condition") }
-
-      "<table class=\"holds\"><thead><tr><th></th>" \
-        "#{held.map { |key| "<th>#{set(written(key) || key)}</th>" }.join}" \
-        "</tr></thead><tbody>#{rows.join}</tbody></table>"
-    end
-
-    def set(written) = "<math><mrow>#{Physics.notation(written)}</mrow></math>"
-
-    def touching(name, holds, held, kind)
-      mentioned = holds.variables
-
-      "<tr class=\"#{kind}\"><th scope=\"row\">#{name.to_s.tr("_", " ")}</th>" \
-        "#{held.map { |key| "<td#{mentioned.include?(key) ? " class=\"on\"" : ""}></td>" }.join}" \
-        "</tr>"
-    end
 
     def laws
       (equations.map { |name, holds| rule(name, holds.to_mathml, guards[name]) } +
