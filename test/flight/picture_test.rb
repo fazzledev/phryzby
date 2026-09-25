@@ -119,7 +119,8 @@ class FlightPictureTest < Minitest::Test
 
     runs = walked.each_cons(2).map { |(from, to)| Math.hypot(to[0] - from[0], to[1] - from[1]) }
     gone = runs.each_with_object([ 0.0 ]) { |step, kept| kept << kept.last + step }
-    scale = Flight::Picture::REACH / (THROWN.inputs[:u][:range].end**2 / 9.81)
+    scale = Flight::Picture::REACH /
+            (THROWN.inputs[:u][:range].end**2 / THROWN.posing(**THROWN.opening).solve(:g))
 
     lambda do |tau|
       at = (tau / flight).clamp(0.0, 1.0)
@@ -138,7 +139,34 @@ class FlightPictureTest < Minitest::Test
     refute_includes drawn(theta: 0.0), "animateMotion"
   end
 
+  # Gravity sets how big a throw is and how long it takes, and nothing else:
+  # the same throw on a world that pulls less goes further and hangs longer,
+  # but it is the same shape. So the arc does not move, and what changes is
+  # how much ground the picture is standing on, and how long the ball is up.
+  def test_a_weaker_world_is_the_same_arc_over_more_ground
+    seen = GRAVITY.keys.each_index.map do |n|
+      svg = drawn(world: n)
+      [ svg[/<path id="flight" d="([^"]+)"/, 1], svg[/dur="([\d.]+)s"/, 1].to_f,
+        svg[/>(\d+) m of ground</, 1].to_i ]
+    end
+
+    assert_equal 1, seen.map(&:first).uniq.size
+    assert_equal seen.map { |(_, flight, _)| flight }.sort.reverse,
+                 seen.map { |(_, flight, _)| flight }
+    assert_equal seen.map(&:last).sort.reverse, seen.map(&:last)
+  end
+
+  # Six times less pull, six times the ground and six times as long in the air.
+  def test_the_moon_is_the_earth_divided_by_its_own_pull
+    moon, earth = %w[moon earth].map { |world| drawn(world: GRAVITY.keys.index(world)) }
+    seconds = ->(svg) { svg[/dur="([\d.]+)s"/, 1].to_f }
+
+    assert_in_delta GRAVITY.fetch("earth") / GRAVITY.fetch("moon"),
+                    seconds.call(moon) / seconds.call(earth), 1e-3
+  end
+
   def test_it_names_what_it_drew
-    [ "ground", "thrown", "range", "peak" ].each { |called| assert_includes drawn, ">#{called}<" }
+    [ "thrown", "range", "peak" ].each { |called| assert_includes drawn, ">#{called}<" }
+    assert_match(/>\d+ m of ground</, drawn)
   end
 end

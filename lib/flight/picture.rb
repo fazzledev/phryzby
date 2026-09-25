@@ -23,9 +23,14 @@ module Flight
 
     # The ground it is thrown from and lands back on. Everything else is
     # measured off this line.
-    def ground(called: "ground")
+    # The ground, and how much of it is in the picture. The frame is cut for
+    # the furthest this chapter can throw, and that depends on the pull — so
+    # on a world that pulls less the same arc covers more ground, and the only
+    # honest way to say so is to say how much.
+    def ground(called: nil)
       @shapes.unshift(turf)
-      want(called, [ [ 294, GROUND + 15, "end" ] ], fixed: true)
+      want(called || format("%g m of ground", (REACH / scale).round), [ [ 294, GROUND + 15, "end" ] ],
+           fixed: true)
     end
 
     # The whole throw: the arc it flies, the angle it left at, and the hand

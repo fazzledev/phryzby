@@ -756,7 +756,7 @@ function mountDragging(frame) {
 // the labels go is neither subject's business, so that is shared.
 const DRAWN = {
   light: [ "lib/light/refractive_media.rb", "lib/light/picture.rb" ],
-  flight: [ "lib/flight/picture.rb" ],
+  flight: [ "lib/flight/gravity.rb", "lib/flight/picture.rb" ],
 };
 
 const drawnBy = (playground) =>
