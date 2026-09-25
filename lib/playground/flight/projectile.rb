@@ -21,8 +21,8 @@ play_with Projectile do
     input :in_view, IN_VIEW
 
     output :R,   in: :m
-    output :h,   in: :m
-    output :t_f, in: :s
+    output :H,   in: :m
+    output :T, in: :s
   end
 
   about "one moment of it" do
@@ -41,6 +41,6 @@ play_with Projectile do
     flight leaving_at: :theta_0
     now
     reach "range", :R
-    apex "peak", :h
+    apex "peak", :H
   end
 end

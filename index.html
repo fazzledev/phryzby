@@ -64,16 +64,18 @@ module Projectile
   quantity :gravity,         variable: :g
 
   quantity :range,           variable: :R
-  quantity :peak,            variable: :h
-  quantity :time_of_flight,  variable: :t_f
+  quantity :peak,            variable: :H
+  quantity :time_of_flight,  variable: :T
 
   equation(:horizontal_range) { R == u**2 * sin(2 * theta_0) / g }
-  equation(:maximum_height)   { h == (u * sin(theta_0))**2 / (2 * g) }
-  equation(:time_of_flight)   { t_f == 2 * u * sin(theta_0) / g }
+  equation(:maximum_height)   { H == (u * sin(theta_0))**2 / (2 * g) }
+  equation(:time_of_flight)   { T == 2 * u * sin(theta_0) / g }
 
   # And where it is part way through. A moment cannot be slid from nought to
   # the end of the flight, because how long the flight lasts is itself
   # something the law works out; a part of it can be, and the moment follows.
+  # T is the whole of it and t is the instant — which is the way round a book
+  # writes them, and the reason the law may write a capital at all.
   quantity :part_of_the_flight, variable: :k
   quantity :elapsed,            variable: :t
 
@@ -83,7 +85,7 @@ module Projectile
   quantity :velocity_up,     variable: :v_y
   quantity :angle_of_travel, variable: :theta
 
-  equation(:elapsed_time) { t == k * t_f }
+  equation(:elapsed_time) { t == k * T }
 
   equation(:horizontal_displacement) { x == u * cos(theta_0) * t }
   equation(:vertical_displacement)   { y == u * sin(theta_0) * t - g * t**2 / 2 }
