@@ -33,11 +33,12 @@ module Flight
     # against this one number.
     def ground(called: nil)
       @shapes.unshift(turf)
-      # Written on the ground, because that is what it measures. Nothing else
-      # is down here: a mark on the ground can be read from just above the
-      # line, and this cannot be read anywhere else at all.
-      want(called || format("%g m of ground", span.round), [ [ 294, GROUND + 20, "end" ] ],
-           fixed: true)
+      # Written on the ground, because that is what it measures, and as low
+      # down it as a label is allowed to sit: everything above the line is the
+      # throw's. Nothing else is down here — a mark on the ground can be read
+      # from just above it, and this cannot be read anywhere else at all.
+      want(called || format("%g m of ground", span.round),
+           [ [ WIDTH / 2, GROUND + 23, "middle" ] ], fixed: true)
     end
 
     # The whole throw: the arc it flies, the angle it left at, and the hand
