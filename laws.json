@@ -123,7 +123,7 @@
         "id": "e:horizontal_range",
         "kind": "equation",
         "said": "horizontal range",
-        "maths": "<mi>R</mi><mo>=</mo><mfrac><mrow><msup><mrow><mi>u</mi></mrow><mrow><mn>2</mn></mrow></msup><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mo class=\"fence\" stretchy=\"false\">(</mo><mn>2</mn><mo>&#x22c5;</mo><msub><mi>θ</mi><mi>0</mi></msub><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mi>g</mi></mrow></mfrac>"
+        "maths": "<mi>R</mi><mo>=</mo><msub><mi>u</mi><mi>x</mi></msub><mo>&#x22c5;</mo><mi>T</mi>"
       },
       {
         "id": "e:maximum_height",
@@ -205,15 +205,11 @@
       },
       {
         "source": "e:horizontal_range",
-        "target": "q:speed"
+        "target": "q:speed_across"
       },
       {
         "source": "e:horizontal_range",
-        "target": "q:angle_of_throw"
-      },
-      {
-        "source": "e:horizontal_range",
-        "target": "q:gravity"
+        "target": "q:time_of_flight"
       },
       {
         "source": "e:maximum_height",
@@ -392,7 +388,7 @@
         "id": "e:horizontal_range",
         "kind": "equation",
         "said": "horizontal range",
-        "maths": "<mi>R</mi><mo>=</mo><mfrac><mrow><msup><mrow><mi>u</mi></mrow><mrow><mn>2</mn></mrow></msup><mo>&#x22c5;</mo><mi>sin</mi><mo>&#x2061;</mo><mspace width=\"0.17em\"/><mo class=\"fence\" stretchy=\"false\">(</mo><mn>2</mn><mo>&#x22c5;</mo><msub><mi>θ</mi><mi>0</mi></msub><mo class=\"fence\" stretchy=\"false\">)</mo></mrow><mrow><mi>g</mi></mrow></mfrac>"
+        "maths": "<mi>R</mi><mo>=</mo><msub><mi>u</mi><mi>x</mi></msub><mo>&#x22c5;</mo><mi>T</mi>"
       },
       {
         "id": "e:maximum_height",
@@ -438,15 +434,11 @@
       },
       {
         "source": "e:horizontal_range",
-        "target": "q:speed"
+        "target": "q:speed_across"
       },
       {
         "source": "e:horizontal_range",
-        "target": "q:angle_of_throw"
-      },
-      {
-        "source": "e:horizontal_range",
-        "target": "q:gravity"
+        "target": "q:time_of_flight"
       },
       {
         "source": "e:maximum_height",

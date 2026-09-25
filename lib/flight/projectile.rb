@@ -23,12 +23,10 @@ module Projectile
   quantity :peak,            variable: :H
   quantity :time_of_flight,  variable: :T
 
-  # The range is the one written out in full rather than as u_x times T,
-  # which is what it means. Asked forwards they are the same; asked backwards
-  # — what angle reaches thirty metres — the first can be turned round and the
-  # second cannot, because u_x and T both lead back to the angle and the
-  # solver takes one unknown out of one equation at a time.
-  equation(:horizontal_range) { R == u**2 * sin(2 * theta_0) / g }
+  # How far it got is how fast it was going along the ground times how long it
+  # was off it. The closed form a book prints — u squared sin two theta over g
+  # — is this with the components written out and a double angle collected up.
+  equation(:horizontal_range) { R == u_x * T }
   equation(:maximum_height)   { H == u_y**2 / (2 * g) }
   equation(:time_of_flight)   { T == 2 * u_y / g }
 end

@@ -60,7 +60,7 @@ module Physics
 
     private
 
-    def determine(key, range, pending, except: nil)
+    def determine(key, range, pending, except: nil, ringed: true)
       candidates(key, except, pending).each do |equation|
         restore = @env.dup
 
@@ -72,7 +72,76 @@ module Physics
         @env.replace(restore)
       end
 
+      if ringed
+        found = round_the_houses(key, range, except)
+        return @env[key] = found if found
+      end
+
       raise "no equation determines the #{key.to_s.tr("_", " ")} from what is known"
+    end
+
+    # Everything above works by putting a number in place of each unknown it
+    # does not want, which cannot be done when the way to that number leads
+    # back to the one being asked for. A ring of equations has no end to start
+    # from and the search above gives up at it.
+    #
+    # It does not need the number, though. It needs the name gone — and an
+    # equation with a bare name on one side says what that name stands for, so
+    # the expression can go in its place. Do that until the only unknown left
+    # is the one being asked for, and a ring has become a single equation the
+    # ordinary solver can turn round.
+    # Every equation is a place to start, not only the ones that name what is
+    # being asked for: in a ring the equation holding the known value often
+    # does not mention it at all, and only comes to once the names between
+    # them have been written out.
+    def round_the_houses(key, range, except)
+      self.class.equations.each do |name, equation|
+        next if name == except
+
+        unrolled = unroll(equation, key)
+        next unless unrolled
+
+        found = root_of(unrolled, key, range)
+        return found if found
+      end
+
+      nil
+    end
+
+    UNROLLING = 8
+
+    # No equation may be put into itself, or into anything it has already been
+    # put into: H == u_y ** 2 / (2 * g) with H replaced by what that same
+    # equation says H is comes to nought equals nought, which every number
+    # satisfies and none answers.
+    def unroll(equation, key)
+      spent = [ equation ]
+
+      UNROLLING.times do
+        missing = equation.variables - @env.keys - [ key ]
+        return equation.variables.include?(key) ? equation : nil if missing.empty?
+
+        name, said, from = standing_for(missing, spent)
+        return nil unless name
+
+        spent << from
+        equation = equation.instead(name, said)
+      end
+
+      nil
+    end
+
+    def standing_for(missing, spent)
+      missing.each do |name|
+        self.class.equations.each_value do |equation|
+          next if spent.include?(equation)
+
+          said = equation.defines
+          return [ name, said.last, equation ] if said && said.first == name
+        end
+      end
+
+      nil
     end
 
     # A guarded equation states a special case, so it is tried before the
@@ -112,7 +181,11 @@ module Physics
       (equation.variables - @env.keys - [ key ]).all? do |missing|
         next false if pending.include?(missing)
 
-        determine(missing, nil, pending + [ missing ], except: except)
+        # Not round the houses: that is for a question which has otherwise
+        # failed outright. Reaching for it here would make more things
+        # determinable part way down, and so change which equation a question
+        # is answered from — including to one that is degenerate.
+        determine(missing, nil, pending + [ missing ], except: except, ringed: false)
       rescue RuntimeError
         false
       end

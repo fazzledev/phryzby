@@ -15,6 +15,11 @@ module Physics
 
     def coerce(numeric) = [ Const.new(numeric), self ]
 
+    # The same expression with one name written out as what it stands for.
+    # Nothing but a name has a name to replace, so most of them are already
+    # what they will be.
+    def instead(_name, _expr) = self
+
     def self.wrap(value) = value.is_a?(Expr) ? value : Const.new(value)
   end
 
@@ -41,6 +46,8 @@ module Physics
 
     def variables = [ @name ]
     def to_s = @written.to_s
+
+    def instead(name, expr) = @name == name ? expr : self
   end
 
   class BinOp < Expr
@@ -53,6 +60,8 @@ module Physics
     def evaluate(env) = @left.evaluate(env).public_send(@op, @right.evaluate(env))
     def variables = @left.variables | @right.variables
     def to_s = "(#{@left} #{@op} #{@right})"
+
+    def instead(name, expr) = BinOp.new(@op, @left.instead(name, expr), @right.instead(name, expr))
   end
 
   class Fn < Expr
@@ -64,5 +73,7 @@ module Physics
     def evaluate(env) = Math.public_send(@name, @arg.evaluate(env))
     def variables = @arg.variables
     def to_s = "#{@name}(#{@arg})"
+
+    def instead(name, expr) = Fn.new(@name, @arg.instead(name, expr))
   end
 end
