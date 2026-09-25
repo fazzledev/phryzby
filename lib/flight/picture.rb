@@ -116,9 +116,9 @@ module Flight
 
       # Just above the line it marks, and off to the side of the arrowhead
       # coming down on it. The room under the line is the ruler's.
-      want(called, [ [ at + 11, GROUND - 9, "start" ], [ at - 11, GROUND - 9, "end" ],
-                     [ at + 11, GROUND - 21, "start" ], [ at - 11, GROUND - 21, "end" ],
-                     [ at, GROUND - 32, "middle" ], [ at, GROUND + 15, "middle" ] ])
+      want(called, [ [ at + 11, GROUND - 13, "start" ], [ at - 11, GROUND - 13, "end" ],
+                     [ at + 11, GROUND - 25, "start" ], [ at - 11, GROUND - 25, "end" ],
+                     [ at, GROUND - 37, "middle" ], [ at, GROUND + 15, "middle" ] ])
     end
 
     # The top of the arc, marked across to the edge it is measured from — and
@@ -279,8 +279,11 @@ module Flight
         %(stroke="var(--ink-soft)" stroke-width="1"/>)
     end
 
+    # How much ground the throw covered, laid just above the line it covered
+    # it along — meeting the drop mark at the landing. Under the line is the
+    # ruler's, and the two were reading as one thing down there.
     def tick(at)
-      %(<line x1="#{START}" y1="#{GROUND + 6}" x2="#{at.round(2)}" y2="#{GROUND + 6}" ) +
+      %(<line x1="#{START}" y1="#{GROUND - 6}" x2="#{at.round(2)}" y2="#{GROUND - 6}" ) +
         %(stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="2 2"/>)
     end
 
