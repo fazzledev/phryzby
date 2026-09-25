@@ -33,6 +33,7 @@ play_with Projectile do
     output :y,   in: :m
     output :v_x, in: :"m/s"
     output :v_y, in: :"m/s"
+    output :theta_t, in: :deg
   end
 
   draw Flight::Picture do

@@ -81,6 +81,7 @@ module Projectile
   quantity :height,          variable: :y
   quantity :velocity_across, variable: :v_x
   quantity :velocity_up,     variable: :v_y
+  quantity :angle_of_travel, variable: :theta_t
 
   equation(:elapsed_time) { t == k * t_f }
 
@@ -89,6 +90,11 @@ module Projectile
 
   equation(:horizontal_velocity) { v_x == u * cos(theta) }
   equation(:vertical_velocity)   { v_y == u * sin(theta) - g * t }
+
+  # Which way it is going now, off the ground the way the throw was measured
+  # off it — the angle it left at while it is still climbing, nought at the
+  # top, and the same angle below the ground on the way down.
+  equation(:direction_of_travel) { theta_t == atan(v_y / v_x) }
 end</pre>
         </div>
       </div>

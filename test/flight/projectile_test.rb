@@ -67,6 +67,27 @@ class ProjectileTest < Minitest::Test
     assert_in_delta(-20.0 * Math.sin(40.deg), done.solve(:v_y), 1e-9)
   end
 
+  # Which way it is going, against the way it was sent: the law is told the
+  # angle it left at and works the rest out, so the two agreeing at the start
+  # is a check rather than an arrangement.
+  def test_it_is_going_the_way_it_was_thrown_the_instant_it_is_thrown
+    off = thrown(u: 20.0, theta: 37.deg, k: 0.0)
+
+    assert_in_delta 37.deg, off.solve(:theta_t), 1e-9
+  end
+
+  def test_it_is_going_nowhere_upward_at_the_top
+    assert_in_delta 0.0, thrown(u: 20.0, theta: 37.deg, k: 0.5).solve(:theta_t), 1e-9
+  end
+
+  # What it did going up it undoes coming down, so it lands as steeply as it
+  # left and on the other side of level.
+  def test_it_comes_down_as_steeply_as_it_went_up
+    down = thrown(u: 20.0, theta: 37.deg, k: 1.0)
+
+    assert_in_delta(-37.deg, down.solve(:theta_t), 1e-9)
+  end
+
   # Nothing pushes it sideways, so nothing about sideways changes.
   def test_it_crosses_the_ground_at_one_speed_the_whole_way
     (0..10).map { |n| thrown(u: 20.0, theta: 40.deg, k: n / 10.0).solve(:v_x) }
