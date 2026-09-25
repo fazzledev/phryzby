@@ -14,7 +14,7 @@ play_with Projectile do
   input(:g) { world }
 
   about "the throw, all of it" do
-    input :theta, default: 45.deg
+    input :theta_0, default: 45.deg
     input :u, 5.0..100.0, in: :"m/s", default: 18.0
 
     input :world, GRAVITY, default: "earth"
@@ -33,12 +33,12 @@ play_with Projectile do
     output :y,   in: :m
     output :v_x, in: :"m/s"
     output :v_y, in: :"m/s"
-    output :theta_t, in: :deg
+    output :theta, in: :deg
   end
 
   draw Flight::Picture do
     ground
-    flight leaving_at: :theta
+    flight leaving_at: :theta_0
     now
     reach "range", :r
     apex "peak", :h

@@ -35,7 +35,7 @@ class FlightPictureTest < Minitest::Test
   def test_nothing_it_draws_leaves_the_frame
     [ 5.0, 15.0, 25.0 ].each do |speed|
       [ 5.deg, 45.deg, 85.deg ].each do |turned|
-        points(drawn(u: speed, theta: turned)).each do |(x, y)|
+        points(drawn(u: speed, theta_0: turned)).each do |(x, y)|
           assert_includes 0.0..Flight::Picture::WIDTH.to_f, x
           assert_includes 0.0..Flight::Picture::HEIGHT.to_f, y
         end
@@ -46,7 +46,7 @@ class FlightPictureTest < Minitest::Test
   # The angle is swung about the hand and measured up off the ground, which
   # is not how an optics picture measures one — so the picture says which.
   def test_it_tells_the_page_where_its_angle_is_measured_from
-    assert_includes drawn, %(data-drags="theta" data-at="20 172")
+    assert_includes drawn, %(data-drags="theta_0" data-at="20 172")
   end
 
   # The ball is in the air for exactly as long as the law says it is, so the
@@ -73,7 +73,7 @@ class FlightPictureTest < Minitest::Test
   # going up, it undoes coming down.
   def test_it_is_half_way_along_at_half_the_time
     [ 20.deg, 45.deg, 80.deg ].each do |turned|
-      svg = drawn(theta: turned)
+      svg = drawn(theta_0: turned)
       clock = svg[/keyTimes="([^"]+)"/, 1].split(";").map(&:to_f)
       reached = svg[/keyPoints="([^"]+)"/, 1].split(";").map(&:to_f)
 
@@ -135,7 +135,7 @@ class FlightPictureTest < Minitest::Test
   end
 
   def test_a_throw_that_never_leaves_the_ground_has_no_ball_to_fly
-    refute_includes drawn(theta: 0.0), "animateMotion"
+    refute_includes drawn(theta_0: 0.0), "animateMotion"
   end
 
   # The ground in view does not move, so a world that pulls less is a throw
