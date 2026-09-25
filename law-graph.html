@@ -78,6 +78,43 @@ const setting = sel => sel.each(function (d) {
 });
 const tall = d => held(d) ? 32 : (d.h || 30);
 
+// A collision force for boxes: whichever way out is nearer, both ends move
+// half of it. Run a few times a tick, because moving one pair can push a
+// third into a fourth.
+const ROOM = 12;
+const SETTLING = 400;
+const PASSES = 4;
+
+function apart() {
+  const nodes = apart.nodes;
+  const w = d => wide(d) / 2 + ROOM;
+  const h = d => tall(d) / 2 + ROOM;
+
+  for (let pass = 0; pass < PASSES; pass++) {
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        const across = (w(a) + w(b)) - Math.abs(a.x - b.x);
+        const down = (h(a) + h(b)) - Math.abs(a.y - b.y);
+        if (across <= 0 || down <= 0) continue;
+
+        // Half the overlap each, every time. Easing this off as the
+        // simulation cools leaves whatever is still overlapping at the end
+        // overlapping for good, which is the only moment anyone looks.
+        const push = 0.5;
+        if (across < down) {
+          const by = (a.x < b.x ? -1 : 1) * across * push;
+          a.x += by; b.x -= by;
+        } else {
+          const by = (a.y < b.y ? -1 : 1) * down * push;
+          a.y += by; b.y -= by;
+        }
+      }
+    }
+  }
+}
+apart.initialize = them => { apart.nodes = them; };
+
 function show(called) {
   root.selectAll("*").remove();
   document.getElementById("picker").value = called;
@@ -131,18 +168,31 @@ function show(called) {
   const sim = d3.forceSimulation(nodes)
     .force("link", d3.forceLink(links).id(d => d.id).distance(110).strength(0.5))
     .force("charge", d3.forceManyBody().strength(-900))
-    .force("collide", d3.forceCollide(d => wide(d) / 2 + 16))
+    // Nodes are boxes, not circles, and a circle wide enough to hold a long
+    // one keeps short ones a long way from it while letting a tall pair sit
+    // on each other. This pushes rectangles apart instead — including the
+    // room each takes for the kind above it and the name below.
+    .force("apart", apart)
     // Centred every tick rather than pulled towards the middle: a weak pull
     // has not finished pulling by the time the simulation cools, and the web
     // settles in a corner.
     .force("middle", d3.forceCenter(width() / 2, height() / 2))
     .force("x", d3.forceX(width() / 2).strength(0.02))
     .force("y", d3.forceY(height() / 2).strength(0.04))
-    .on("tick", () => {
-      link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
-          .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
-      node.attr("transform", d => `translate(${d.x},${d.y})`);
-    });
+    .stop();
+
+  const draw = () => {
+    link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+    node.attr("transform", d => `translate(${d.x},${d.y})`);
+  };
+
+  // Settled before it is shown, rather than in front of the reader: the web
+  // arrives laid out, and a tab that is not looking gets the same layout as
+  // one that is.
+  for (let n = 0; n < SETTLING; n++) sim.tick();
+  draw();
+  sim.on("tick", draw);
 
   // Pick a node and it keeps what it touches. Pick more than one, and what
   // joins them is whatever touches all of them — which is the only way two
