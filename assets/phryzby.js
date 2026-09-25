@@ -104,6 +104,7 @@ export const BOOK = [
     group: "flight",
     chapters: [
       { page: "flight/projectile.html", files: [ "lib/flight/projectile.rb" ] },
+      { page: "flight/motion.html", files: [ "lib/flight/motion.rb" ] },
     ],
   },
   {
@@ -129,6 +130,7 @@ export const BOOK = [
 const TITLES = {
   "engine.html": "0 · The Engine",
   "flight/projectile.html": "1.1 · Projectile",
+  "flight/motion.html": "1.2 · Equations of Motion",
   "light/incidence.html": "2.1 · Incidence",
   "light/reflection.html": "2.2 · Reflection",
   "light/refraction.html": "2.3 · Refraction: Air to Water",
@@ -770,7 +772,7 @@ function mountDragging(frame) {
 // the labels go is neither subject's business, so that is shared.
 const DRAWN = {
   light: [ "lib/light/refractive_media.rb", "lib/light/picture.rb" ],
-  flight: [ "lib/flight/gravity.rb", "lib/flight/picture.rb" ],
+  flight: [ "lib/flight/gravity.rb", "lib/flight/in_view.rb", "lib/flight/picture.rb" ],
 };
 
 const drawnBy = (playground) =>

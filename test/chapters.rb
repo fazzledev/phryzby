@@ -3,6 +3,9 @@
 require_relative "../lib/playground/flight/projectile"
 THROWN = Physics.playground
 
+require_relative "../lib/playground/flight/motion"
+MOVING = Physics.playground
+
 require_relative "../lib/playground/light/refraction"
 BENDING = Physics.playground
 

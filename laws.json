@@ -1,6 +1,6 @@
 {
-  "flight/projectile.html": {
-    "called": "Projectile",
+  "flight/motion.html": {
+    "called": "Equations of Motion",
     "nodes": [
       {
         "id": "q:speed",
@@ -279,6 +279,118 @@
       {
         "source": "e:direction_of_travel",
         "target": "q:velocity_across"
+      }
+    ]
+  },
+  "flight/projectile.html": {
+    "called": "Projectile",
+    "nodes": [
+      {
+        "id": "q:speed",
+        "kind": "quantity",
+        "base": "u",
+        "under": null,
+        "called": "speed"
+      },
+      {
+        "id": "q:angle_of_throw",
+        "kind": "quantity",
+        "base": "θ",
+        "under": "0",
+        "called": "angle of throw"
+      },
+      {
+        "id": "q:gravity",
+        "kind": "quantity",
+        "base": "g",
+        "under": null,
+        "called": "gravity"
+      },
+      {
+        "id": "q:range",
+        "kind": "quantity",
+        "base": "R",
+        "under": null,
+        "called": "range"
+      },
+      {
+        "id": "q:peak",
+        "kind": "quantity",
+        "base": "H",
+        "under": null,
+        "called": "peak"
+      },
+      {
+        "id": "q:time_of_flight",
+        "kind": "quantity",
+        "base": "T",
+        "under": null,
+        "called": "time of flight"
+      },
+      {
+        "id": "e:horizontal_range",
+        "kind": "equation",
+        "said": "horizontal range"
+      },
+      {
+        "id": "e:maximum_height",
+        "kind": "equation",
+        "said": "maximum height"
+      },
+      {
+        "id": "e:time_of_flight",
+        "kind": "equation",
+        "said": "time of flight"
+      }
+    ],
+    "links": [
+      {
+        "source": "e:horizontal_range",
+        "target": "q:range"
+      },
+      {
+        "source": "e:horizontal_range",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:horizontal_range",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:horizontal_range",
+        "target": "q:gravity"
+      },
+      {
+        "source": "e:maximum_height",
+        "target": "q:peak"
+      },
+      {
+        "source": "e:maximum_height",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:maximum_height",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:maximum_height",
+        "target": "q:gravity"
+      },
+      {
+        "source": "e:time_of_flight",
+        "target": "q:time_of_flight"
+      },
+      {
+        "source": "e:time_of_flight",
+        "target": "q:speed"
+      },
+      {
+        "source": "e:time_of_flight",
+        "target": "q:angle_of_throw"
+      },
+      {
+        "source": "e:time_of_flight",
+        "target": "q:gravity"
       }
     ]
   },

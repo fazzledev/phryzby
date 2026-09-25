@@ -2,6 +2,7 @@ require "minitest/autorun"
 require_relative "../lib/physics"
 require_relative "../tools/law_graph"
 require_relative "../lib/light/relative_index"
+require_relative "../lib/flight/motion"
 
 # The web the page draws is generated from the laws, so it can fall behind
 # them. This is the thing that notices: a law that gains a quantity and a file
@@ -17,7 +18,7 @@ class LawGraphTest < Minitest::Test
   def test_every_chapter_has_a_web_that_joins_up
     webs = LawGraph.chapters
 
-    assert_equal 13, webs.size
+    assert_equal 14, webs.size
     webs.each do |page, web|
       named = web[:nodes].map { |node| node[:id] }
 
@@ -33,7 +34,8 @@ class LawGraphTest < Minitest::Test
     webs = LawGraph.chapters
     pills = ->(page) { webs.fetch(page)[:nodes].count { |node| node[:kind] != "quantity" } }
 
-    assert_equal 9, pills.call("flight/projectile.html")
+    assert_equal 3, pills.call("flight/projectile.html")
+    assert_equal 9, pills.call("flight/motion.html")
     assert_operator pills.call("light/total-internal-reflection.html"), :>,
                     pills.call("light/reflectance.html")
   end
@@ -41,7 +43,7 @@ class LawGraphTest < Minitest::Test
   # The letter and its subscript travel apart, so the page can set one under
   # the other rather than printing the underscore.
   def test_a_subscript_is_handed_over_as_a_subscript
-    assert_equal [ "v", "x" ], LawGraph.letter(Projectile, :velocity_across)
+    assert_equal [ "v", "x" ], LawGraph.letter(Motion, :velocity_across)
     assert_equal [ "θ", "0" ], LawGraph.letter(Projectile, :angle_of_throw)
     assert_equal [ "R", nil ], LawGraph.letter(Projectile, :range)
     assert_equal [ "μ", "21" ], LawGraph.letter(RelativeIndex, :relative_refractive_index)
