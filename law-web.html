@@ -119,8 +119,9 @@
   #legend svg{width:24px;height:13px;flex:none;display:block}
   #legend .mark{font-weight:700;flex:none;margin-left:-.25rem}
   /* Nothing about the question is being said while the question is not being
-     asked — neither in the legend, nor by the controls that narrow it. */
-  .plain .qrow{opacity:.25}
+     asked, so the controls that narrow it go quiet. */
+  #rail.plain .qrow{opacity:.25}
+  #legend [hidden]{display:none}
   #rail.plain input[name="showing"]{pointer-events:none}
 </style>
 <header>
@@ -146,29 +147,32 @@
   <label class="toggle"><input type="checkbox" class="kind" value="identity" checked>identities</label>
   <button type="button" id="refit">fit it to the page</button>
 <div id="legend">
-  <b>in the law</b>
-  <div><i class="quantity"></i>quantity</div>
-  <div><i class="equation"></i>equation</div>
-  <div><i class="condition"></i>condition</div>
-  <div><i class="identity"></i>identity</div>
-  <b class="qrow">the question</b>
-  <div class="qrow"><i class="quantity given"></i><span class="mark"
-    style="color:#98C379">&#10003;</span>given</div>
-  <div class="qrow"><i class="quantity"></i><span class="mark"
-    style="color:#8C8C8C">&bull;</span>needed on the way</div>
-  <div class="qrow"><i class="quantity asked"></i><span class="mark"
-    style="color:#FF6B81">?</span>asked for</div>
-  <b class="qrow">the way there</b>
-  <div class="qrow"><svg viewBox="0 0 24 13"><line x1="0" y1="6.5" x2="16" y2="6.5"
-    stroke="#6BA8FF" stroke-width="3"></line><path d="M15 2.5 L23.5 6.5 L15 10.5 z"
-    fill="#6BA8FF"></path></svg>the solver's route</div>
-  <div class="qrow"><svg viewBox="0 0 24 13"><line x1="0" y1="6.5" x2="24" y2="6.5"
-    stroke="#8C8C8C" stroke-width="1.5"></line></svg>another way there</div>
-  <div class="qrow"><svg viewBox="0 0 24 13"><line x1="0" y1="6.5" x2="24" y2="6.5"
-    stroke="#8C8C8C" stroke-width="1.5" stroke-opacity=".2"></line></svg>on no way there</div>
-  <b>picked out</b>
-  <div><i style="border-color:#6BA8FF;border-width:2.6px"></i>picked</div>
-  <div><i style="border-color:#ECECEC;border-width:2.4px"></i>what joins them</div>
+  <b data-group="law">in the law</b>
+  <div data-in="law" data-when="#web g.node.quantity"><i class="quantity"></i>quantity</div>
+  <div data-in="law" data-when="#web g.node.equation"><i class="equation"></i>equation</div>
+  <div data-in="law" data-when="#web g.node.condition"><i class="condition"></i>condition</div>
+  <div data-in="law" data-when="#web g.node.identity"><i class="identity"></i>identity</div>
+  <b data-group="asked">the question</b>
+  <div data-in="asked" data-when="#web .badge.is-given"><i class="quantity given"></i><span
+    class="mark" style="color:#98C379">&#10003;</span>given</div>
+  <div data-in="asked" data-when="#web .badge.is-needed"><i class="quantity"></i><span
+    class="mark" style="color:#8C8C8C">&bull;</span>needed on the way</div>
+  <div data-in="asked" data-when="#web .badge.is-asked"><i class="quantity asked"></i><span
+    class="mark" style="color:#FF6B81">?</span>asked for</div>
+  <b data-group="way">the way there</b>
+  <div data-in="way" data-when="#web line.link.driven"><svg viewBox="0 0 24 13"><line x1="0"
+    y1="6.5" x2="16" y2="6.5" stroke="#6BA8FF" stroke-width="3"></line><path
+    d="M15 2.5 L23.5 6.5 L15 10.5 z" fill="#6BA8FF"></path></svg>the solver's route</div>
+  <div data-in="way" data-when="#web line.link.spare"><svg viewBox="0 0 24 13"><line x1="0"
+    y1="6.5" x2="24" y2="6.5" stroke="#8C8C8C" stroke-width="1.5"></line></svg>another way there</div>
+  <div data-in="way" data-when="#web .off"><svg viewBox="0 0 24 13"><line x1="0" y1="6.5"
+    x2="24" y2="6.5" stroke="#8C8C8C" stroke-width="1.5"
+    stroke-opacity=".2"></line></svg>on no way there</div>
+  <b data-group="pick">picked out</b>
+  <div data-in="pick" data-when="#web g.node.lit"><i
+    style="border-color:#6BA8FF;border-width:2.6px"></i>picked</div>
+  <div data-in="pick" data-when="#web g.node.joins"><i
+    style="border-color:#ECECEC;border-width:2.4px"></i>what joins them</div>
 </div>
 </aside>
 <svg id="web"><defs>
@@ -621,6 +625,20 @@ function show(called) {
   // Nothing is hidden: what is not picked dims a little and stays readable,
   // because what a quantity is not joined to says as much as what it is.
   let lit = new Set();
+  // The legend says what is on the page and nothing else: it asks the web
+  // whether it has one of each thing, rather than being told. A chapter with
+  // no conditions does not explain what a condition looks like, and nothing
+  // explains being picked out until something has been.
+  const tell = () => {
+    document.querySelectorAll("#legend [data-when]").forEach(row => {
+      row.hidden = !document.querySelector(row.dataset.when);
+    });
+    document.querySelectorAll("#legend b[data-group]").forEach(head => {
+      head.hidden = ![ ...document.querySelectorAll(`[data-in="${head.dataset.group}"]`) ]
+        .some(row => !row.hidden);
+    });
+  };
+
   const pick = () => {
     const near_any = new Set();
     lit.forEach(id => near.get(id).forEach(other => near_any.add(other)));
@@ -666,6 +684,7 @@ function show(called) {
         .classed("between", d => (lit.has(d.source.id) && joins.has(d.target.id)) ||
                                  (lit.has(d.target.id) && joins.has(d.source.id)) ||
                                  (lit.size === 1 && (lit.has(d.source.id) || lit.has(d.target.id))));
+    tell();
   };
 
   let moved = false;
