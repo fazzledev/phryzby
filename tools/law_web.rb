@@ -7,8 +7,8 @@ require "json"
 #
 # It is a chapter's scenario rather than one law, because a chapter composes:
 # what it can answer comes from all the laws it plays with at once.
-module LawGraph
-  WHERE = File.expand_path("../laws.json", __dir__)
+module LawWeb
+  WHERE = File.expand_path("../web.json", __dir__)
   PLAYGROUNDS = Dir[File.expand_path("../lib/playground/**/*.rb", __dir__)].sort.freeze
 
   # lib/playground/light/water_to_air.rb is the chapter at light/water-to-air.html
@@ -72,9 +72,9 @@ end
 
 if $PROGRAM_NAME == __FILE__
   require_relative "../lib/physics"
-  File.write(LawGraph::WHERE, "#{LawGraph.to_json}\n")
-  puts "wrote #{LawGraph::WHERE}"
-  JSON.parse(File.read(LawGraph::WHERE)).each do |page, web|
+  File.write(LawWeb::WHERE, "#{LawWeb.to_json}\n")
+  puts "wrote #{LawWeb::WHERE}"
+  JSON.parse(File.read(LawWeb::WHERE)).each do |page, web|
     puts format("  %-40s %-28s %2d quantities, %2d equations", page, web["called"],
                 web["nodes"].count { |n| n["kind"] == "quantity" },
                 web["nodes"].count { |n| n["kind"] != "quantity" })
