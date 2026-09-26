@@ -70,7 +70,13 @@
      colours of the route it is, drawn thin: the way a map leaves the slower
      way on the screen rather than off it. */
   .spare{opacity:.5}
-  .link.spare{stroke-opacity:.6;stroke-width:1}
+  .link.spare{stroke-opacity:.85;stroke-width:1}
+  /* The same colour, turned down. Thin was not enough on its own: at a glance
+     an alternate and the road driven were the same line in two weights, and
+     which one the solver took is the thing worth seeing. */
+  .link.spare.from{stroke:#4E6B41}
+  .link.spare.to{stroke:#8C4655}
+  .link.spare.along{stroke:#54545A}
   label.toggle{display:flex;align-items:center;gap:.3rem;color:#8C8C8C;font-size:.78rem;
     cursor:pointer;user-select:none}
   label.toggle input{accent-color:#98C379;cursor:pointer}
