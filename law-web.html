@@ -358,7 +358,11 @@ function digging(nodes, links, given, asked, route) {
 // middle to reach round. So each ring is spaced evenly and put in the order
 // its own ring above it is already in: a step of working starts out facing
 // what it was worked from.
-function around(nodes, dug) {
+function around(nodes, links, dug) {
+  const touches = new Map(nodes.map(n => [ n.id, [] ]));
+  links.forEach(l => { touches.get(l.source)?.push(l.target);
+                       touches.get(l.target)?.push(l.source); });
+
   const rings = new Map();
   nodes.forEach(n => {
     const at = dug.down.get(n.id);
@@ -370,7 +374,7 @@ function around(nodes, dug) {
   [ ...rings.keys() ].sort((a, b) => a - b).forEach(at => {
     const ids = rings.get(at);
     const towards = id => {
-      const known = dug.touches.get(id).filter(other => facing.has(other))
+      const known = (touches.get(id) || []).filter(other => facing.has(other))
                        .map(other => facing.get(other));
       if (!known.length) return ids.indexOf(id) / ids.length * 2 * Math.PI;
 
@@ -451,11 +455,20 @@ function show(called) {
   const kept = kinds();
   const nodes = within.filter(n => kept.has(n.kind));
   const here = new Set(nodes.map(n => n.id));
-  const links = weave(within,
-                      whole.links.filter(l => reach.has(l.source) && reach.has(l.target)), here);
 
-  const dug = digging(nodes, links, given.filter(id => here.has(id)),
-                      asked.filter(id => here.has(id)), route);
+  // With the equations off there is nothing standing between one quantity and
+  // the next, so there is nothing for a line to be drawn along: what is left
+  // is the question itself, and it is set out as the question rather than as
+  // a web.
+  const grouped = !kept.has("equation");
+  const links = grouped ? []
+    : weave(within, whole.links.filter(l => reach.has(l.source) && reach.has(l.target)), here);
+
+  // How deep a thing sits is a fact about the whole law, like what a route
+  // reaches: an equation does not move further in because the quantities were
+  // switched off — and with them off there would be nothing to count from,
+  // since what a chapter is given is always a quantity.
+  const dug = digging(whole.nodes, whole.links, given, asked, route);
   // The rings stay evenly spaced — that is what makes them read as rings —
   // and the whole dig is sized so the tightest of them has room. Sizing each
   // ring to its own contents instead put nine answers in a wide circle and
@@ -478,8 +491,8 @@ function show(called) {
   // Started where it belongs rather than settled into it: a simulation that
   // has to carry a node across the middle to its own ring drags everything it
   // touches along with it and cools before any of them arrive.
-  const facing = around(nodes, dug);
-  nodes.forEach(n => {
+  const facing = around(nodes, links, dug);
+  if (!grouped) nodes.forEach(n => {
     n.x = width() / 2 + ring(n) * Math.cos(facing.get(n.id));
     n.y = height() / 2 + ring(n) * Math.sin(facing.get(n.id));
   });
@@ -550,7 +563,34 @@ function show(called) {
   rounds.append("text").attr("class", "called").attr("text-anchor", "middle")
       .attr("y", d => deep(d) / 2 + 9).text(d => d.called);
 
-  const sim = d3.forceSimulation(nodes)
+  // Columns, read left to right: what you were handed, what has to be worked
+  // out, what is being asked for, and whatever the question never reaches.
+  // Unlabelled, because each one already says what it is — a green circle
+  // with a tick on it is not made any more given by a word over the top of
+  // it. No forces settle this: there is nothing joining anything.
+  const SIDES = [ "given", "needed", "asked", "loose" ];
+  if (grouped) {
+    const DOWN = 16, ACROSS = 56;
+    const columns = SIDES
+      .map(key => ({ at: 0, holds: nodes.filter(n => (role(n) || "loose") === key) }))
+      .filter(column => column.holds.length);
+
+    let along = 0;
+    columns.forEach(column => {
+      const broad = Math.max(...column.holds.map(wide));
+      column.at = along + broad / 2;
+      along += broad + ACROSS;
+
+      let down = -column.holds.reduce((deep, n) => deep + tall(n) + DOWN, -DOWN) / 2;
+      column.holds.forEach(n => { n.x = column.at; n.y = down + tall(n) / 2; down += tall(n) + DOWN; });
+    });
+
+    const over = width() / 2 - (along - ACROSS) / 2;
+    nodes.forEach(n => { n.x += over; n.y += height() / 2; n.fx = n.x; n.fy = n.y; });
+  }
+
+  const sim = d3.forceSimulation(nodes);
+  if (!grouped) sim
     .force("link", d3.forceLink(links).id(d => d.id).distance(110).strength(0.12))
     .force("charge", d3.forceManyBody().strength(-380))
     // Nodes are boxes, not circles, and a circle wide enough to hold a long
@@ -561,8 +601,8 @@ function show(called) {
     // Each thing holds to its own ring and the rest of the forces decide only
     // where round it to sit. A charge that far apart is what spreads them
     // round rather than letting a ring bunch on one side.
-    .force("ring", d3.forceRadial(ring, width() / 2, height() / 2).strength(2))
-    .stop();
+    .force("ring", d3.forceRadial(ring, width() / 2, height() / 2).strength(2));
+  sim.stop();
 
   // Where a line meets a box rather than where it meets its middle, so an
   // arrowhead lands on the edge of what it points at instead of underneath it.
@@ -591,7 +631,7 @@ function show(called) {
   // Settled before it is shown, rather than in front of the reader: the web
   // arrives laid out, and a tab that is not looking gets the same layout as
   // one that is.
-  for (let n = 0; n < SETTLING; n++) sim.tick();
+  for (let n = 0; n < (grouped ? 0 : SETTLING); n++) sim.tick();
   draw();
 
   // Sized and centred on what is drawn. A node is a point to the simulation
