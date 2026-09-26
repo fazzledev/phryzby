@@ -2,28 +2,146 @@
   "flight/motion.html": {
     "called": "Instants of a Projectile",
     "solving": [
-      "e:range_written_out",
-      "q:range",
-      "e:initial_velocity_up",
-      "q:initial_velocity_up",
-      "e:maximum_height",
-      "q:peak",
-      "e:time_of_flight",
-      "q:time_of_flight",
-      "e:elapsed_time",
-      "q:elapsed",
-      "e:initial_velocity_across",
-      "q:initial_velocity_across",
-      "e:horizontal_displacement",
-      "q:distance_out",
-      "e:vertical_displacement",
-      "q:height",
-      "e:horizontal_velocity",
-      "q:velocity_across",
-      "e:vertical_velocity",
-      "q:velocity_up",
-      "e:direction_of_travel",
-      "q:angle_of_travel"
+      {
+        "from": "q:speed",
+        "to": "e:range_written_out"
+      },
+      {
+        "from": "q:angle_of_throw",
+        "to": "e:range_written_out"
+      },
+      {
+        "from": "q:gravity",
+        "to": "e:range_written_out"
+      },
+      {
+        "from": "e:range_written_out",
+        "to": "q:range"
+      },
+      {
+        "from": "q:speed",
+        "to": "e:initial_velocity_up"
+      },
+      {
+        "from": "q:angle_of_throw",
+        "to": "e:initial_velocity_up"
+      },
+      {
+        "from": "e:initial_velocity_up",
+        "to": "q:initial_velocity_up"
+      },
+      {
+        "from": "q:initial_velocity_up",
+        "to": "e:maximum_height"
+      },
+      {
+        "from": "q:gravity",
+        "to": "e:maximum_height"
+      },
+      {
+        "from": "e:maximum_height",
+        "to": "q:peak"
+      },
+      {
+        "from": "q:initial_velocity_up",
+        "to": "e:time_of_flight"
+      },
+      {
+        "from": "q:gravity",
+        "to": "e:time_of_flight"
+      },
+      {
+        "from": "e:time_of_flight",
+        "to": "q:time_of_flight"
+      },
+      {
+        "from": "q:part_of_the_flight",
+        "to": "e:elapsed_time"
+      },
+      {
+        "from": "q:time_of_flight",
+        "to": "e:elapsed_time"
+      },
+      {
+        "from": "e:elapsed_time",
+        "to": "q:elapsed"
+      },
+      {
+        "from": "q:speed",
+        "to": "e:initial_velocity_across"
+      },
+      {
+        "from": "q:angle_of_throw",
+        "to": "e:initial_velocity_across"
+      },
+      {
+        "from": "e:initial_velocity_across",
+        "to": "q:initial_velocity_across"
+      },
+      {
+        "from": "q:initial_velocity_across",
+        "to": "e:horizontal_displacement"
+      },
+      {
+        "from": "q:elapsed",
+        "to": "e:horizontal_displacement"
+      },
+      {
+        "from": "e:horizontal_displacement",
+        "to": "q:distance_out"
+      },
+      {
+        "from": "q:initial_velocity_up",
+        "to": "e:vertical_displacement"
+      },
+      {
+        "from": "q:elapsed",
+        "to": "e:vertical_displacement"
+      },
+      {
+        "from": "q:gravity",
+        "to": "e:vertical_displacement"
+      },
+      {
+        "from": "e:vertical_displacement",
+        "to": "q:height"
+      },
+      {
+        "from": "q:initial_velocity_across",
+        "to": "e:horizontal_velocity"
+      },
+      {
+        "from": "e:horizontal_velocity",
+        "to": "q:velocity_across"
+      },
+      {
+        "from": "q:initial_velocity_up",
+        "to": "e:vertical_velocity"
+      },
+      {
+        "from": "q:gravity",
+        "to": "e:vertical_velocity"
+      },
+      {
+        "from": "q:elapsed",
+        "to": "e:vertical_velocity"
+      },
+      {
+        "from": "e:vertical_velocity",
+        "to": "q:velocity_up"
+      },
+      {
+        "from": "q:velocity_up",
+        "to": "e:direction_of_travel"
+      },
+      {
+        "from": "q:velocity_across",
+        "to": "e:direction_of_travel"
+      },
+      {
+        "from": "e:direction_of_travel",
+        "to": "q:angle_of_travel"
+      }
     ],
     "given": [
       "q:angle_of_throw",
@@ -437,14 +555,58 @@
   "flight/projectile.html": {
     "called": "Projectile",
     "solving": [
-      "e:range_written_out",
-      "q:range",
-      "e:initial_velocity_up",
-      "q:initial_velocity_up",
-      "e:maximum_height",
-      "q:peak",
-      "e:time_of_flight",
-      "q:time_of_flight"
+      {
+        "from": "q:speed",
+        "to": "e:range_written_out"
+      },
+      {
+        "from": "q:angle_of_throw",
+        "to": "e:range_written_out"
+      },
+      {
+        "from": "q:gravity",
+        "to": "e:range_written_out"
+      },
+      {
+        "from": "e:range_written_out",
+        "to": "q:range"
+      },
+      {
+        "from": "q:speed",
+        "to": "e:initial_velocity_up"
+      },
+      {
+        "from": "q:angle_of_throw",
+        "to": "e:initial_velocity_up"
+      },
+      {
+        "from": "e:initial_velocity_up",
+        "to": "q:initial_velocity_up"
+      },
+      {
+        "from": "q:initial_velocity_up",
+        "to": "e:maximum_height"
+      },
+      {
+        "from": "q:gravity",
+        "to": "e:maximum_height"
+      },
+      {
+        "from": "e:maximum_height",
+        "to": "q:peak"
+      },
+      {
+        "from": "q:initial_velocity_up",
+        "to": "e:time_of_flight"
+      },
+      {
+        "from": "q:gravity",
+        "to": "e:time_of_flight"
+      },
+      {
+        "from": "e:time_of_flight",
+        "to": "q:time_of_flight"
+      }
     ],
     "given": [
       "q:angle_of_throw",
@@ -774,8 +936,22 @@
   "light/critical-angle.html": {
     "called": "Critical Angle",
     "solving": [
-      "e:snells_law",
-      "q:angle_of_refraction"
+      {
+        "from": "q:refractive_index_of_first_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:angle_of_incidence",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:refractive_index_of_second_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "e:snells_law",
+        "to": "q:angle_of_refraction"
+      }
     ],
     "given": [
       "q:angle_of_incidence",
@@ -901,8 +1077,14 @@
   "light/internal-reflection.html": {
     "called": "Internal Reflection",
     "solving": [
-      "e:law_of_reflection",
-      "q:angle_of_reflection"
+      {
+        "from": "q:angle_of_incidence",
+        "to": "e:law_of_reflection"
+      },
+      {
+        "from": "e:law_of_reflection",
+        "to": "q:angle_of_reflection"
+      }
     ],
     "given": [
       "q:angle_of_incidence",
@@ -1011,8 +1193,22 @@
   "light/into-air.html": {
     "called": "Into Air",
     "solving": [
-      "e:snells_law",
-      "q:angle_of_refraction"
+      {
+        "from": "q:refractive_index_of_first_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:angle_of_incidence",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:refractive_index_of_second_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "e:snells_law",
+        "to": "q:angle_of_refraction"
+      }
     ],
     "given": [
       "q:angle_of_incidence",
@@ -1120,14 +1316,74 @@
   "light/reflectance.html": {
     "called": "Reflectance",
     "solving": [
-      "e:snells_law",
-      "q:angle_of_refraction",
-      "e:s_polarised",
-      "q:reflectance_s_polarised",
-      "e:p_polarised",
-      "q:reflectance_p_polarised",
-      "e:unpolarised",
-      "q:reflectance"
+      {
+        "from": "q:refractive_index_of_first_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:angle_of_incidence",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:refractive_index_of_second_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "e:snells_law",
+        "to": "q:angle_of_refraction"
+      },
+      {
+        "from": "q:refractive_index_of_first_medium",
+        "to": "e:s_polarised"
+      },
+      {
+        "from": "q:angle_of_incidence",
+        "to": "e:s_polarised"
+      },
+      {
+        "from": "q:refractive_index_of_second_medium",
+        "to": "e:s_polarised"
+      },
+      {
+        "from": "q:angle_of_refraction",
+        "to": "e:s_polarised"
+      },
+      {
+        "from": "e:s_polarised",
+        "to": "q:reflectance_s_polarised"
+      },
+      {
+        "from": "q:refractive_index_of_first_medium",
+        "to": "e:p_polarised"
+      },
+      {
+        "from": "q:angle_of_refraction",
+        "to": "e:p_polarised"
+      },
+      {
+        "from": "q:refractive_index_of_second_medium",
+        "to": "e:p_polarised"
+      },
+      {
+        "from": "q:angle_of_incidence",
+        "to": "e:p_polarised"
+      },
+      {
+        "from": "e:p_polarised",
+        "to": "q:reflectance_p_polarised"
+      },
+      {
+        "from": "q:reflectance_s_polarised",
+        "to": "e:unpolarised"
+      },
+      {
+        "from": "q:reflectance_p_polarised",
+        "to": "e:unpolarised"
+      },
+      {
+        "from": "e:unpolarised",
+        "to": "q:reflectance"
+      }
     ],
     "given": [
       "q:angle_of_incidence",
@@ -1329,8 +1585,14 @@
   "light/reflection.html": {
     "called": "Reflection",
     "solving": [
-      "e:law_of_reflection",
-      "q:angle_of_reflection"
+      {
+        "from": "q:angle_of_incidence",
+        "to": "e:law_of_reflection"
+      },
+      {
+        "from": "e:law_of_reflection",
+        "to": "q:angle_of_reflection"
+      }
     ],
     "given": [
       "q:angle_of_incidence"
@@ -1374,8 +1636,22 @@
   "light/refraction.html": {
     "called": "Refraction: Air to Water",
     "solving": [
-      "e:snells_law",
-      "q:angle_of_refraction"
+      {
+        "from": "q:refractive_index_of_first_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:angle_of_incidence",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:refractive_index_of_second_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "e:snells_law",
+        "to": "q:angle_of_refraction"
+      }
     ],
     "given": [
       "q:angle_of_incidence",
@@ -1461,8 +1737,22 @@
   "light/refractive-index.html": {
     "called": "Refractive Index",
     "solving": [
-      "e:snells_law",
-      "q:angle_of_refraction"
+      {
+        "from": "q:refractive_index_of_first_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:angle_of_incidence",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:refractive_index_of_second_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "e:snells_law",
+        "to": "q:angle_of_refraction"
+      }
     ],
     "given": [
       "q:refractive_index_of_first_medium",
@@ -1570,8 +1860,22 @@
   "light/relative-refractive-index.html": {
     "called": "Relative Refractive Index",
     "solving": [
-      "e:snells_law",
-      "q:angle_of_refraction"
+      {
+        "from": "q:refractive_index_of_first_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:angle_of_incidence",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:refractive_index_of_second_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "e:snells_law",
+        "to": "q:angle_of_refraction"
+      }
     ],
     "given": [
       "q:relative_refractive_index",
@@ -1705,8 +2009,10 @@
   "light/total-internal-reflection.html": {
     "called": "Total Internal Reflection",
     "solving": [
-      "e:everything_reflects",
-      "q:reflectance"
+      {
+        "from": "e:everything_reflects",
+        "to": "q:reflectance"
+      }
     ],
     "given": [
       "q:angle_of_incidence",
@@ -1915,8 +2221,22 @@
   "light/water-to-air.html": {
     "called": "Refraction: Water to Air",
     "solving": [
-      "e:snells_law",
-      "q:angle_of_refraction"
+      {
+        "from": "q:refractive_index_of_first_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:angle_of_incidence",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "q:refractive_index_of_second_medium",
+        "to": "e:snells_law"
+      },
+      {
+        "from": "e:snells_law",
+        "to": "q:angle_of_refraction"
+      }
     ],
     "given": [
       "q:angle_of_incidence",

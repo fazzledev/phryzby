@@ -54,7 +54,22 @@ module LawWeb
       nil
     end
 
-    scenario.worked.flat_map { |key, names| names.map { |name| "e:#{name}" } << "q:#{key}" }.uniq
+    scenario.worked.flat_map { |key, (first, *through)| step(law, key, first, through) }.uniq
+  end
+
+  # One step of the working, pointed the way it was worked. The web itself has
+  # no direction — an equation can be turned any way round — but a solution
+  # does: what the equation already knew goes in, and the one thing it was
+  # turned round for comes out. An answer reached round a ring comes out of
+  # the equation that was finally solved, with the ones it was unrolled
+  # through feeding into it.
+  def self.step(law, key, first, through)
+    spent = through.flat_map { |name| law.equations.fetch(name).defines&.first }.compact
+    knew = law.equations.fetch(first).variables - [ key ] - spent
+
+    knew.map { |held| { from: "q:#{held}", to: "e:#{first}" } } +
+      through.map { |name| { from: "e:#{name}", to: "e:#{first}" } } +
+      [ { from: "e:#{first}", to: "q:#{key}" } ]
   end
 
   # A name as the web knows it. A quantity goes by what it stands for, since

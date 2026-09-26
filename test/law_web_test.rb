@@ -63,10 +63,24 @@ class LawWebTest < Minitest::Test
   def test_a_chapter_says_which_way_the_solver_went
     took = LawWeb.chapters["flight/projectile.html"][:solving]
 
-    assert_includes took, "e:range_written_out"
-    assert_includes took, "q:range"
-    refute_includes took, "e:horizontal_range"
-    refute_includes took, "e:range_by_the_double_angle"
+    assert_includes took, { from: "e:range_written_out", to: "q:range" }
+    assert_includes took, { from: "q:speed", to: "e:range_written_out" }
+    assert_includes took, { from: "e:initial_velocity_up", to: "q:initial_velocity_up" }
+
+    through = took.flat_map { |step| step.values_at(:from, :to) }
+
+    refute_includes through, "e:horizontal_range"
+    refute_includes through, "e:range_by_the_double_angle"
+  end
+
+  # The web has no direction and a solution does: an equation is turned round
+  # for one thing, and everything else in it was known before it was.
+  def test_a_step_points_the_way_it_was_worked
+    took = LawWeb.chapters["flight/projectile.html"][:solving]
+    into = ->(node) { took.select { |step| step[:to] == node }.map { |step| step[:from] } }
+
+    assert_equal %w[e:maximum_height], into.call("q:peak")
+    assert_equal %w[q:initial_velocity_up q:gravity], into.call("e:maximum_height")
   end
 
   # A way the solver went is a way the web has, or the page would light a road
@@ -75,7 +89,9 @@ class LawWebTest < Minitest::Test
     LawWeb.chapters.each do |page, web|
       named = web[:nodes].map { |node| node[:id] }
 
-      assert_empty web[:solving] - named, "#{page} solves through something not in its web"
+      through = web[:solving].flat_map { |step| step.values_at(:from, :to) }.uniq
+
+      assert_empty through - named, "#{page} solves through something not in its web"
     end
   end
 
