@@ -21,7 +21,16 @@ module Physics
       # What the situation was posed with, as against what solving it has
       # since worked out.
       @given = @env.keys.freeze
+
+      # Which equation each answer came from. The solver takes one way of
+      # several — it tries the equation with the fewest unknowns left and
+      # stops at the first answer — so this is the way it went, not the only
+      # way there was. An answer reached round a ring came by every equation
+      # the ring was unrolled through.
+      @worked = {}
     end
+
+    attr_reader :worked
 
     def as_posed = @env.slice(*@given)
 
@@ -61,20 +70,25 @@ module Physics
     private
 
     def determine(key, range, pending, except: nil, ringed: true)
-      candidates(key, except, pending).each do |equation|
-        restore = @env.dup
+      candidates(key, except, pending).each do |name, equation|
+        restore, taken = @env.dup, @worked.dup
 
         if supply(equation, key, pending, except)
           found = root_of(equation, key, range)
-          return @env[key] = found if found
+          if found
+            @worked[key] = [ name ]
+            return @env[key] = found
+          end
         end
 
         @env.replace(restore)
+        @worked.replace(taken)
       end
 
-      if ringed
-        found = round_the_houses(key, range, except)
-        return @env[key] = found if found
+      if ringed && (answer = round_the_houses(key, range, except))
+        found, through = answer
+        @worked[key] = through
+        return @env[key] = found
       end
 
       raise "no equation determines the #{key.to_s.tr("_", " ")} from what is known"
@@ -98,11 +112,11 @@ module Physics
       self.class.equations.each do |name, equation|
         next if name == except
 
-        unrolled = unroll(equation, key)
+        unrolled, through = unroll(equation, key)
         next unless unrolled
 
         found = root_of(unrolled, key, range)
-        return found if found
+        return [ found, [ name ] + through ] if found
       end
 
       nil
@@ -116,15 +130,19 @@ module Physics
     # satisfies and none answers.
     def unroll(equation, key)
       spent = [ equation ]
+      through = []
 
       UNROLLING.times do
         missing = equation.variables - @env.keys - [ key ]
-        return equation.variables.include?(key) ? equation : nil if missing.empty?
+        if missing.empty?
+          return equation.variables.include?(key) ? [ equation, through ] : nil
+        end
 
         name, said, from = standing_for(missing, spent)
         return nil unless name
 
         spent << from
+        through << self.class.equations.key(from)
         equation = equation.instead(name, said)
       end
 
@@ -153,7 +171,7 @@ module Physics
       end
 
       special, general = applicable.partition { |name, _| self.class.guards.key?(name) }
-      (nearest(special, key) + nearest(general, key)).map(&:last)
+      nearest(special, key) + nearest(general, key)
     end
 
     # The one that asks for least first. Where two equations both reach what

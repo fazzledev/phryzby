@@ -58,7 +58,18 @@
   .wanted .said,.wanted .kind{fill:#FF6B81}
   /* Off every route: it is in the law, but nothing on the way from what is
      given to what is asked for goes through it. */
-  .off{opacity:.3}
+  .off{opacity:.2}
+  /* A route has two ends and no arrows: an edge takes the colour of the end
+     of the question it touches, so which way the chapter is going is read off
+     the line rather than off a head on it. */
+  .link.along{stroke:#8C8C8C;stroke-opacity:.95;stroke-width:1.8}
+  .link.from{stroke:#98C379;stroke-opacity:1;stroke-width:1.8}
+  .link.to{stroke:#FF6B81;stroke-opacity:1;stroke-width:1.8}
+  /* A route the solver did not take. It is as true as the one it did — the
+     solver stops at the first answer, not the best one — so it stays legible,
+     the way a map keeps the slower way on the screen. */
+  .spare{opacity:.5}
+  .link.spare{stroke:#6E6E6E;stroke-opacity:.55;stroke-width:1.1}
   label.toggle{display:flex;align-items:center;gap:.3rem;color:#8C8C8C;font-size:.78rem;
     cursor:pointer;user-select:none}
   label.toggle input{accent-color:#98C379;cursor:pointer}
@@ -207,8 +218,9 @@ function show(called) {
   root.selectAll("*").remove();
   document.getElementById("picker").value = called;
 
-  const { nodes, links, given, wanted } = structuredClone(laws[called]);
+  const { nodes, links, given, wanted, solving } = structuredClone(laws[called]);
   const route = routing(nodes, links, given, wanted);
+  const took = new Set([ ...solving, ...given ]);
   const asks = () => document.getElementById("asked").checked;
 
   // Who touches whom, taken before the simulation turns the ends of a link
@@ -307,12 +319,22 @@ function show(called) {
     kinds.text(tagged);
     node.classed("given", d => asks() && !picked && given.includes(d.id))
         .classed("wanted", d => asks() && !picked && wanted.includes(d.id))
+        .classed("spare", d => asks() && !picked && route.has(d.id) && !took.has(d.id))
         .classed("off", d => asks() && !picked && !route.has(d.id))
         .classed("faded", d => picked && !near_any.has(d.id))
         .classed("lit", d => lit.has(d.id))
         .classed("joins", d => joins.has(d.id));
+    const on = d => asks() && !picked &&
+                    took.has(d.source.id) && took.has(d.target.id);
+    const spare = d => asks() && !picked && !on(d) &&
+                       route.has(d.source.id) && route.has(d.target.id);
+    const ends = (d, which) => which.includes(d.source.id) || which.includes(d.target.id);
     link.classed("off", d => asks() && !picked &&
                              !(route.has(d.source.id) && route.has(d.target.id)))
+        .classed("from", d => on(d) && ends(d, given))
+        .classed("to", d => on(d) && !ends(d, given) && ends(d, wanted))
+        .classed("along", d => on(d) && !ends(d, given) && !ends(d, wanted))
+        .classed("spare", spare)
         .classed("faded", d => picked && !lit.has(d.source.id) && !lit.has(d.target.id))
         .classed("between", d => (lit.has(d.source.id) && joins.has(d.target.id)) ||
                                  (lit.has(d.target.id) && joins.has(d.source.id)) ||

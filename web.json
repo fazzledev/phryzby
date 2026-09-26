@@ -1,6 +1,30 @@
 {
   "flight/motion.html": {
     "called": "Instants of a Projectile",
+    "solving": [
+      "e:range_written_out",
+      "q:range",
+      "e:initial_velocity_up",
+      "q:initial_velocity_up",
+      "e:maximum_height",
+      "q:peak",
+      "e:time_of_flight",
+      "q:time_of_flight",
+      "e:elapsed_time",
+      "q:elapsed",
+      "e:initial_velocity_across",
+      "q:initial_velocity_across",
+      "e:horizontal_displacement",
+      "q:distance_out",
+      "e:vertical_displacement",
+      "q:height",
+      "e:horizontal_velocity",
+      "q:velocity_across",
+      "e:vertical_velocity",
+      "q:velocity_up",
+      "e:direction_of_travel",
+      "q:angle_of_travel"
+    ],
     "given": [
       "q:angle_of_throw",
       "q:speed",
@@ -412,6 +436,16 @@
   },
   "flight/projectile.html": {
     "called": "Projectile",
+    "solving": [
+      "e:range_written_out",
+      "q:range",
+      "e:initial_velocity_up",
+      "q:initial_velocity_up",
+      "e:maximum_height",
+      "q:peak",
+      "e:time_of_flight",
+      "q:time_of_flight"
+    ],
     "given": [
       "q:angle_of_throw",
       "q:speed",
@@ -655,6 +689,7 @@
   },
   "light/any-two-media.html": {
     "called": "Any Two Media",
+    "solving": [],
     "given": [
       "q:angle_of_incidence",
       "q:refractive_index_of_first_medium",
@@ -738,6 +773,10 @@
   },
   "light/critical-angle.html": {
     "called": "Critical Angle",
+    "solving": [
+      "e:snells_law",
+      "q:angle_of_refraction"
+    ],
     "given": [
       "q:angle_of_incidence",
       "q:refractive_index_of_first_medium",
@@ -843,6 +882,7 @@
   },
   "light/incidence.html": {
     "called": "Incidence",
+    "solving": [],
     "given": [
       "q:angle_of_incidence"
     ],
@@ -860,6 +900,10 @@
   },
   "light/internal-reflection.html": {
     "called": "Internal Reflection",
+    "solving": [
+      "e:law_of_reflection",
+      "q:angle_of_reflection"
+    ],
     "given": [
       "q:angle_of_incidence",
       "q:refractive_index_of_first_medium",
@@ -966,6 +1010,10 @@
   },
   "light/into-air.html": {
     "called": "Into Air",
+    "solving": [
+      "e:snells_law",
+      "q:angle_of_refraction"
+    ],
     "given": [
       "q:angle_of_incidence",
       "q:refractive_index_of_first_medium",
@@ -1071,6 +1119,16 @@
   },
   "light/reflectance.html": {
     "called": "Reflectance",
+    "solving": [
+      "e:snells_law",
+      "q:angle_of_refraction",
+      "e:s_polarised",
+      "q:reflectance_s_polarised",
+      "e:p_polarised",
+      "q:reflectance_p_polarised",
+      "e:unpolarised",
+      "q:reflectance"
+    ],
     "given": [
       "q:angle_of_incidence",
       "q:refractive_index_of_first_medium",
@@ -1270,6 +1328,10 @@
   },
   "light/reflection.html": {
     "called": "Reflection",
+    "solving": [
+      "e:law_of_reflection",
+      "q:angle_of_reflection"
+    ],
     "given": [
       "q:angle_of_incidence"
     ],
@@ -1311,6 +1373,10 @@
   },
   "light/refraction.html": {
     "called": "Refraction: Air to Water",
+    "solving": [
+      "e:snells_law",
+      "q:angle_of_refraction"
+    ],
     "given": [
       "q:angle_of_incidence",
       "q:refractive_index_of_first_medium",
@@ -1394,6 +1460,10 @@
   },
   "light/refractive-index.html": {
     "called": "Refractive Index",
+    "solving": [
+      "e:snells_law",
+      "q:angle_of_refraction"
+    ],
     "given": [
       "q:refractive_index_of_first_medium",
       "q:refractive_index_of_second_medium",
@@ -1499,6 +1569,10 @@
   },
   "light/relative-refractive-index.html": {
     "called": "Relative Refractive Index",
+    "solving": [
+      "e:snells_law",
+      "q:angle_of_refraction"
+    ],
     "given": [
       "q:relative_refractive_index",
       "q:angle_of_incidence",
@@ -1630,6 +1704,10 @@
   },
   "light/total-internal-reflection.html": {
     "called": "Total Internal Reflection",
+    "solving": [
+      "e:everything_reflects",
+      "q:reflectance"
+    ],
     "given": [
       "q:angle_of_incidence",
       "q:refractive_index_of_first_medium",
@@ -1836,6 +1914,10 @@
   },
   "light/water-to-air.html": {
     "called": "Refraction: Water to Air",
+    "solving": [
+      "e:snells_law",
+      "q:angle_of_refraction"
+    ],
     "given": [
       "q:angle_of_incidence",
       "q:refractive_index_of_first_medium",

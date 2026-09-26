@@ -32,9 +32,29 @@ module LawWeb
   # what it offers a control for is given, and what it prints a reading of is
   # wanted — so the web only has to name them the way its own nodes are named.
   def self.asked(ground, law)
-    { given: (ground.inputs.keys + ground.given.keys).filter_map { |name| node(law, name) }.uniq,
+    { solving: taken(ground, law),
+      given: (ground.inputs.keys + ground.given.keys).filter_map { |name| node(law, name) }.uniq,
       wanted: ground.outputs.reject { |out| out[:from] }
                     .filter_map { |out| node(law, out[:name]) }.uniq }
+  end
+
+  # The way the solver actually goes. It tries whichever equation has the
+  # fewest unknowns left and stops at the first answer, so of the four ways to
+  # the range it takes one and never sees the others. The rest of the web is
+  # the alternates, and they are every bit as true — this is only the road it
+  # happened to drive down.
+  def self.taken(ground, law)
+    scenario = ground.posing(**ground.opening)
+
+    ground.outputs.reject { |out| out[:from] }.each do |out|
+      if law.conditions.key?(out[:name]) then scenario.satisfies?(out[:name])
+      else scenario.solve(out[:name])
+      end
+    rescue StandardError
+      nil
+    end
+
+    scenario.worked.flat_map { |key, names| names.map { |name| "e:#{name}" } << "q:#{key}" }.uniq
   end
 
   # A name as the web knows it. A quantity goes by what it stands for, since

@@ -57,6 +57,28 @@ class LawWebTest < Minitest::Test
     end
   end
 
+  # The solver takes one way of the several the web offers, and the chapter
+  # shows which. Of the four ways to the range it drives down one; the rest
+  # are the roads not taken and stay on the map.
+  def test_a_chapter_says_which_way_the_solver_went
+    took = LawWeb.chapters["flight/projectile.html"][:solving]
+
+    assert_includes took, "e:range_written_out"
+    assert_includes took, "q:range"
+    refute_includes took, "e:horizontal_range"
+    refute_includes took, "e:range_by_the_double_angle"
+  end
+
+  # A way the solver went is a way the web has, or the page would light a road
+  # that is not on the map.
+  def test_the_way_taken_is_part_of_the_web
+    LawWeb.chapters.each do |page, web|
+      named = web[:nodes].map { |node| node[:id] }
+
+      assert_empty web[:solving] - named, "#{page} solves through something not in its web"
+    end
+  end
+
   # What a chapter works out in Ruby rather than asking a law for is not a
   # node and cannot be wanted, and neither is a property picked by name.
   def test_what_no_law_names_is_neither_given_nor_wanted
