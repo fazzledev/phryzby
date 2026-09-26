@@ -429,6 +429,42 @@ function weave(nodes, links, here) {
   return drawn;
 }
 
+// The view in the address bar, so a way of looking at a chapter can be sent
+// to somebody. Only what has been changed is written down: a chapter looked
+// at the ordinary way stays a plain ?at=, and every setting left alone says
+// nothing.
+const wording = called => {
+  const said = [ `at=${encodeURIComponent(called)}` ];
+  if (!asks()) said.push("mode=law");
+  else if (showing() !== "all") said.push(`showing=${showing()}`);
+
+  const off = [ ...document.querySelectorAll("input.kind:not(:checked)") ].map(box => box.value);
+  if (off.length) said.push(`off=${off.join(",")}`);
+
+  return `?${said.join("&")}`;
+};
+
+// What the address bar asks for, taken only where it names something the page
+// actually has: a setting spelled wrong is ignored rather than obeyed.
+const asWritten = () => {
+  const asked = new URLSearchParams(location.search);
+  const put = (name, value) => {
+    const box = value && document.querySelector(`input[name="${name}"][value="${value}"]`);
+    if (box) box.checked = true;
+  };
+
+  put("mode", asked.get("mode"));
+  put("showing", asked.get("showing"));
+  (asked.get("off") || "").split(",").forEach(kind => {
+    const box = document.querySelector(`input.kind[value="${kind}"]`);
+    if (box) box.checked = false;
+  });
+
+  const at = asked.get("at");
+
+  return laws[at] ? at : Object.keys(laws)[0];
+};
+
 function show(called) {
   // Back to life size before anything is measured: a formula is set and then
   // measured, and the last chapter may have left the page zoomed out.
@@ -508,7 +544,7 @@ function show(called) {
   const near = new Map(nodes.map(n => [ n.id, new Set([ n.id ]) ]));
   links.forEach(l => { near.get(l.source).add(l.target); near.get(l.target).add(l.source); });
   document.getElementById("called").textContent = laws[called].called;
-  history.replaceState(null, "", `?at=${encodeURIComponent(called)}`);
+  history.replaceState(null, "", wording(called));
   const link = root.append("g").selectAll("line").data(links).join("line").attr("class", "link");
 
   const node = root.append("g").selectAll("g").data(nodes).join("g")
@@ -765,6 +801,5 @@ picker.selectAll("option").data(Object.keys(laws)).join("option")
       .attr("value", d => d).text(d => laws[d].called);
 picker.on("change", function () { show(this.value); });
 
-const asked = new URLSearchParams(location.search).get("at");
-show(laws[asked] ? asked : Object.keys(laws)[0]);
+show(asWritten());
 </script>
