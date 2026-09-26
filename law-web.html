@@ -159,7 +159,8 @@
 const laws = await fetch("web.json").then(r => r.json());
 const svg = d3.select("#web");
 const root = svg.append("g");
-svg.call(d3.zoom().scaleExtent([ 0.3, 3 ]).on("zoom", e => root.attr("transform", e.transform)));
+const zoom = d3.zoom().scaleExtent([ 0.15, 3 ]).on("zoom", e => root.attr("transform", e.transform));
+svg.call(zoom);
 
 const width = () => svg.node().clientWidth;
 const height = () => svg.node().clientHeight;
@@ -290,12 +291,107 @@ function routing(nodes, links, given, asked) {
   return on;
 }
 
+// How far in from the rim each thing sits. A given is at the edge, because it
+// is where the reader comes in; every step of working is one ring further
+// down, and what the chapter asks for is at the middle. Digging for it.
+//
+// What no route reaches is not part of the dig at all, and is set outside the
+// rim rather than being given a depth it does not have.
+function digging(nodes, links, given, asked, route) {
+  const touches = new Map(nodes.map(n => [ n.id, [] ]));
+  links.forEach(l => { touches.get(l.source).push(l.target);
+                       touches.get(l.target).push(l.source); });
+
+  const down = new Map(given.map(id => [ id, 0 ]));
+  for (let edge = given.slice(); edge.length;) {
+    const next = [];
+    edge.forEach(id => touches.get(id).forEach(other => {
+      if (down.has(other) || !route.has(other)) return;
+      down.set(other, down.get(id) + 1);
+      next.push(other);
+    }));
+    edge = next;
+  }
+
+  // The answers are the bottom of it, whatever the counting says: two asked
+  // quantities reached in different numbers of steps still belong together.
+  const floor = Math.max(1, ...down.values());
+  asked.forEach(id => down.set(id, floor));
+  // Outside the rim: not part of the dig, so it is not given a depth in it.
+  nodes.forEach(n => { if (!down.has(n.id)) down.set(n.id, -1); });
+
+  return { down: down, floor: floor, touches: touches };
+}
+
+// Where round each ring to start everything off. Left to the forces alone a
+// ring bunches on whichever side it happened to be thrown, and lines cross the
+// middle to reach round. So each ring is spaced evenly and put in the order
+// its own ring above it is already in: a step of working starts out facing
+// what it was worked from.
+function around(nodes, dug) {
+  const rings = new Map();
+  nodes.forEach(n => {
+    const at = dug.down.get(n.id);
+    if (!rings.has(at)) rings.set(at, []);
+    rings.get(at).push(n.id);
+  });
+
+  const facing = new Map();
+  [ ...rings.keys() ].sort((a, b) => a - b).forEach(at => {
+    const ids = rings.get(at);
+    const towards = id => {
+      const known = dug.touches.get(id).filter(other => facing.has(other))
+                       .map(other => facing.get(other));
+      if (!known.length) return ids.indexOf(id) / ids.length * 2 * Math.PI;
+
+      // A circular mean, because angles wrap and an average of 350° and 10°
+      // is 0°, not 180°.
+      return Math.atan2(d3.mean(known, Math.sin), d3.mean(known, Math.cos));
+    };
+    ids.map(id => [ id, towards(id) ]).sort((one, two) => one[1] - two[1])
+       .forEach(([ id ], n) => facing.set(id, n / ids.length * 2 * Math.PI));
+  });
+
+  return facing;
+}
+
 function show(called) {
+  // Back to life size before anything is measured: a formula is set and then
+  // measured, and the last chapter may have left the page zoomed out.
+  svg.call(zoom.transform, d3.zoomIdentity);
   root.selectAll("*").remove();
   document.getElementById("picker").value = called;
 
   const { nodes, links, given, asked, solving } = structuredClone(laws[called]);
   const route = routing(nodes, links, given, asked);
+  const dug = digging(nodes, links, given, asked, route);
+  // The rings stay evenly spaced — that is what makes them read as rings —
+  // and the whole dig is sized so the tightest of them has room. Sizing each
+  // ring to its own contents instead put nine answers in a wide circle and
+  // three givens in a narrow one, which is the chapter drawn inside out.
+  const SPREAD = 0.74;
+  const across = at => 1 - SPREAD * at / dug.floor;
+
+  const needs = new Map();
+  nodes.forEach(n => {
+    const at = dug.down.get(n.id);
+    needs.set(at, (needs.get(at) || 0) + wide(n) + ROOM * 2);
+  });
+
+  const RIM = Math.max(Math.min(width(), height()) * 0.40,
+                       ...[ ...needs.keys() ].filter(at => at >= 0)
+                         .map(at => needs.get(at) / (2 * Math.PI) / across(at)));
+
+  const ring = d => dug.down.get(d.id) < 0 ? RIM * 1.34 : RIM * across(dug.down.get(d.id));
+
+  // Started where it belongs rather than settled into it: a simulation that
+  // has to carry a node across the middle to its own ring drags everything it
+  // touches along with it and cools before any of them arrive.
+  const facing = around(nodes, dug);
+  nodes.forEach(n => {
+    n.x = width() / 2 + ring(n) * Math.cos(facing.get(n.id));
+    n.y = height() / 2 + ring(n) * Math.sin(facing.get(n.id));
+  });
   const took = new Set([ ...given, ...solving.flatMap(s => [ s.from, s.to ]) ]);
   // Which way each step of the working went, looked up by the edge it used.
   const way = new Map(solving.map(s => [ `${s.from}\u0000${s.to}`, true ]));
@@ -364,19 +460,17 @@ function show(called) {
       .attr("y", d => deep(d) / 2 + 9).text(d => d.called);
 
   const sim = d3.forceSimulation(nodes)
-    .force("link", d3.forceLink(links).id(d => d.id).distance(110).strength(0.5))
-    .force("charge", d3.forceManyBody().strength(-900))
+    .force("link", d3.forceLink(links).id(d => d.id).distance(110).strength(0.12))
+    .force("charge", d3.forceManyBody().strength(-380))
     // Nodes are boxes, not circles, and a circle wide enough to hold a long
     // one keeps short ones a long way from it while letting a tall pair sit
     // on each other. This pushes rectangles apart instead — including the
     // room each takes for the kind above it and the name below.
     .force("apart", apart)
-    // Centred every tick rather than pulled towards the middle: a weak pull
-    // has not finished pulling by the time the simulation cools, and the web
-    // settles in a corner.
-    .force("middle", d3.forceCenter(width() / 2, height() / 2))
-    .force("x", d3.forceX(width() / 2).strength(0.02))
-    .force("y", d3.forceY(height() / 2).strength(0.04))
+    // Each thing holds to its own ring and the rest of the forces decide only
+    // where round it to sit. A charge that far apart is what spreads them
+    // round rather than letting a ring bunch on one side.
+    .force("ring", d3.forceRadial(ring, width() / 2, height() / 2).strength(2))
     .stop();
 
   // Where a line meets a box rather than where it meets its middle, so an
@@ -409,16 +503,24 @@ function show(called) {
   for (let n = 0; n < SETTLING; n++) sim.tick();
   draw();
 
-  // Centred on what is drawn rather than on where the nodes are. A node is a
-  // point to the simulation and a circle with a name under it and a kind over
-  // it on the screen, so a web the forces had centred perfectly could still
-  // have its topmost caption off the top of the page.
-  const seen = root.node().getBBox();
-  const over = width() / 2 - (seen.x + seen.width / 2);
-  const down = height() / 2 - (seen.y + seen.height / 2);
-  if (Number.isFinite(over) && Number.isFinite(down)) {
-    nodes.forEach(n => { n.x += over; n.y += down; });
-    draw();
+  // Sized and centred on what is drawn. A node is a point to the simulation
+  // and a circle with a name under it on the screen, so the edges have to be
+  // measured rather than assumed — and now that a ring is as big as it needs
+  // to be, a crowded chapter lays out larger than the page and is shown
+  // smaller rather than cropped.
+  const edges = {
+    left: Math.min(...nodes.map(n => n.x - wide(n) / 2)),
+    right: Math.max(...nodes.map(n => n.x + wide(n) / 2)),
+    top: Math.min(...nodes.map(n => n.y - tall(n) / 2)),
+    foot: Math.max(...nodes.map(n => n.y + tall(n) / 2)),
+  };
+  const MARGIN = 28;
+  const fits = Math.min(1, (width() - MARGIN * 2) / (edges.right - edges.left),
+                           (height() - MARGIN * 2) / (edges.foot - edges.top));
+  if (Number.isFinite(fits) && fits > 0) {
+    svg.call(zoom.transform, d3.zoomIdentity
+      .translate(width() / 2, height() / 2).scale(fits)
+      .translate(-(edges.left + edges.right) / 2, -(edges.top + edges.foot) / 2));
   }
   sim.on("tick", draw);
 
