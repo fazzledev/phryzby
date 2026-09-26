@@ -45,4 +45,14 @@ module Projectile
   end
   equation(:maximum_height)   { H == u_y**2 / (2 * g) }
   equation(:time_of_flight)   { T == 2 * u_y / g }
+
+  # And here is what the throw weighs, which is the one thing above that none
+  # of it needed. A heavy stone and a light one thrown the same way land in the
+  # same place at the same moment: gravity pulls harder on the heavy one and
+  # the heavy one is harder to move, by exactly the same factor, and the two
+  # cancel. The law can say what it weighs; nothing in the law ever asks.
+  quantity :mass,   variable: :m
+  quantity :weight, variable: :W
+
+  equation(:weight) { W == m * g }
 end

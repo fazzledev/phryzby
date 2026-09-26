@@ -218,6 +218,20 @@
         "called": "time of flight"
       },
       {
+        "id": "q:mass",
+        "kind": "quantity",
+        "base": "m",
+        "under": null,
+        "called": "mass"
+      },
+      {
+        "id": "q:weight",
+        "kind": "quantity",
+        "base": "W",
+        "under": null,
+        "called": "weight"
+      },
+      {
         "id": "q:part_of_the_flight",
         "kind": "quantity",
         "base": "k",
@@ -319,6 +333,12 @@
         "kind": "equation",
         "said": "time of flight",
         "maths": "<mi>T</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><msub><mi>u</mi><mi>y</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
+      },
+      {
+        "id": "e:weight",
+        "kind": "equation",
+        "said": "weight",
+        "maths": "<mi>W</mi><mo>=</mo><mi>m</mi><mo>&#x22c5;</mo><mi>g</mi>"
       },
       {
         "id": "e:elapsed_time",
@@ -464,6 +484,18 @@
       },
       {
         "source": "e:time_of_flight",
+        "target": "q:gravity"
+      },
+      {
+        "source": "e:weight",
+        "target": "q:weight"
+      },
+      {
+        "source": "e:weight",
+        "target": "q:mass"
+      },
+      {
+        "source": "e:weight",
         "target": "q:gravity"
       },
       {
@@ -676,6 +708,20 @@
         "called": "time of flight"
       },
       {
+        "id": "q:mass",
+        "kind": "quantity",
+        "base": "m",
+        "under": null,
+        "called": "mass"
+      },
+      {
+        "id": "q:weight",
+        "kind": "quantity",
+        "base": "W",
+        "under": null,
+        "called": "weight"
+      },
+      {
         "id": "e:double_angle",
         "kind": "identity",
         "said": "double angle",
@@ -728,6 +774,12 @@
         "kind": "equation",
         "said": "time of flight",
         "maths": "<mi>T</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mo>&#x22c5;</mo><msub><mi>u</mi><mi>y</mi></msub></mrow><mrow><mi>g</mi></mrow></mfrac>"
+      },
+      {
+        "id": "e:weight",
+        "kind": "equation",
+        "said": "weight",
+        "maths": "<mi>W</mi><mo>=</mo><mi>m</mi><mo>&#x22c5;</mo><mi>g</mi>"
       }
     ],
     "links": [
@@ -837,6 +889,18 @@
       },
       {
         "source": "e:time_of_flight",
+        "target": "q:gravity"
+      },
+      {
+        "source": "e:weight",
+        "target": "q:weight"
+      },
+      {
+        "source": "e:weight",
+        "target": "q:mass"
+      },
+      {
+        "source": "e:weight",
         "target": "q:gravity"
       },
       {

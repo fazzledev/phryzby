@@ -34,8 +34,8 @@ class LawWebTest < Minitest::Test
     webs = LawWeb.chapters
     pills = ->(page) { webs.fetch(page)[:nodes].count { |node| node[:kind] != "quantity" } }
 
-    assert_equal 9, pills.call("flight/projectile.html")
-    assert_equal 15, pills.call("flight/motion.html")
+    assert_equal 10, pills.call("flight/projectile.html")
+    assert_equal 16, pills.call("flight/motion.html")
     assert_operator pills.call("light/total-internal-reflection.html"), :>,
                     pills.call("light/reflectance.html")
   end
@@ -93,6 +93,22 @@ class LawWebTest < Minitest::Test
 
       assert_empty through - named, "#{page} solves through something not in its web"
     end
+  end
+
+  # A chapter may carry what its question never reaches. The throw's weight is
+  # in the law and on no route through it, which is the whole point of it being
+  # there: nothing about where a thing lands depends on what it weighs.
+  def test_a_chapter_may_carry_what_no_route_reaches
+    web = LawWeb.chapters["flight/projectile.html"]
+    named = web[:nodes].map { |node| node[:id] }
+    reached = web[:solving].flat_map { |step| step.values_at(:from, :to) }
+
+    assert_includes named, "q:mass"
+    assert_includes named, "e:weight"
+    refute_includes reached, "q:mass"
+    refute_includes reached, "q:weight"
+    refute_includes web[:given], "q:mass"
+    refute_includes web[:asked], "q:weight"
   end
 
   # What a chapter works out in Ruby rather than asking a law for is not a
