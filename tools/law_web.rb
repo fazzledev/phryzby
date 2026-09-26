@@ -30,12 +30,14 @@ module LawWeb
   # A chapter is a question: these quantities are handed over, and those are
   # the ones being asked for. The playground has already said which is which —
   # what it offers a control for is given, and what it prints a reading of is
-  # wanted — so the web only has to name them the way its own nodes are named.
-  def self.asked(ground, law)
+  # asked for — so the web only has to name them the way its own nodes are
+  # named. Everything between the two is needed, which the web works out for
+  # itself rather than being told.
+  def self.question(ground, law)
     { solving: taken(ground, law),
       given: (ground.inputs.keys + ground.given.keys).filter_map { |name| node(law, name) }.uniq,
-      wanted: ground.outputs.reject { |out| out[:from] }
-                    .filter_map { |out| node(law, out[:name]) }.uniq }
+      asked: ground.outputs.reject { |out| out[:from] }
+                   .filter_map { |out| node(law, out[:name]) }.uniq }
   end
 
   # The way the solver actually goes. It tries whichever equation has the
@@ -120,7 +122,7 @@ module LawWeb
       scenario = ground.posing(**ground.opening).class
 
       [ page(path), { called: ground.heading[%r{<h1>(.*?)</h1>}, 1],
-                      **asked(ground, scenario), **web(scenario) } ]
+                      **question(ground, scenario), **web(scenario) } ]
     end
   end
 

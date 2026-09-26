@@ -149,7 +149,7 @@
       "q:part_of_the_flight",
       "q:gravity"
     ],
-    "wanted": [
+    "asked": [
       "q:range",
       "q:peak",
       "q:time_of_flight",
@@ -613,7 +613,7 @@
       "q:speed",
       "q:gravity"
     ],
-    "wanted": [
+    "asked": [
       "q:range",
       "q:peak",
       "q:time_of_flight"
@@ -857,7 +857,7 @@
       "q:refractive_index_of_first_medium",
       "q:refractive_index_of_second_medium"
     ],
-    "wanted": [
+    "asked": [
       "e:no_refracted_ray"
     ],
     "nodes": [
@@ -958,7 +958,7 @@
       "q:refractive_index_of_first_medium",
       "q:refractive_index_of_second_medium"
     ],
-    "wanted": [
+    "asked": [
       "q:angle_of_refraction",
       "e:no_refracted_ray"
     ],
@@ -1062,7 +1062,7 @@
     "given": [
       "q:angle_of_incidence"
     ],
-    "wanted": [],
+    "asked": [],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -1091,7 +1091,7 @@
       "q:refractive_index_of_first_medium",
       "q:refractive_index_of_second_medium"
     ],
-    "wanted": [
+    "asked": [
       "q:angle_of_reflection",
       "q:angle_of_refraction",
       "e:no_refracted_ray"
@@ -1215,7 +1215,7 @@
       "q:refractive_index_of_first_medium",
       "q:refractive_index_of_second_medium"
     ],
-    "wanted": [
+    "asked": [
       "q:angle_of_refraction",
       "e:no_refracted_ray"
     ],
@@ -1390,7 +1390,7 @@
       "q:refractive_index_of_first_medium",
       "q:refractive_index_of_second_medium"
     ],
-    "wanted": [
+    "asked": [
       "q:angle_of_refraction",
       "e:no_refracted_ray",
       "q:reflectance_s_polarised",
@@ -1597,7 +1597,7 @@
     "given": [
       "q:angle_of_incidence"
     ],
-    "wanted": [
+    "asked": [
       "q:angle_of_reflection"
     ],
     "nodes": [
@@ -1658,7 +1658,7 @@
       "q:refractive_index_of_first_medium",
       "q:refractive_index_of_second_medium"
     ],
-    "wanted": [
+    "asked": [
       "q:angle_of_refraction"
     ],
     "nodes": [
@@ -1759,7 +1759,7 @@
       "q:refractive_index_of_second_medium",
       "q:angle_of_incidence"
     ],
-    "wanted": [
+    "asked": [
       "q:angle_of_refraction",
       "e:no_refracted_ray"
     ],
@@ -1883,7 +1883,7 @@
       "q:refractive_index_of_first_medium",
       "q:refractive_index_of_second_medium"
     ],
-    "wanted": [
+    "asked": [
       "q:angle_of_refraction",
       "e:no_refracted_ray"
     ],
@@ -2019,7 +2019,7 @@
       "q:refractive_index_of_first_medium",
       "q:refractive_index_of_second_medium"
     ],
-    "wanted": [
+    "asked": [
       "e:no_refracted_ray",
       "q:reflectance"
     ],
@@ -2243,7 +2243,7 @@
       "q:refractive_index_of_first_medium",
       "q:refractive_index_of_second_medium"
     ],
-    "wanted": [
+    "asked": [
       "q:angle_of_refraction",
       "e:no_refracted_ray"
     ],
