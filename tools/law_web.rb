@@ -27,6 +27,27 @@ module LawWeb
     [ Physics::LETTER.fetch(stem, stem), under ]
   end
 
+  # A chapter is a question: these quantities are handed over, and those are
+  # the ones being asked for. The playground has already said which is which —
+  # what it offers a control for is given, and what it prints a reading of is
+  # wanted — so the web only has to name them the way its own nodes are named.
+  def self.asked(ground, law)
+    { given: (ground.inputs.keys + ground.given.keys).filter_map { |name| node(law, name) }.uniq,
+      wanted: ground.outputs.reject { |out| out[:from] }
+                    .filter_map { |out| node(law, out[:name]) }.uniq }
+  end
+
+  # A name as the web knows it. A quantity goes by what it stands for, since
+  # a chapter may ask for it under any of its spellings; a condition is a
+  # statement and stands for itself; and what a reading works out in Ruby the
+  # laws never named at all.
+  def self.node(law, name)
+    return "e:#{name}" if law.conditions.key?(name)
+
+    stands_for = law.quantities[name]
+    stands_for && "q:#{stands_for}"
+  end
+
   def self.web(law)
     { nodes: law.quantities.values.uniq.map { |q|
                base, under = letter(law, q)
@@ -63,7 +84,8 @@ module LawWeb
       ground = Physics.playground
       scenario = ground.posing(**ground.opening).class
 
-      [ page(path), { called: ground.heading[%r{<h1>(.*?)</h1>}, 1], **web(scenario) } ]
+      [ page(path), { called: ground.heading[%r{<h1>(.*?)</h1>}, 1],
+                      **asked(ground, scenario), **web(scenario) } ]
     end
   end
 

@@ -1,6 +1,23 @@
 {
   "flight/motion.html": {
     "called": "Instants of a Projectile",
+    "given": [
+      "q:angle_of_throw",
+      "q:speed",
+      "q:part_of_the_flight",
+      "q:gravity"
+    ],
+    "wanted": [
+      "q:range",
+      "q:peak",
+      "q:time_of_flight",
+      "q:elapsed",
+      "q:distance_out",
+      "q:height",
+      "q:velocity_across",
+      "q:velocity_up",
+      "q:angle_of_travel"
+    ],
     "nodes": [
       {
         "id": "q:speed",
@@ -395,6 +412,16 @@
   },
   "flight/projectile.html": {
     "called": "Projectile",
+    "given": [
+      "q:angle_of_throw",
+      "q:speed",
+      "q:gravity"
+    ],
+    "wanted": [
+      "q:range",
+      "q:peak",
+      "q:time_of_flight"
+    ],
     "nodes": [
       {
         "id": "q:speed",
@@ -628,6 +655,14 @@
   },
   "light/any-two-media.html": {
     "called": "Any Two Media",
+    "given": [
+      "q:angle_of_incidence",
+      "q:refractive_index_of_first_medium",
+      "q:refractive_index_of_second_medium"
+    ],
+    "wanted": [
+      "e:no_refracted_ray"
+    ],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -703,6 +738,15 @@
   },
   "light/critical-angle.html": {
     "called": "Critical Angle",
+    "given": [
+      "q:angle_of_incidence",
+      "q:refractive_index_of_first_medium",
+      "q:refractive_index_of_second_medium"
+    ],
+    "wanted": [
+      "q:angle_of_refraction",
+      "e:no_refracted_ray"
+    ],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -799,6 +843,10 @@
   },
   "light/incidence.html": {
     "called": "Incidence",
+    "given": [
+      "q:angle_of_incidence"
+    ],
+    "wanted": [],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -812,6 +860,16 @@
   },
   "light/internal-reflection.html": {
     "called": "Internal Reflection",
+    "given": [
+      "q:angle_of_incidence",
+      "q:refractive_index_of_first_medium",
+      "q:refractive_index_of_second_medium"
+    ],
+    "wanted": [
+      "q:angle_of_reflection",
+      "q:angle_of_refraction",
+      "e:no_refracted_ray"
+    ],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -908,6 +966,15 @@
   },
   "light/into-air.html": {
     "called": "Into Air",
+    "given": [
+      "q:angle_of_incidence",
+      "q:refractive_index_of_first_medium",
+      "q:refractive_index_of_second_medium"
+    ],
+    "wanted": [
+      "q:angle_of_refraction",
+      "e:no_refracted_ray"
+    ],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -1004,6 +1071,18 @@
   },
   "light/reflectance.html": {
     "called": "Reflectance",
+    "given": [
+      "q:angle_of_incidence",
+      "q:refractive_index_of_first_medium",
+      "q:refractive_index_of_second_medium"
+    ],
+    "wanted": [
+      "q:angle_of_refraction",
+      "e:no_refracted_ray",
+      "q:reflectance_s_polarised",
+      "q:reflectance_p_polarised",
+      "q:reflectance"
+    ],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -1191,6 +1270,12 @@
   },
   "light/reflection.html": {
     "called": "Reflection",
+    "given": [
+      "q:angle_of_incidence"
+    ],
+    "wanted": [
+      "q:angle_of_reflection"
+    ],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -1226,6 +1311,14 @@
   },
   "light/refraction.html": {
     "called": "Refraction: Air to Water",
+    "given": [
+      "q:angle_of_incidence",
+      "q:refractive_index_of_first_medium",
+      "q:refractive_index_of_second_medium"
+    ],
+    "wanted": [
+      "q:angle_of_refraction"
+    ],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -1301,6 +1394,15 @@
   },
   "light/refractive-index.html": {
     "called": "Refractive Index",
+    "given": [
+      "q:refractive_index_of_first_medium",
+      "q:refractive_index_of_second_medium",
+      "q:angle_of_incidence"
+    ],
+    "wanted": [
+      "q:angle_of_refraction",
+      "e:no_refracted_ray"
+    ],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -1397,6 +1499,16 @@
   },
   "light/relative-refractive-index.html": {
     "called": "Relative Refractive Index",
+    "given": [
+      "q:relative_refractive_index",
+      "q:angle_of_incidence",
+      "q:refractive_index_of_first_medium",
+      "q:refractive_index_of_second_medium"
+    ],
+    "wanted": [
+      "q:angle_of_refraction",
+      "e:no_refracted_ray"
+    ],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -1518,6 +1630,15 @@
   },
   "light/total-internal-reflection.html": {
     "called": "Total Internal Reflection",
+    "given": [
+      "q:angle_of_incidence",
+      "q:refractive_index_of_first_medium",
+      "q:refractive_index_of_second_medium"
+    ],
+    "wanted": [
+      "e:no_refracted_ray",
+      "q:reflectance"
+    ],
     "nodes": [
       {
         "id": "q:angle_of_incidence",
@@ -1715,6 +1836,15 @@
   },
   "light/water-to-air.html": {
     "called": "Refraction: Water to Air",
+    "given": [
+      "q:angle_of_incidence",
+      "q:refractive_index_of_first_medium",
+      "q:refractive_index_of_second_medium"
+    ],
+    "wanted": [
+      "q:angle_of_refraction",
+      "e:no_refracted_ray"
+    ],
     "nodes": [
       {
         "id": "q:angle_of_incidence",

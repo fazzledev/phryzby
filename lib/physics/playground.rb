@@ -27,7 +27,7 @@ module Physics
       @picture = nil
     end
 
-    attr_reader :inputs, :chosen, :outputs, :picture
+    attr_reader :inputs, :chosen, :given, :outputs, :picture
 
     def title(text) = @title = text
     def description(text) = @description = text

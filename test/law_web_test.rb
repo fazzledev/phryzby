@@ -40,6 +40,32 @@ class LawWebTest < Minitest::Test
                     pills.call("light/reflectance.html")
   end
 
+  # A chapter is a question, and the playground already asked it: its controls
+  # are what is handed over and its readings are what is wanted. Both ends have
+  # to be named the way the nodes are, or the page marks nothing.
+  def test_a_chapter_says_what_is_given_and_what_is_asked_for
+    webs = LawWeb.chapters
+
+    assert_equal %w[q:angle_of_throw q:speed q:gravity], webs["flight/projectile.html"][:given]
+    assert_equal %w[q:range q:peak q:time_of_flight], webs["flight/projectile.html"][:wanted]
+
+    webs.each do |page, web|
+      named = web[:nodes].map { |node| node[:id] }
+
+      assert_empty web[:given] - named, "#{page} is given something the web has no node for"
+      assert_empty web[:wanted] - named, "#{page} asks for something the web has no node for"
+    end
+  end
+
+  # What a chapter works out in Ruby rather than asking a law for is not a
+  # node and cannot be wanted, and neither is a property picked by name.
+  def test_what_no_law_names_is_neither_given_nor_wanted
+    web = LawWeb.chapters["flight/projectile.html"]
+
+    refute_includes web[:given], "q:in_view"
+    refute_includes web[:given], "q:world"
+  end
+
   # The letter and its subscript travel apart, so the page can set one under
   # the other rather than printing the underscore.
   def test_a_subscript_is_handed_over_as_a_subscript
