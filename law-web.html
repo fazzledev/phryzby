@@ -66,10 +66,11 @@
   .link.from{stroke:#98C379;stroke-opacity:1;stroke-width:1.8}
   .link.to{stroke:#FF6B81;stroke-opacity:1;stroke-width:1.8}
   /* A route the solver did not take. It is as true as the one it did — the
-     solver stops at the first answer, not the best one — so it stays legible,
-     the way a map keeps the slower way on the screen. */
+     solver stops at the first answer, not the best one — so it keeps the
+     colours of the route it is, drawn thin: the way a map leaves the slower
+     way on the screen rather than off it. */
   .spare{opacity:.5}
-  .link.spare{stroke:#6E6E6E;stroke-opacity:.55;stroke-width:1.1}
+  .link.spare{stroke-opacity:.6;stroke-width:1}
   label.toggle{display:flex;align-items:center;gap:.3rem;color:#8C8C8C;font-size:.78rem;
     cursor:pointer;user-select:none}
   label.toggle input{accent-color:#98C379;cursor:pointer}
@@ -361,9 +362,9 @@ function show(called) {
     const ends = (d, which) => which.includes(d.source.id) || which.includes(d.target.id);
     link.classed("off", d => asks() && !picked &&
                              !(route.has(d.source.id) && route.has(d.target.id)))
-        .classed("from", d => on(d) && ends(d, given))
-        .classed("to", d => on(d) && !ends(d, given) && ends(d, wanted))
-        .classed("along", d => on(d) && !ends(d, given) && !ends(d, wanted))
+        .classed("from", d => (on(d) || spare(d)) && ends(d, given))
+        .classed("to", d => (on(d) || spare(d)) && !ends(d, given) && ends(d, wanted))
+        .classed("along", d => (on(d) || spare(d)) && !ends(d, given) && !ends(d, wanted))
         .classed("spare", spare)
         // The head goes on the end the step arrived at, whichever end of the
         // edge that happens to be — the web wrote the edge equation first and
