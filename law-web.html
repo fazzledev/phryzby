@@ -118,8 +118,10 @@
   #legend .half{opacity:.5}
   #legend svg{width:24px;height:13px;flex:none;display:block}
   #legend .mark{font-weight:700;flex:none;margin-left:-.25rem}
-  /* Nothing about the question is being said while the question is off. */
-  #legend.plain .qrow{opacity:.25}
+  /* Nothing about the question is being said while the question is not being
+     asked — neither in the legend, nor by the controls that narrow it. */
+  .plain .qrow{opacity:.25}
+  #rail.plain input[name="showing"]{pointer-events:none}
 </style>
 <header>
   <a class="brand" href="./"><img src="assets/favicon.svg" alt="" width="17" height="17">phryzby</a>
@@ -130,10 +132,18 @@
 <aside id="rail">
   <b>chapter</b>
   <select id="picker"></select>
-  <b>view</b>
-  <label class="toggle"><input type="checkbox" id="question" checked>the question</label>
-  <label class="toggle"><input type="checkbox" id="strays" checked>what no route reaches</label>
-  <label class="toggle"><input type="checkbox" id="identities" checked>identities</label>
+  <b>mode</b>
+  <label class="toggle"><input type="radio" name="mode" value="question" checked>the question</label>
+  <label class="toggle"><input type="radio" name="mode" value="law">the law</label>
+  <b class="qrow">showing</b>
+  <label class="toggle qrow"><input type="radio" name="showing" value="one">one route</label>
+  <label class="toggle qrow"><input type="radio" name="showing" value="all" checked>all routes</label>
+  <label class="toggle qrow"><input type="radio" name="showing" value="every">everything</label>
+  <b>elements</b>
+  <label class="toggle"><input type="checkbox" class="kind" value="quantity" checked>quantities</label>
+  <label class="toggle"><input type="checkbox" class="kind" value="equation" checked>equations</label>
+  <label class="toggle"><input type="checkbox" class="kind" value="condition" checked>conditions</label>
+  <label class="toggle"><input type="checkbox" class="kind" value="identity" checked>identities</label>
   <button type="button" id="refit">fit it to the page</button>
 <div id="legend">
   <b>in the law</b>
@@ -371,8 +381,45 @@ function around(nodes, dug) {
   return facing;
 }
 
-const on = which => document.getElementById(which).checked;
-const asks = () => on("question");
+const chosen = name => document.querySelector(`input[name="${name}"]:checked`).value;
+const asks = () => chosen("mode") === "question";
+// How much of the web to lay out: the one route the solver drove, every route
+// from what is given to what is asked, or the whole law including what no
+// route reaches. A law nobody is asking anything of is all of it.
+const showing = () => (asks() ? chosen("showing") : "every");
+const kinds = () => new Set([ ...document.querySelectorAll("input.kind:checked") ]
+                            .map(box => box.value));
+
+// Hide a kind and what it joined stays joined. With the equations off this is
+// the web of which quantity touches which; with the quantities off, of which
+// equations share one. Neither is a broken web — they are the two halves of
+// what it says, each on its own.
+function weave(nodes, links, here) {
+  const near = new Map(nodes.map(n => [ n.id, [] ]));
+  links.forEach(l => { near.get(l.source)?.push(l.target); near.get(l.target)?.push(l.source); });
+
+  const made = new Set();
+  const drawn = [];
+  nodes.filter(n => here.has(n.id)).forEach(n => {
+    const spent = new Set([ n.id ]);
+    for (let front = near.get(n.id).slice(); front.length;) {
+      const next = [];
+      front.forEach(id => {
+        if (spent.has(id)) return;
+        spent.add(id);
+        if (!here.has(id)) return (near.get(id) || []).forEach(far => next.push(far));
+
+        const both = n.id < id ? `${n.id}\u0000${id}` : `${id}\u0000${n.id}`;
+        if (made.has(both)) return;
+        made.add(both);
+        drawn.push({ source: n.id, target: id });
+      });
+      front = next;
+    }
+  });
+
+  return drawn;
+}
 
 function show(called) {
   // Back to life size before anything is measured: a formula is set and then
@@ -388,14 +435,20 @@ function show(called) {
   const { given, asked, solving } = whole;
   const route = routing(whole.nodes, whole.links, given, asked);
 
+  const took = new Set([ ...given, ...solving.flatMap(step => [ step.from, step.to ]) ]);
+  const reach = showing() === "one" ? took
+              : showing() === "all" ? route
+              : new Set(whole.nodes.map(n => n.id));
+
   // Left out rather than hidden: a node switched off still holds its place in
   // its ring, and the web lays out round a hole. So the ones being shown are
   // the ones laid out.
-  const shown = d => (on("strays") || route.has(d.id)) &&
-                     (on("identities") || d.kind !== "identity");
-  const nodes = whole.nodes.filter(shown);
+  const within = whole.nodes.filter(n => reach.has(n.id));
+  const kept = kinds();
+  const nodes = within.filter(n => kept.has(n.kind));
   const here = new Set(nodes.map(n => n.id));
-  const links = whole.links.filter(l => here.has(l.source) && here.has(l.target));
+  const links = weave(within,
+                      whole.links.filter(l => reach.has(l.source) && reach.has(l.target)), here);
 
   const dug = digging(nodes, links, given.filter(id => here.has(id)),
                       asked.filter(id => here.has(id)), route);
@@ -426,7 +479,7 @@ function show(called) {
     n.x = width() / 2 + ring(n) * Math.cos(facing.get(n.id));
     n.y = height() / 2 + ring(n) * Math.sin(facing.get(n.id));
   });
-  const took = new Set([ ...given, ...solving.flatMap(s => [ s.from, s.to ]) ]);
+
   // Which way each step of the working went, looked up by the edge it used.
   const way = new Map(solving.map(s => [ `${s.from}\u0000${s.to}`, true ]));
   const stepped = d => way.has(`${d.source.id}\u0000${d.target.id}`) ? 1
@@ -577,7 +630,8 @@ function show(called) {
       .map(n => n.id));
 
     const picked = lit.size > 0;
-    document.getElementById("legend").classList.toggle("plain", !asks());
+    [ "legend", "rail" ].forEach(where =>
+      document.getElementById(where).classList.toggle("plain", !asks()));
     badge.classed("is-given", d => asks() && role(d) === "given")
          .classed("is-needed", d => asks() && role(d) === "needed")
          .classed("is-asked", d => asks() && role(d) === "asked");
@@ -627,8 +681,8 @@ function show(called) {
     pick();
   });
   svg.on("click", e => { if (e.target === svg.node()) { lit = new Set(); pick(); } });
-  document.getElementById("question").onchange = pick;
-  document.getElementById("legend").classList.toggle("plain", !asks());
+  [ "legend", "rail" ].forEach(where =>
+    document.getElementById(where).classList.toggle("plain", !asks()));
   pick();
 
   node.call(d3.drag()
@@ -643,8 +697,8 @@ function show(called) {
 let fit = () => {};
 
 document.getElementById("refit").onclick = () => fit();
-[ "strays", "identities" ].forEach(which => {
-  document.getElementById(which).onchange = () => show(document.getElementById("picker").value);
+document.querySelectorAll("#rail input[type=radio], #rail input.kind").forEach(box => {
+  box.onchange = () => show(document.getElementById("picker").value);
 });
 
 const picker = d3.select("#picker");
