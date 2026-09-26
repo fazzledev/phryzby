@@ -62,21 +62,18 @@
   /* A route has two ends and no arrows: an edge takes the colour of the end
      of the question it touches, so which way the chapter is going is read off
      the line rather than off a head on it. */
-  .link.along{stroke:#8C8C8C;stroke-opacity:.95;stroke-width:1.8}
-  .link.from{stroke:#98C379;stroke-opacity:1;stroke-width:1.8}
-  .link.to{stroke:#FF6B81;stroke-opacity:1;stroke-width:1.8}
+  .link.along{stroke:#8C8C8C;stroke-opacity:.95;stroke-width:1.5}
+  .link.from{stroke:#98C379;stroke-opacity:1;stroke-width:1.5}
+  .link.to{stroke:#FF6B81;stroke-opacity:1;stroke-width:1.5}
+  /* The road the solver drove: the same road in the same colour as every
+     other way there — it is not a better one, only the one it went down — at
+     twice the weight and with a head on the end. */
+  .link.driven{stroke-width:3}
   /* A route the solver did not take. It is as true as the one it did — the
-     solver stops at the first answer, not the best one — so it keeps the
-     colours of the route it is, drawn thin: the way a map leaves the slower
-     way on the screen rather than off it. */
+     solver stops at the first answer, not the best one — so it is the same
+     road in the same colour, drawn once instead of twice. */
   .spare{opacity:.5}
-  .link.spare{stroke-opacity:.85;stroke-width:1}
-  /* The same colour, turned down. Thin was not enough on its own: at a glance
-     an alternate and the road driven were the same line in two weights, and
-     which one the solver took is the thing worth seeing. */
-  .link.spare.from{stroke:#4E6B41}
-  .link.spare.to{stroke:#8C4655}
-  .link.spare.along{stroke:#54545A}
+  .link.spare{opacity:1}
   label.toggle{display:flex;align-items:center;gap:.3rem;color:#8C8C8C;font-size:.78rem;
     cursor:pointer;user-select:none}
   label.toggle input{accent-color:#98C379;cursor:pointer}
@@ -123,10 +120,10 @@
   <div class="asked"><i class="quantity wanted"></i>wanted</div>
   <b class="asked">the way there</b>
   <div class="asked"><svg viewBox="0 0 20 11"><line x1="0" y1="5.5" x2="14" y2="5.5"
-    stroke="#8C8C8C" stroke-width="1.8"></line><path d="M13 2 L19 5.5 L13 9 z"
+    stroke="#8C8C8C" stroke-width="3"></line><path d="M13 2 L19 5.5 L13 9 z"
     fill="#8C8C8C"></path></svg>the solver's route</div>
   <div class="asked"><svg viewBox="0 0 20 11"><line x1="0" y1="5.5" x2="20" y2="5.5"
-    stroke="#54545A" stroke-width="1"></line></svg>another way there</div>
+    stroke="#8C8C8C" stroke-width="1.5"></line></svg>another way there</div>
   <div class="asked"><i class="quantity gone"></i>on no way there</div>
   <b>picked out</b>
   <div><i style="border-color:#6BA8FF;border-width:2.6px"></i>picked</div>
@@ -134,13 +131,15 @@
 </div>
 <svg id="web"><defs>
   <!-- One head per colour, because a marker does not inherit the stroke of
-       the line it sits on. Drawn pointing along +x, which is the way a
-       marker is turned to face. -->
-  <marker id="head-from" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6"
+       the line it sits on. Drawn pointing along +x, which is the way a marker
+       is turned to face, and sized in the page's own units: a marker scales
+       with the stroke it sits on by default, and the road the solver drove is
+       a wide one. -->
+  <marker id="head-from" viewBox="0 0 8 8" refX="7" refY="4" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11"
           orient="auto-start-reverse"><path d="M0 0 L8 4 L0 8 z" fill="#98C379"></path></marker>
-  <marker id="head-to" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6"
+  <marker id="head-to" viewBox="0 0 8 8" refX="7" refY="4" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11"
           orient="auto-start-reverse"><path d="M0 0 L8 4 L0 8 z" fill="#FF6B81"></path></marker>
-  <marker id="head-along" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6"
+  <marker id="head-along" viewBox="0 0 8 8" refX="7" refY="4" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11"
           orient="auto-start-reverse"><path d="M0 0 L8 4 L0 8 z" fill="#8C8C8C"></path></marker>
 </defs></svg>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
@@ -372,8 +371,8 @@ function show(called) {
   const draw = () => {
     link.each(function (d) {
       const head = stepped(d);
-      const [ x1, y1 ] = meets(d.source, d.target, head === -1 ? 4 : 1);
-      const [ x2, y2 ] = meets(d.target, d.source, head === 1 ? 4 : 1);
+      const [ x1, y1 ] = meets(d.source, d.target, head === -1 ? 3 : 1);
+      const [ x2, y2 ] = meets(d.target, d.source, head === 1 ? 3 : 1);
       this.setAttribute("x1", x1); this.setAttribute("y1", y1);
       this.setAttribute("x2", x2); this.setAttribute("y2", y2);
     });
@@ -385,6 +384,18 @@ function show(called) {
   // one that is.
   for (let n = 0; n < SETTLING; n++) sim.tick();
   draw();
+
+  // Centred on what is drawn rather than on where the nodes are. A node is a
+  // point to the simulation and a circle with a name under it and a kind over
+  // it on the screen, so a web the forces had centred perfectly could still
+  // have its topmost caption off the top of the page.
+  const seen = root.node().getBBox();
+  const over = width() / 2 - (seen.x + seen.width / 2);
+  const down = height() / 2 - (seen.y + seen.height / 2);
+  if (Number.isFinite(over) && Number.isFinite(down)) {
+    nodes.forEach(n => { n.x += over; n.y += down; });
+    draw();
+  }
   sim.on("tick", draw);
 
   // Pick a node and it keeps what it touches. Pick more than one, and what
@@ -419,6 +430,7 @@ function show(called) {
     const ends = (d, which) => which.includes(d.source.id) || which.includes(d.target.id);
     link.classed("off", d => asks() && !picked &&
                              !(route.has(d.source.id) && route.has(d.target.id)))
+        .classed("driven", on)
         .classed("from", d => (on(d) || spare(d)) && ends(d, given))
         .classed("to", d => (on(d) || spare(d)) && !ends(d, given) && ends(d, wanted))
         .classed("along", d => (on(d) || spare(d)) && !ends(d, given) && !ends(d, wanted))
