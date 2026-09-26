@@ -17,9 +17,9 @@
   .note{color:#6E6E6E;font-size:.72rem;margin-left:auto}
   svg#web{display:block;width:100vw;height:calc(100vh - 3.1rem);cursor:grab}
   .link{stroke:#6E6E6E;stroke-opacity:.5;stroke-width:1.1}
-  .quantity rect{fill:#191919;stroke:#3A3A3A;stroke-width:1.2;rx:6}
+  .quantity rect{fill:#191919;stroke:#3A3A3A;stroke-width:1.2;rx:20}
   .quantity .said{fill:#ECECEC;font-size:14px}
-  .quantity .called{fill:#8C8C8C;font-size:8.5px}
+  .quantity .called{fill:#8C8C8C;font-size:7.6px;letter-spacing:.5px;opacity:.75}
   /* What kind of thing each one is, said on it rather than in a legend. */
   .kind{font-size:6.6px;letter-spacing:1.3px;text-transform:uppercase;opacity:.55}
   /* Under the statement, the way a caption sits under a figure in the law. */
@@ -93,7 +93,7 @@
   #legend div{display:flex;align-items:center;gap:.45rem;white-space:nowrap}
   #legend i{display:inline-block;width:20px;height:11px;border-radius:5px;
     border:1.3px solid #3A3A3A;background:#131315;flex:none}
-  #legend .quantity{border-radius:3px;background:#191919;border-color:#3A3A3A}
+  #legend .quantity{width:11px;border-radius:50%;background:#191919;border-color:#3A3A3A}
   #legend .equation{border-color:#B8860B;border-radius:0}
   #legend .condition{border-color:#C8102E}
   #legend .identity{border-color:#5E6B78}
@@ -154,10 +154,15 @@ const width = () => svg.node().clientWidth;
 const height = () => svg.node().clientHeight;
 // A condition is not a quantity either: everything that is not one is a pill.
 const held = d => d.kind === "quantity";
-const wide = d => held(d)
-  ? Math.max(104, (d.base.length + (d.under || "").length * 0.7) * 8.4
-                  + d.called.length * 5.1 + 30)
-  : d.w || 84;
+// A quantity is a circle with its letter in it and its name written beneath,
+// so the letter is what the eye lands on and the name is there to be read
+// once. A statement is a box, because a statement is a line of type.
+const ROUND = 40;
+const girth = d => held(d) ? ROUND : (d.w || 84);
+const deep = d => held(d) ? ROUND : (d.h || 30);
+// What it takes up, which is not what it is drawn as: the name under a circle
+// is wider than the circle and still has to be kept clear of its neighbours.
+const wide = d => held(d) ? Math.max(ROUND, d.called.length * 5.1 + 8) : (d.w || 84);
 
 // A letter and what sits under it, set the way the law writes it rather than
 // closed up into one word: v_x is a v with an x beneath, not the three
@@ -167,12 +172,12 @@ const setting = sel => sel.each(function (d) {
   at.append("tspan").text(d.base);
   if (d.under) at.append("tspan").attr("dy", "3.6").attr("font-size", "70%").text(d.under);
 });
-const tall = d => held(d) ? 32 : (d.h || 30);
+const tall = d => held(d) ? ROUND + 13 : (d.h || 30);
 
 // A collision force for boxes: whichever way out is nearer, both ends move
 // half of it. Run a few times a tick, because moving one pair can push a
 // third into a fourth.
-const ROOM = 12;
+const ROOM = 15;
 const SETTLING = 400;
 const PASSES = 4;
 
@@ -298,8 +303,8 @@ function show(called) {
   const node = root.append("g").selectAll("g").data(nodes).join("g")
                    .attr("class", d => `node ${d.kind}`);
 
-  node.append("rect").attr("width", wide).attr("height", tall)
-      .attr("x", d => -wide(d) / 2).attr("y", d => -tall(d) / 2);
+  node.append("rect").attr("width", girth).attr("height", deep)
+      .attr("x", d => -girth(d) / 2).attr("y", d => -deep(d) / 2);
 
   node.filter(d => !held(d)).append("foreignObject").attr("class", "set")
       .attr("width", 10).attr("height", 10)
@@ -317,23 +322,23 @@ function show(called) {
       .attr("x", -d.w / 2).attr("y", -d.h / 2);
   });
 
-  node.selectAll("rect").attr("width", wide).attr("height", tall)
-      .attr("x", d => -wide(d) / 2).attr("y", d => -tall(d) / 2);
+  node.selectAll("rect").attr("width", girth).attr("height", deep)
+      .attr("x", d => -girth(d) / 2).attr("y", d => -deep(d) / 2);
 
   // What each one is, and — for the two ends of the question — which end.
   const tagged = d => asks() && given.includes(d.id) ? "given"
                     : asks() && wanted.includes(d.id) ? "wanted" : d.kind;
   const kinds = node.append("text").attr("class", "kind").attr("text-anchor", "middle")
-                    .attr("y", d => -tall(d) / 2 - 4).text(tagged);
+                    .attr("y", d => -deep(d) / 2 - 4).text(tagged);
 
   node.filter(d => !held(d)).append("text").attr("class", "named").attr("text-anchor", "middle")
-      .attr("y", d => tall(d) / 2 + 9).text(d => d.said);
+      .attr("y", d => deep(d) / 2 + 9).text(d => d.said);
 
-  const boxes = node.filter(held);
-  boxes.append("text").attr("class", "said").attr("x", d => -wide(d) / 2 + 10).attr("dy", "0.36em")
+  const rounds = node.filter(held);
+  rounds.append("text").attr("class", "said").attr("text-anchor", "middle").attr("dy", "0.36em")
       .call(setting);
-  boxes.append("text").attr("class", "called").attr("text-anchor", "end")
-      .attr("x", d => wide(d) / 2 - 9).attr("dy", "0.36em").text(d => d.called);
+  rounds.append("text").attr("class", "called").attr("text-anchor", "middle")
+      .attr("y", d => deep(d) / 2 + 9).text(d => d.called);
 
   const sim = d3.forceSimulation(nodes)
     .force("link", d3.forceLink(links).id(d => d.id).distance(110).strength(0.5))
@@ -355,9 +360,11 @@ function show(called) {
   // arrowhead lands on the edge of what it points at instead of underneath it.
   const meets = (d, at, gap) => {
     const dx = at.x - d.x, dy = at.y - d.y;
-    const along = Math.min(Math.abs(dx) > 1e-6 ? (wide(d) / 2) / Math.abs(dx) : Infinity,
-                           Math.abs(dy) > 1e-6 ? (tall(d) / 2) / Math.abs(dy) : Infinity);
     const far = Math.hypot(dx, dy) || 1;
+    if (held(d)) return [ d.x + dx / far * (ROUND / 2 + gap), d.y + dy / far * (ROUND / 2 + gap) ];
+
+    const along = Math.min(Math.abs(dx) > 1e-6 ? (girth(d) / 2) / Math.abs(dx) : Infinity,
+                           Math.abs(dy) > 1e-6 ? (deep(d) / 2) / Math.abs(dy) : Infinity);
 
     return [ d.x + dx * along + dx / far * gap, d.y + dy * along + dy / far * gap ];
   };
