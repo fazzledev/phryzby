@@ -59,19 +59,15 @@
   /* Off every route: it is in the law, but nothing on the way from what is
      given to what is asked for goes through it. */
   .off{opacity:.2}
-  /* A route has two ends and no arrows: an edge takes the colour of the end
-     of the question it touches, so which way the chapter is going is read off
-     the line rather than off a head on it. */
-  .link.along{stroke:#8C8C8C;stroke-opacity:.95;stroke-width:1.5}
-  .link.from{stroke:#98C379;stroke-opacity:1;stroke-width:1.5}
-  .link.to{stroke:#FF6B81;stroke-opacity:1;stroke-width:1.5}
-  /* The road the solver drove: the same road in the same colour as every
-     other way there — it is not a better one, only the one it went down — at
-     twice the weight and with a head on the end. */
-  .link.driven{stroke-width:3}
+  /* A line's business is the working, not the question. Which end of the
+     question a quantity is on is said by the quantity, and saying it again on
+     every line touching it left the colours meaning two things at once. So a
+     way there is grey, and the way the solver went is blue. */
+  .link.there{stroke:#8C8C8C;stroke-opacity:.95;stroke-width:1.5}
+  .link.driven{stroke:#6BA8FF;stroke-opacity:1;stroke-width:3}
   /* A route the solver did not take. It is as true as the one it did — the
-     solver stops at the first answer, not the best one — so it is the same
-     road in the same colour, drawn once instead of twice. */
+     solver stops at the first answer, not the best one — so it stays a road,
+     just not the one lit up. */
   .spare{opacity:.5}
   .link.spare{opacity:1}
   label.toggle{display:flex;align-items:center;gap:.3rem;color:#8C8C8C;font-size:.78rem;
@@ -138,36 +134,24 @@
   <div class="qrow"><i class="quantity asked"></i><span class="mark"
     style="color:#FF6B81">?</span>asked for</div>
   <b class="qrow">the way there</b>
-  <div class="qrow"><svg viewBox="0 0 20 11"><line x1="0" y1="5.5" x2="13" y2="5.5"
-    stroke="#8C8C8C" stroke-width="3"></line><path d="M12 1.5 L19.5 5.5 L12 9.5 z"
-    fill="#8C8C8C"></path></svg>the solver's route</div>
-  <div class="qrow"><svg viewBox="0 0 20 11"><line x1="0" y1="5.5" x2="20" y2="5.5"
+  <div class="qrow"><svg viewBox="0 0 24 13"><line x1="0" y1="6.5" x2="16" y2="6.5"
+    stroke="#6BA8FF" stroke-width="3"></line><path d="M15 2.5 L23.5 6.5 L15 10.5 z"
+    fill="#6BA8FF"></path></svg>the solver's route</div>
+  <div class="qrow"><svg viewBox="0 0 24 13"><line x1="0" y1="6.5" x2="24" y2="6.5"
     stroke="#8C8C8C" stroke-width="1.5"></line></svg>another way there</div>
-  <div class="qrow"><svg viewBox="0 0 20 11"><line x1="0" y1="5.5" x2="20" y2="5.5"
+  <div class="qrow"><svg viewBox="0 0 24 13"><line x1="0" y1="6.5" x2="24" y2="6.5"
     stroke="#8C8C8C" stroke-width="1.5" stroke-opacity=".2"></line></svg>on no way there</div>
-  <b class="qrow">what it joins</b>
-  <div class="qrow"><svg viewBox="0 0 20 11"><line x1="0" y1="5.5" x2="20" y2="5.5"
-    stroke="#98C379" stroke-width="1.5"></line></svg>out of a given</div>
-  <div class="qrow"><svg viewBox="0 0 20 11"><line x1="0" y1="5.5" x2="20" y2="5.5"
-    stroke="#FF6B81" stroke-width="1.5"></line></svg>into an asked</div>
-  <div class="qrow"><svg viewBox="0 0 20 11"><line x1="0" y1="5.5" x2="20" y2="5.5"
-    stroke="#8C8C8C" stroke-width="1.5"></line></svg>one step to the next</div>
   <b>picked out</b>
   <div><i style="border-color:#6BA8FF;border-width:2.6px"></i>picked</div>
   <div><i style="border-color:#ECECEC;border-width:2.4px"></i>what joins them</div>
 </div>
 <svg id="web"><defs>
-  <!-- One head per colour, because a marker does not inherit the stroke of
-       the line it sits on. Drawn pointing along +x, which is the way a marker
-       is turned to face, and sized in the page's own units: a marker scales
-       with the stroke it sits on by default, and the road the solver drove is
-       a wide one. -->
-  <marker id="head-from" viewBox="0 0 8 8" refX="7" refY="4" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11"
-          orient="auto-start-reverse"><path d="M0 0 L8 4 L0 8 z" fill="#98C379"></path></marker>
-  <marker id="head-to" viewBox="0 0 8 8" refX="7" refY="4" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11"
-          orient="auto-start-reverse"><path d="M0 0 L8 4 L0 8 z" fill="#FF6B81"></path></marker>
-  <marker id="head-along" viewBox="0 0 8 8" refX="7" refY="4" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11"
-          orient="auto-start-reverse"><path d="M0 0 L8 4 L0 8 z" fill="#8C8C8C"></path></marker>
+  <!-- Drawn pointing along +x, which is the way a marker is turned to face,
+       and sized in the page's own units: a marker scales with the stroke it
+       sits on by default, and the road the solver drove is a wide one. -->
+  <marker id="head" viewBox="0 0 8 8" refX="7" refY="4" markerUnits="userSpaceOnUse"
+          markerWidth="11" markerHeight="11" orient="auto-start-reverse">
+    <path d="M0 0 L8 4 L0 8 z" fill="#6BA8FF"></path></marker>
 </defs></svg>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script type="module">
@@ -481,9 +465,8 @@ function show(called) {
         // the working may have gone the other way down it.
         .each(function (d) {
           const head = on(d) ? stepped(d) : 0;
-          const which = ends(d, given) ? "from" : ends(d, asked) ? "to" : "along";
-          this.setAttribute("marker-end", head === 1 ? `url(#head-${which})` : "none");
-          this.setAttribute("marker-start", head === -1 ? `url(#head-${which})` : "none");
+          this.setAttribute("marker-end", head === 1 ? "url(#head)" : "none");
+          this.setAttribute("marker-start", head === -1 ? "url(#head)" : "none");
         })
         .classed("faded", d => picked && !lit.has(d.source.id) && !lit.has(d.target.id))
         .classed("between", d => (lit.has(d.source.id) && joins.has(d.target.id)) ||
